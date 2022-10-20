@@ -59,6 +59,7 @@ namespace Task {
     using EntryQueue_t = moodycamel::BlockingReaderWriterCircularBuffer<Entry_t>;
     using EventQueue_t = moodycamel::BlockingReaderWriterCircularBuffer<std::vector<Entry_t>>;
     //using TEventQueue_t = moodycamel::BlockingReaderWriterCircularBuffer<std::pair<std::vector<Entry_t>, size_t>>;
+    using MCEventQueue_t = moodycamel::BlockingConcurrentQueue<std::vector<Entry_t>>;
     using TEventQueue_t = moodycamel::BlockingConcurrentQueue<std::pair<std::vector<Entry_t>, size_t>>;
     //using TEventQueue_t = moodycamel::BlockingReaderWriterCircularBuffer<Triggered_event>;
 }

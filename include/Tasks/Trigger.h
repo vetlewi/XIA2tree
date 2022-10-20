@@ -14,7 +14,7 @@ namespace Task {
     class Trigger : public Base
     {
     private:
-        EventQueue_t &input_queue;
+        MCEventQueue_t &input_queue;
         TEventQueue_t output_queue;
 
         const double coincidence_time;
@@ -22,11 +22,52 @@ namespace Task {
         const bool time_cal;
 
     public:
-        Trigger(EventQueue_t &input, const double &time = 1500., const DetectorType &trigger = DetectorType::eDet, const bool &time_cal = false,
+        Trigger(MCEventQueue_t &input, const double &time = 1500., const DetectorType &trigger = DetectorType::eDet, const bool &time_cal = false,
                 const size_t &cap = 65536);
         TEventQueue_t &GetQueue(){ return output_queue; }
 
         void Run() override;
+
+    };
+
+    class STrigger : public Base
+    {
+    private:
+        MCEventQueue_t &input_queue;
+        TEventQueue_t &output_queue;
+
+        const double coincidence_time;
+        const DetectorType trigger;
+        const bool time_cal;
+
+    public:
+        STrigger(MCEventQueue_t &input, TEventQueue_t &output,
+                const double &time = 1500., const DetectorType &trigger = DetectorType::eDet,
+                const bool &time_cal = false);
+
+        void Run() override;
+
+    };
+
+    class Triggers
+    {
+    private:
+        MCEventQueue_t &input_queue;
+        TEventQueue_t output_queue;
+
+        const double coincidence_time;
+        const DetectorType trigger;
+        const bool time_cal;
+
+        std::vector<STrigger *> triggers;
+
+    public:
+        Triggers(MCEventQueue_t &input, const double &time = 1500., const DetectorType &trigger = DetectorType::eDet, const bool &time_cal = false,
+                const size_t &cap = 65536);
+        ~Triggers();
+        TEventQueue_t &GetQueue(){ return output_queue; }
+
+        STrigger *GetNewTrigger();
 
     };
 

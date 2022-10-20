@@ -14,6 +14,7 @@
 #include "Tasks/Splitter.h"
 #include "Tasks/Trigger.h"
 #include "Tasks/Sort.h"
+#include "Tasks/MTSort.h"
 
 #include "Tools/CommandLineInterface.h"
 #include "Tools/ProgressUI.h"
@@ -40,17 +41,21 @@ int main(int argc, char *argv[])
     Task::Calibrator calibrator(cal, reader.GetQueue());
     Task::Buffer buffer(calibrator.GetQueue());
     Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());
-    Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
-                          options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
+    //Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
+    //                      options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
+
+    Task::Triggers triggers(splitter.GetQueue(), options.coincidenceTime.value(),
+                            options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
 
     const char *user_sort = nullptr;
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
-    Task::Sort sort(trigger.GetQueue(), user_sort);
-    Task::Sort sorters[] = {Task::Sort(trigger.GetQueue(), user_sort),
-                            Task::Sort(trigger.GetQueue(), user_sort),
-                            Task::Sort(trigger.GetQueue(), user_sort),
-                            Task::Sort(trigger.GetQueue(), user_sort)};
+    Task::Sorters sorters(triggers.GetQueue(), user_sort);
+    //Task::Sort sort(trigger.GetQueue(), user_sort);
+    /*Task::Sort sorters[] = {Task::Sort(triggers.GetQueue(), user_sort),
+                            Task::Sort(triggers.GetQueue(), user_sort),
+                            Task::Sort(triggers.GetQueue(), user_sort),
+                            Task::Sort(triggers.GetQueue(), user_sort)};*/
 
 
     ThreadPool<std::thread> pool;
@@ -58,17 +63,25 @@ int main(int argc, char *argv[])
     pool.AddTask(&calibrator);
     pool.AddTask(&buffer);
     pool.AddTask(&splitter);
-    pool.AddTask(&trigger);
+    pool.AddTask(triggers.GetNewTrigger());
+    pool.AddTask(triggers.GetNewTrigger());
 
     // We use additional threads for the final step if there is more than one file.
     // This will speed up the work considerably.
-    if ( options.input.value().size() == 1 ) {
+    /*if ( options.input.value().size() == 1 ) {
         pool.AddTask(&sort);
     } else {
         for (auto &_sort: sorters) {
             pool.AddTask(&_sort);
         }
+    }*/
+    /*for (auto &_sort : sorters) {
+        pool.AddTask(&_sort);
+    }*/
+    for ( int i = 0 ; i < 4 ; ++i ){
+        pool.AddTask(sorters.GetNewSorter());
     }
+    //pool.AddTask(sorters.GetNewSorter());
 
     try {
         pool.Wait();
@@ -77,10 +90,14 @@ int main(int argc, char *argv[])
     }
 
     // Write to file
-    Histograms &hm = sort.GetHistograms();
+    //Histograms &hm = sorters[0].GetHistograms();
+    Histograms &hm = sorters.GetHistograms();
+    /*int i = 0;
     for ( auto &_sort : sorters ){
+        if ( i++ == 0 )
+            continue;
         hm.Merge(_sort.GetHistograms());
-    }
+    }*/
     RootWriter::Write(hm, options.output.value());
     return 0;
 }

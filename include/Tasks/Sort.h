@@ -131,7 +131,7 @@ namespace Task {
 
     };
 
-    class Sorters {
+    /*class Sorters {
     private:
         TEventQueue_t &input_queue;
         ThreadSafeHistograms histograms;
@@ -146,7 +146,7 @@ namespace Task {
 
         Histograms &GetHistogram(){ return histograms.GetHistograms(); }
 
-    };
+    };*/
 
     /*!
      * Gather and merge histograms.

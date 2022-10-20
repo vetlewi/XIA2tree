@@ -14,7 +14,7 @@ namespace Task {
     {
     private:
         EventQueue_t &input_queue;
-        EventQueue_t output_queue;
+        MCEventQueue_t output_queue;
         const double gap;
         //std::vector<word_t> buffer;
 
@@ -23,7 +23,7 @@ namespace Task {
     public:
 
         Splitter(EventQueue_t &input, const double &time_gap = 1500., const size_t &cap = 65536);
-        EventQueue_t &GetQueue(){ return output_queue; }
+        MCEventQueue_t &GetQueue(){ return output_queue; }
         void Run() override;
 
     };

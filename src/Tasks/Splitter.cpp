@@ -30,7 +30,7 @@ void Splitter::Run()
         auto entries_end = entries.begin();
         while ( entries_end < entries.end() ){
             entries_end = Split(entries_begin, entries.end(), gap);
-            while ( !output_queue.wait_enqueue_timed(std::vector(entries_begin, entries_end), std::chrono::seconds(1)) ){
+            while ( !output_queue.try_enqueue(std::vector(entries_begin, entries_end)) ){
                 if ( done )
                     break;
             }

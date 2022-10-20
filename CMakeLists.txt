@@ -10,7 +10,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
-CPMAddPackage("gh:vetlewi/Histogram@1.0.1")
+CPMAddPackage("gh:vetlewi/Histogram@1.1.1")
 
 CPMAddPackage(
         NAME structopt
@@ -43,6 +43,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Calibrator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MemoryMap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Sort.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MTSort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/XIAReader.cpp
