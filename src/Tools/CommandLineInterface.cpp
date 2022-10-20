@@ -21,6 +21,7 @@ std::ostream &operator<<(std::ostream &os, const Options &opt)
     os << "\tOutput file: " << opt.output.value() << "\n";
     os << "\tCalibration file: " << opt.CalibrationFile.value_or("") << "\n";
     os << "\tRange file: " << opt.RangeFile.value_or("") << "\n";
+    os << "\tCustom user sorting routine: " << opt.userSort.value_or("") << "\n";
     os << "\tCoincidence time: " << opt.coincidenceTime.value() << " ns\n";
     os << "\tSplit time: " << opt.SplitTime.value() << " ns\n";
 

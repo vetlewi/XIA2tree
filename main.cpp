@@ -42,12 +42,15 @@ int main(int argc, char *argv[])
     Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());
     Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
                           options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
-    Task::Sort sort(trigger.GetQueue());
 
-    Task::Sort sorters[] = {Task::Sort(trigger.GetQueue()),
-                            Task::Sort(trigger.GetQueue()),
-                            Task::Sort(trigger.GetQueue()),
-                            Task::Sort(trigger.GetQueue())};
+    const char *user_sort = nullptr;
+    if ( options.userSort.has_value() )
+        user_sort = options.userSort->c_str();
+    Task::Sort sort(trigger.GetQueue(), user_sort);
+    Task::Sort sorters[] = {Task::Sort(trigger.GetQueue(), user_sort),
+                            Task::Sort(trigger.GetQueue(), user_sort),
+                            Task::Sort(trigger.GetQueue(), user_sort),
+                            Task::Sort(trigger.GetQueue(), user_sort)};
 
 
     ThreadPool<std::thread> pool;

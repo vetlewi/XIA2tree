@@ -11,7 +11,7 @@
 using namespace Task;
 
 DynamicLibrary::DynamicLibrary(const char *libname)
-    : _handle( dlopen(libname, RTLD_LAZY) )
+    : _handle( ( libname ) ? dlopen(libname, RTLD_LAZY) : nullptr )
 {
     if ( !_handle && libname ){ // Only error if the library name is not a nullptr.
         std::cerr << "Unable to load '" << libname << ". Got error '";
@@ -34,7 +34,7 @@ UserSort *DynamicLibrary::GetUserSort(Histograms *hist)
     using Func = UserSort*(*)(Histograms *);
     auto sym = reinterpret_cast<Func>(dlsym(_handle, "NewUserSort"));
     if ( !sym ){
-        std::cerr << "Could not load NewUserSort. Got error '" << dlerror() << std::endl;
+        std::cerr << "Could not load NewUserSort. Got error '" << dlerror() << "'" << std::endl;
         return nullptr;
     }
     return sym(hist);
@@ -148,7 +148,7 @@ void Particle_telescope_t::Fill(const subvector<Entry_t> &deltaE, const subvecto
     }
 }
 
-HistManager::HistManager()
+HistManager::HistManager(const char *custom_sort)
     : histograms( )
     , labr( histograms, "labr", NUM_LABR_DETECTORS )
     , si_de( histograms, "si_de", NUM_SI_DE_DET )
@@ -162,7 +162,7 @@ HistManager::HistManager()
                            { histograms, 5, -100, 100},
                            { histograms, 6, -100, 100},
                            { histograms, 7, -100, 100}}
-   , usersort( histograms, "libParticleCoincidenceSort.so" )
+   , usersort( histograms, custom_sort )
 {
 }
 
@@ -193,9 +193,9 @@ void HistManager::AddEntry(Triggered_event &buffer)
     usersort.FillEvent(buffer);
 }
 
-Sort::Sort(Task::TEventQueue_t &input)
+Sort::Sort(Task::TEventQueue_t &input, const char *custom_sort)
     : input_queue( input )
-    , hm( )
+    , hm( custom_sort )
 {
 }
 

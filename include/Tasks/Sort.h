@@ -98,7 +98,7 @@ namespace Task {
         UserSortManager usersort;
 
     public:
-        HistManager();
+        HistManager(const char *custom_sort = nullptr);
         ~HistManager() = default;
         //HistManager(Histograms &histograms);
 
@@ -125,7 +125,7 @@ namespace Task {
         HistManager hm;
 
     public:
-        Sort(TEventQueue_t &input);
+        Sort(TEventQueue_t &input, const char *custom_sort = nullptr);
         Histograms &GetHistograms(){ return hm.GetHistograms(); }
         void Run() override;
 
