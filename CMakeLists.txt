@@ -64,15 +64,26 @@ target_include_directories(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Tasks
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools)
 
+add_library(UserSort
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/UserSort/DynamicLibrary.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/UserSort/UserSortManager.cpp)
+
+target_include_directories(UserSort
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/UserSort
+)
+
+set_target_properties(UserSort PROPERTIES CXX_STANDARD 17)
+
 add_library(ParticleCoincidenceSort MODULE
         ParticleCoincidenceSort.cpp)
 
 set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 17)
 target_link_libraries(XIAfuncs PUBLIC OCL::Histogram readerwriterqueue concurrentqueue indicators::indicators structopt::structopt)
 
-target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs)
+target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
 
 add_executable(XIA2tree main.cpp)
 set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 17)
-target_link_libraries(XIA2tree PRIVATE OCL::Histogram XIAfuncs readerwriterqueue concurrentqueue)
+target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwriterqueue concurrentqueue)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
