@@ -13,7 +13,7 @@
 #include "Tasks/Buffer.h"
 #include "Tasks/Splitter.h"
 #include "Tasks/Trigger.h"
-#include "Tasks/Sort.h"
+//#include "Tasks/Sort.h"
 #include "Tasks/MTSort.h"
 
 #include "Tools/CommandLineInterface.h"
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     //                      options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
 
     Task::Triggers triggers(splitter.GetQueue(), options.coincidenceTime.value(),
-                            options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
+                            options.Trigger.value(), options.sortType.value());
 
     const char *user_sort = nullptr;
     if ( options.userSort.has_value() )

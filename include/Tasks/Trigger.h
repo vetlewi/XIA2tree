@@ -8,6 +8,7 @@
 #include <Tasks.h>
 #include <Queue.h>
 #include <experimentsetup.h>
+#include <CommandLineInterface.h>
 
 namespace Task {
 
@@ -38,12 +39,12 @@ namespace Task {
 
         const double coincidence_time;
         const DetectorType trigger;
-        const bool time_cal;
+        const CLI::sort_type sort_type;
 
     public:
         STrigger(MCEventQueue_t &input, TEventQueue_t &output,
                 const double &time = 1500., const DetectorType &trigger = DetectorType::eDet,
-                const bool &time_cal = false);
+                const CLI::sort_type &sort_type = CLI::sort_type::coincidence);
 
         void Run() override;
 
@@ -57,13 +58,13 @@ namespace Task {
 
         const double coincidence_time;
         const DetectorType trigger;
-        const bool time_cal;
+        const CLI::sort_type sort_type;
 
         std::vector<STrigger *> triggers;
 
     public:
-        Triggers(MCEventQueue_t &input, const double &time = 1500., const DetectorType &trigger = DetectorType::eDet, const bool &time_cal = false,
-                const size_t &cap = 65536);
+        Triggers(MCEventQueue_t &input, const double &time = 1500., const DetectorType &trigger = DetectorType::eDet,
+                 const CLI::sort_type &sort_type = CLI::sort_type::coincidence, const size_t &cap = 65536);
         ~Triggers();
         TEventQueue_t &GetQueue(){ return output_queue; }
 

@@ -61,6 +61,15 @@ void Trigger::Run()
     while ( !done ){
         if ( input_queue.wait_dequeue_timed(input, std::chrono::seconds(1)) ){
 
+            if ( trigger == DetectorType::any ){
+                auto evt = std::make_pair(input, 0);
+                while ( !output_queue.try_enqueue(evt) ){
+                    if ( done )
+                        break;
+                }
+                continue;
+            }
+
             // First we will find all the entries that corresponds to a "correct" trigger within the buffer
             auto triggers = GetTriggers(input, trigger);
 
@@ -102,12 +111,13 @@ void Trigger::Run()
     is_done = true;
 }
 
-STrigger::STrigger(MCEventQueue_t &input, TEventQueue_t &output, const double &time, const DetectorType &trig, const bool &_tcal)
+STrigger::STrigger(MCEventQueue_t &input, TEventQueue_t &output, const double &time,
+                   const DetectorType &trig, const CLI::sort_type &_sort_type)
         : input_queue( input )
         , output_queue( output )
         , coincidence_time( time )
         , trigger( trig )
-        , time_cal( _tcal )
+        , sort_type( _sort_type )
 {}
 
 void STrigger::Run()
@@ -117,12 +127,21 @@ void STrigger::Run()
     while ( !done ){
         if ( input_queue.wait_dequeue_timed(input, std::chrono::seconds(1)) ){
 
+            if ( sort_type == CLI::sort_type::gap ){
+                auto evt = std::make_pair(input, 0);
+                while ( !output_queue.try_enqueue(evt) ){
+                    if ( done )
+                        break;
+                }
+                continue;
+            }
+
             // First we will find all the entries that corresponds to a "correct" trigger within the buffer
             auto triggers = GetTriggers(input, trigger);
 
             for ( auto &trig : triggers ){
 
-                if ( time_cal ){ // If it is a time calibration run, we only care about the timing relative to the "trigger"
+                if ( sort_type == CLI::sort_type::time ){ // If it is a time calibration run, we only care about the timing relative to the "trigger"
                     if ( trig->detectorID != 0 )
                         continue;
                 }
@@ -158,12 +177,12 @@ void STrigger::Run()
     is_done = true;
 }
 
-Triggers::Triggers(Task::MCEventQueue_t &input, const double &time, const DetectorType &trig, const bool &_tcal, const size_t &cap)
+Triggers::Triggers(Task::MCEventQueue_t &input, const double &time, const DetectorType &trig, const CLI::sort_type &_sort_type, const size_t &cap)
     : input_queue( input )
     , output_queue( cap )
     , coincidence_time( time )
     , trigger( trig )
-    , time_cal( _tcal )
+    , sort_type( _sort_type )
     , triggers( )
 {
 }
@@ -176,6 +195,6 @@ Triggers::~Triggers()
 
 STrigger *Triggers::GetNewTrigger()
 {
-    triggers.push_back(new STrigger(input_queue, output_queue, coincidence_time, trigger, time_cal));
+    triggers.push_back(new STrigger(input_queue, output_queue, coincidence_time, trigger, sort_type));
     return triggers.back();
 }
