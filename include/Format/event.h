@@ -52,7 +52,7 @@ public:
 
     inline std::vector<Entry_t> GetEntries() const { return entries; }
     inline subvector<Entry_t> GetDetector(const DetectorType &type) const { return type_bounds.at(type); }
-    inline Entry_t *GetTrigger() { return ( trigger.type == unused && trigger.detectorID == uint16_t(-1) ) ? nullptr : &trigger; }
+    inline const Entry_t *GetTrigger() const { return ( trigger.type == unused && trigger.detectorID == uint16_t(-1) ) ? nullptr : &trigger; }
 
     subvector<Entry_t> GetRing(const size_t &ringNo);
 };
