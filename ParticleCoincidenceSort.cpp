@@ -2,8 +2,7 @@
 // Created by Vetle Wegner Ingeberg on 07/10/2022.
 //
 
-#include "UserSort.h"
-
+#include <UserSort/UserSort.h>
 #include <histogram/Histogram1D.h>
 #include <histogram/Histogram2D.h>
 #include <histogram/Histograms.h>
