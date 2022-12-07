@@ -4,6 +4,8 @@
 
 
 #include "UserSortManager.h"
+#include "UserSort.h"
+#include "event.h"
 
 UserSortManager::UserSortManager(ThreadSafeHistograms &hist, const char *libname)
         : library( libname )
@@ -20,4 +22,10 @@ void UserSortManager::FillEvent(const Triggered_event &event)
 {
     if ( object )
         object->FillEvent(event);
+}
+
+void UserSortManager::Flush()
+{
+    if ( object )
+        object->Flush();
 }
