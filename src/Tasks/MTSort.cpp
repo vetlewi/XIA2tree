@@ -129,7 +129,7 @@ MTHistManager::MTHistManager(ThreadSafeHistograms &histograms, const char *custo
                                { histograms, 5, -100, 100},
                                { histograms, 6, -100, 100},
                                { histograms, 7, -100, 100}}
-        //, usersort( histograms, custom_sort )
+        , userSort( histograms, custom_sort )
 {
 }
 
@@ -157,7 +157,7 @@ void MTHistManager::AddEntry(Triggered_event &buffer)
         GetPart(i)->Fill(buffer.GetRing(i), buffer.GetDetector(eDet));
     }
 
-    //usersort.FillEvent(buffer);
+    userSort.FillEvent(buffer);
 }
 
 void MTHistManager::Flush()
@@ -170,6 +170,8 @@ void MTHistManager::Flush()
     for ( auto &i : {0, 1, 2, 3, 4, 5, 6, 7}){
         GetPart(i)->Flush();
     }
+
+    userSort.Flush();
 }
 
 MTSort::MTSort(Task::TEventQueue_t &input,ThreadSafeHistograms &histograms, const char *custom_sort)

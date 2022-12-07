@@ -6,6 +6,7 @@
 #define XIA2TREE_MTSORT_H
 
 #include <histogram/ThreadSafeHistograms.h>
+#include <UserSort/UserSortManager.h>
 
 #include "Task.h"
 #include "Queue.h"
@@ -52,7 +53,7 @@ namespace Task {
         //! Time energy spectra for particles.
         MT_Particle_telescope_t particle_coincidence[NUM_SI_DE_TEL]; // Sorted by ring number
 
-        UserSort *userSort;
+        UserSortManager userSort;
 
         MT_Detector_Histograms_t *GetSpec(const DetectorType &type);
         inline MT_Particle_telescope_t *GetPart(const size_t &num){ return ( num < NUM_SI_DE_TEL ) ? particle_coincidence+num : nullptr; }
