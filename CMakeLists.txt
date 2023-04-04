@@ -10,7 +10,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
-CPMAddPackage("gh:vetlewi/Histogram@1.2.0")
+CPMAddPackage("gh:vetlewi/Histogram@1.3.0")
 
 CPMAddPackage(
         NAME structopt
@@ -94,7 +94,9 @@ target_link_libraries(XIAfuncs
         readerwriterqueue
         concurrentqueue
         indicators::indicators
-        structopt::structopt)
+        structopt::structopt
+        ROOT::RIO
+        ROOT::Tree)
 
 target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
 target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
