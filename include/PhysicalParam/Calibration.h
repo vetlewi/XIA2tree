@@ -15,7 +15,8 @@
 // We will also use this class to store information about the
 // channel mappings.
 
-#define NUM_ADDRESSABLE 4096 // Total number of addressable channels are 16*16*16
+//#define NUM_ADDRESSABLE 4096 // Total number of addressable channels are 16*16*16
+#define NUM_ADDRESSABLE 208 // Total number of addressable channels are 13*16... within one crate
 
 
 class Calibration {
@@ -29,16 +30,17 @@ private:
         size_t telescope_number;
         size_t detector_number;
 
-        double gain, shift; // Energy calibration
+        double quad, gain, shift; // Energy calibration
         double cfd_shift; // Time calibration for CFD (between 0 and 1 ns)
         int timestamp_shift; // Time calibration for timestamp (whole numbers of ns)
 
-        inline double CalibrateEnergy(const unsigned short &channel) const
+        [[nodiscard]] inline double CalibrateEnergy(const unsigned short &channel) const
         {
-            return gain*(channel + drand48() - 0.5) + shift;
+            double ch = channel + drand48() - 0.5;
+            return quad*ch*ch + gain*ch + shift;
         }
 
-        inline XIA::XIA_CFD_t CalibrateCFD(const unsigned short &channel) const
+        [[nodiscard]] inline XIA::XIA_CFD_t CalibrateCFD(const unsigned short &channel) const
         {
             return XIA::XIA_CFD_Decode(sfreq, uint16_t(channel));
         }

@@ -20,8 +20,12 @@
 #include "Tools/ProgressUI.h"
 #include "ThreadPool.hpp"
 
+#include <TROOT.h>
+
 int main(int argc, char *argv[])
 {
+    ROOT::EnableThreadSafety();
+    ROOT::EnableImplicitMT();
     CLI::Options options;
     try {
         options = CLI::ParseCLA(argc, argv);
@@ -37,12 +41,21 @@ int main(int argc, char *argv[])
     Calibration cal(cal_file);
     ProgressUI progress;
 
+    std::string hist_file;
+    std::string tree_file;
+    if ( options.tree.value() ) {
+        auto outname = options.output.value();
+        outname = outname.substr(0, outname.find_last_of('.'));
+        tree_file = outname + "_tree.root";
+        hist_file = outname + "_hist.root";
+    } else {
+        hist_file = options.output.value();
+    }
+
     Task::XIAReader reader(options.input.value(), &progress);
     Task::Calibrator calibrator(cal, reader.GetQueue());
     Task::Buffer buffer(calibrator.GetQueue());
     Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());
-    //Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
-    //                      options.Trigger.value(), (options.sortType.value() == CLI::sort_type::time));
 
     Task::Triggers triggers(splitter.GetQueue(), options.coincidenceTime.value(),
                             options.Trigger.value(), options.sortType.value());
@@ -50,13 +63,8 @@ int main(int argc, char *argv[])
     const char *user_sort = nullptr;
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
-    Task::Sorters sorters(triggers.GetQueue(), user_sort);
-    //Task::Sort sort(trigger.GetQueue(), user_sort);
-    /*Task::Sort sorters[] = {Task::Sort(triggers.GetQueue(), user_sort),
-                            Task::Sort(triggers.GetQueue(), user_sort),
-                            Task::Sort(triggers.GetQueue(), user_sort),
-                            Task::Sort(triggers.GetQueue(), user_sort)};*/
-
+    //const char *treef = ( tree_file.empty() ) ? nullptr : tree_file.c_str();
+    Task::Sorters sorters(triggers.GetQueue(), ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);
@@ -66,22 +74,9 @@ int main(int argc, char *argv[])
     pool.AddTask(triggers.GetNewTrigger());
     pool.AddTask(triggers.GetNewTrigger());
 
-    // We use additional threads for the final step if there is more than one file.
-    // This will speed up the work considerably.
-    /*if ( options.input.value().size() == 1 ) {
-        pool.AddTask(&sort);
-    } else {
-        for (auto &_sort: sorters) {
-            pool.AddTask(&_sort);
-        }
-    }*/
-    /*for (auto &_sort : sorters) {
-        pool.AddTask(&_sort);
-    }*/
     for ( int i = 0 ; i < 4 ; ++i ){
         pool.AddTask(sorters.GetNewSorter());
     }
-    //pool.AddTask(sorters.GetNewSorter());
 
     try {
         pool.Wait();
@@ -98,6 +93,6 @@ int main(int argc, char *argv[])
             continue;
         hm.Merge(_sort.GetHistograms());
     }*/
-    RootWriter::Write(hm, options.output.value());
+    RootWriter::Write(hm, hist_file.c_str());
     return 0;
 }

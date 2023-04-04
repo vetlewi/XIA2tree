@@ -14,9 +14,12 @@
 
 namespace Task {
 
+    struct MT_Safe_TTree_Container;
+
     struct MT_Detector_Histograms_t
     {
         ThreadSafeHistogram2D time;
+        ThreadSafeHistogram2D time_CFDfail;
         ThreadSafeHistogram2D energy;
         ThreadSafeHistogram2D energy_cal;
         ThreadSafeHistogram1D mult;
@@ -84,9 +87,11 @@ namespace Task {
     private:
         TEventQueue_t &input_queue;
         MTHistManager hm;
+        MT_Safe_TTree_Container *tree;
 
     public:
-        MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const char *custom_sort = nullptr);
+        MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms,
+               MT_Safe_TTree_Container *tree, const char *custom_sort = nullptr);
         ~MTSort() = default;
         void Run() override;
         void Flush();
@@ -99,15 +104,18 @@ namespace Task {
         ThreadSafeHistograms histograms;
         std::vector<MTSort *> sorters;
         std::string user_sort_path;
+        std::string tree_file_name;
+        std::vector<std::string> tree_files; //! To be returned to the user when everything is said and done.
+
     public:
-        Sorters(TEventQueue_t &input, const char *user_sort = nullptr);
+        Sorters(TEventQueue_t &input, const char *tree_name = nullptr, const char *user_sort = nullptr);
         ~Sorters();
         void flush();
         Histograms &GetHistograms(){
             flush();
             return histograms.GetHistograms();
         }
-
+        std::vector<std::string> GetTreeFiles() const { return tree_files; }
         MTSort *GetNewSorter();
     };
 

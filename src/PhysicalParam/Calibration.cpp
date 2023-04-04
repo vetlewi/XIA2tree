@@ -32,12 +32,16 @@
 static Parameters calParam;
 
 //! Parameters for energy calibration of the LaBr detectors
+static Parameter quad_labr(calParam, "quad_labr", NUM_LABR_DETECTORS, 0);
 static Parameter gain_labr(calParam, "gain_labr", NUM_LABR_DETECTORS, 1);
 static Parameter shift_labr(calParam, "shift_labr", NUM_LABR_DETECTORS, 0);
 
 //! Parameters for energy calibration of the Si detectors
+static Parameter quad_de(calParam, "quad_de", NUM_SI_DE_DET, 0);
 static Parameter gain_de(calParam, "gain_de", NUM_SI_DE_DET, 1);
 static Parameter shift_de(calParam, "shift_de", NUM_SI_DE_DET, 0);
+
+static Parameter quad_e(calParam, "quad_e", NUM_SI_E_DET, 0);
 static Parameter gain_e(calParam, "gain_e", NUM_SI_E_DET, 1);
 static Parameter shift_e(calParam, "shift_e", NUM_SI_E_DET, 0);
 
@@ -45,6 +49,20 @@ static Parameter t0_labr(calParam, "t0_labr", NUM_LABR_DETECTORS, 0);
 static Parameter t0_de(calParam, "t0_de", NUM_SI_DE_DET, 0);
 static Parameter t0_e(calParam, "t0_e", NUM_SI_E_DET, 0);
 static Parameter t0_ppac(calParam, "t0_ppac", NUM_PPAC, 0);
+
+Parameter::param_t GetQuad(const DetectorInfo_t *dinfo)
+{
+    switch ( dinfo->type ){
+        case labr :
+            return quad_labr[dinfo->detectorNum];
+        case deDet :
+            return quad_de[dinfo->detectorNum];
+        case eDet :
+            return quad_e[dinfo->detectorNum];
+        default:
+            return 1;
+    }
+}
 
 Parameter::param_t GetGain(const DetectorInfo_t *dinfo)
 {
@@ -80,7 +98,7 @@ Parameter::param_t GetTime(const DetectorInfo_t *dinfo)
         case labr :
             return t0_labr[dinfo->detectorNum];
         case deDet :
-            return t0_de[dinfo->detectorNum];
+            return t0_de[dinfo->detectorNum + NUM_SI_DE_TEL * dinfo->telNum]; // Stupid hack... need a better solution
         case eDet :
             return t0_e[dinfo->detectorNum];
         case ppac :
@@ -118,6 +136,8 @@ bool SetCalibration(const char *calfile)
 
     // Get line by line!
     while ( NextLine(inCal, currentLine, lineno) ){
+        if ( currentLine[0] == '#' ) // skip lines begining with #
+            continue;
         std::istringstream icmd(currentLine);
         if ( !calParam.SetAll(icmd) ){
             std::cerr << "Error extracting calibration from line ";
@@ -138,7 +158,12 @@ bool SetCalibration(std::istream &inCal)
 
     // Get line by line!
     while ( NextLine(inCal, currentLine, lineno) ){
-        std::istringstream icmd(currentLine);
+        if ( currentLine.empty() )
+            continue;
+        auto use_line = currentLine.substr(currentLine.find_first_not_of(' '), currentLine.find_last_of('#'));
+        if ( use_line[0] == '#' )
+            continue;
+        std::istringstream icmd(use_line);
         if ( !calParam.SetAll(icmd) ){
             std::cerr << "Error extracting calibration from line ";
             std::cerr << lineno << ": " << currentLine << std::endl;
@@ -173,13 +198,15 @@ void Calibration::Populate()
                 dinfo->type,
                 dinfo->telNum,
                 dinfo->detectorNum,
+                GetQuad(dinfo),
                 GetGain(dinfo),
                 GetShift(dinfo),
                 GetTime(dinfo) - int(GetTime(dinfo)),
                 int(GetTime(dinfo))
         };
-        if ( dinfo->type == deDet ) // Stupid temporary hack!!
+        if ( dinfo->type == deDet ) { // Stupid temporary hack!!
             entry.detector_number += NUM_SI_DE_TEL * entry.telescope_number;
+        }
     }
 }
 

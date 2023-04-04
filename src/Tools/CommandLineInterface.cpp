@@ -35,8 +35,8 @@ Options CLI::ParseCLA(const int &argc, char *argv[])
 {
     Options options;
     try {
-        structopt::app app("TDR2tree", "0.9.0");
-        structopt::details::visitor vis("TDR2tree", "0.9.0");
+        structopt::app app("XIA2tree", "0.9.9");
+        structopt::details::visitor vis("XIA2tree", "0.9.9");
         visit_struct::for_each(options, vis);
         options = app.parse<Options>(argc, argv);
         if ( !options.input.has_value() ){
