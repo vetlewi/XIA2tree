@@ -51,12 +51,12 @@ public:
     explicit Triggered_event(const std::vector<Entry_t> &_entries, const Entry_t &trigger);
     explicit Triggered_event(std::vector<Entry_t> &&_entries, const Entry_t &trigger);
 
-    inline std::vector<Entry_t> GetEntries() const { return entries; }
-    inline subvector<Entry_t> GetDetector(const DetectorType &type) const { return type_bounds.at(type); }
-    inline const Entry_t *GetTrigger() const { return ( trigger.type == unused ) ? nullptr : &trigger; }
+    [[nodiscard]] inline std::vector<Entry_t> GetEntries() const { return entries; }
+    [[nodiscard]] inline subvector<Entry_t> GetDetector(const DetectorType &type) const { return type_bounds.at(type); }
+    [[nodiscard]] inline const Entry_t *GetTrigger() const { return ( trigger.type == unused ) ? nullptr : &trigger; }
 
-    subvector<Entry_t> GetRing(const size_t &ringNo);
-    std::pair<subvector<Entry_t>, subvector<Entry_t>> GetTrap(const size_t &ringNo) const;
+    [[nodiscard]] subvector<Entry_t> GetRing(const size_t &ringNo);
+    [[nodiscard]] std::pair<subvector<Entry_t>, subvector<Entry_t>> GetTrap(const size_t &ringNo) const;
 };
 
 #endif //XIA2TREE_EVENT_H
