@@ -70,7 +70,7 @@ Parameter::param_t GetGain(const DetectorInfo_t *dinfo)
         case labr :
             return gain_labr[dinfo->detectorNum];
         case deDet :
-            return gain_de[dinfo->detectorNum];
+            return gain_de[dinfo->detectorNum + NUM_SI_DE_TEL * dinfo->telNum];
         case eDet :
             return gain_e[dinfo->detectorNum];
         default:
@@ -84,7 +84,7 @@ Parameter::param_t GetShift(const DetectorInfo_t *dinfo)
         case labr :
             return shift_labr[dinfo->detectorNum];
         case deDet :
-            return shift_de[dinfo->detectorNum];
+            return shift_de[dinfo->detectorNum + NUM_SI_DE_TEL * dinfo->telNum];
         case eDet :
             return shift_e[dinfo->detectorNum];
         default:
@@ -192,6 +192,7 @@ void Calibration::Populate()
 
     for ( auto&& [index, entry] : enumerate(detectors) ){
         dinfo = GetDetectorPtr(index);
+
         entry = {
                 *reinterpret_cast<XIA_address_t *>(&index),
                 dinfo->sfreq,

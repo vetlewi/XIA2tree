@@ -40,21 +40,23 @@ private:
     std::vector<Entry_t> entries;
     Entry_t trigger;
     std::map<DetectorType, subvector<Entry_t>> type_bounds;
-    std::vector<subvector<Entry_t>> de_by_ring;
+    subvector<Entry_t> de_by_ring[NUM_SI_DE_DET];
 
     void index(); // Should run each initialization, unless empty.
 
 public:
     Triggered_event() = default;
     Triggered_event(const Triggered_event &event);
+    explicit Triggered_event(const std::vector<Entry_t> &_entries);
     explicit Triggered_event(const std::vector<Entry_t> &_entries, const Entry_t &trigger);
     explicit Triggered_event(std::vector<Entry_t> &&_entries, const Entry_t &trigger);
 
     inline std::vector<Entry_t> GetEntries() const { return entries; }
     inline subvector<Entry_t> GetDetector(const DetectorType &type) const { return type_bounds.at(type); }
-    inline const Entry_t *GetTrigger() const { return ( trigger.type == unused && trigger.detectorID == uint16_t(-1) ) ? nullptr : &trigger; }
+    inline const Entry_t *GetTrigger() const { return ( trigger.type == unused ) ? nullptr : &trigger; }
 
     subvector<Entry_t> GetRing(const size_t &ringNo);
+    std::pair<subvector<Entry_t>, subvector<Entry_t>> GetTrap(const size_t &ringNo) const;
 };
 
 #endif //XIA2TREE_EVENT_H

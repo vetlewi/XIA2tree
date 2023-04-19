@@ -47,9 +47,11 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/XIAReader.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/RootInterface/TTreeManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Calibration.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/experimentsetup.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Parameters.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/XIA_CFD.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/CommandLineInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/ProgressUI.cpp
@@ -86,6 +88,9 @@ target_link_libraries(ParticleCoincidenceSort PUBLIC OCL::UserSort)
 add_library(Co60CoincidenceSort MODULE Co60_coincidence_sort.cpp)
 target_link_libraries(Co60CoincidenceSort PUBLIC OCL::UserSort)
 
+add_library(TimingInvestigation MODULE TimingInvestigation.cpp)
+target_link_libraries(TimingInvestigation PUBLIC OCL::UserSort)
+
 set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 17)
 target_link_libraries(XIAfuncs
     PUBLIC
@@ -100,6 +105,7 @@ target_link_libraries(XIAfuncs
 
 target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
 target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
+target_link_libraries(TimingInvestigation PRIVATE OCL::Histogram XIAfuncs UserSort)
 
 add_executable(XIA2tree main.cpp)
 set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 17)

@@ -4,7 +4,7 @@
 #include <signal.h>
 
 #include "PhysicalParam/Calibration.h"
-
+#include "PhysicalParam/ParticleRange.h"
 #include "histogram/RootWriter.h"
 
 #include "Tasks/Tasks.h"
@@ -21,17 +21,12 @@
 #include "ThreadPool.hpp"
 
 #include <TROOT.h>
+#include <TFileMerger.h>
 
-int main(int argc, char *argv[])
+std::vector<std::string> RunSort(const CLI::Options &options)
 {
-    ROOT::EnableThreadSafety();
-    ROOT::EnableImplicitMT();
-    CLI::Options options;
-    try {
-        options = CLI::ParseCLA(argc, argv);
-    } catch ( std::exception &e ){
-        return 1; // Error
-    }
+    ProgressUI progress;
+
     std::ifstream cal_file;
     try {
         cal_file = std::ifstream(options.CalibrationFile.value());
@@ -39,7 +34,13 @@ int main(int argc, char *argv[])
         // Pass, do nothing.
     }
     Calibration cal(cal_file);
-    ProgressUI progress;
+
+    try {
+
+    } catch ( std::exception &e ){
+        // Pass do nothing.
+    }
+    ParticleRange particleRange( options.RangeFile.value() );
 
     std::string hist_file;
     std::string tree_file;
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
     //const char *treef = ( tree_file.empty() ) ? nullptr : tree_file.c_str();
-    Task::Sorters sorters(triggers.GetQueue(), ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
+    Task::Sorters sorters(triggers.GetQueue(), particleRange, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);
@@ -84,15 +85,44 @@ int main(int argc, char *argv[])
         std::cerr << "Got exception: " << ex.what() << std::endl;
     }
 
-    // Write to file
-    //Histograms &hm = sorters[0].GetHistograms();
     Histograms &hm = sorters.GetHistograms();
-    /*int i = 0;
-    for ( auto &_sort : sorters ){
-        if ( i++ == 0 )
-            continue;
-        hm.Merge(_sort.GetHistograms());
-    }*/
     RootWriter::Write(hm, hist_file.c_str());
+    auto root_files = sorters.GetTreeFiles();
+    root_files.push_back(hist_file);
+    return root_files;
+}
+
+void MergeFiles(std::string &output_file, const std::vector<std::string> &files)
+{
+    {
+        TFileMerger merger;
+        merger.OutputFile(output_file.c_str());
+        for (auto &file: files) {
+            merger.AddFile(file.c_str(), true);
+        }
+        merger.Merge();
+    }
+    // We can now delete all the files
+    for ( auto &file : files ){
+        system(std::string("rm " + file).c_str());
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    ROOT::EnableThreadSafety();
+    ROOT::EnableImplicitMT();
+    CLI::Options options;
+    try {
+        options = CLI::ParseCLA(argc, argv);
+    } catch ( std::exception &e ){
+        return 1; // Error
+    }
+
+    auto files = RunSort(options);
+    if ( files.size() == 1 ) // Do nothing. No files to merge.
+        return 0;
+    else if ( files.size() > 1 )
+        MergeFiles(options.output.value(), files);
     return 0;
 }

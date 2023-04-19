@@ -9,7 +9,15 @@
 Triggered_event::Triggered_event(const Triggered_event &event)
     : entries( event.entries )
     , trigger( event.trigger )
-    , de_by_ring( NUM_SI_DE_TEL, {nullptr, nullptr} )
+    , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
+                 {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
+{
+    index();
+}
+
+Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries)
+    : entries( _entries )
+    , trigger( {DetectorType::unused, uint16_t(-1), 0, 0, -1, true, -1e9, -1e9, true} )
 {
     index();
 }
@@ -17,7 +25,8 @@ Triggered_event::Triggered_event(const Triggered_event &event)
 Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries, const Entry_t &_trigger)
     : entries( _entries )
     , trigger( _trigger )
-    , de_by_ring( NUM_SI_DE_TEL, {nullptr, nullptr} )
+    , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
+                 {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
 {
     //
     index();
@@ -26,7 +35,8 @@ Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries, const Ent
 Triggered_event::Triggered_event(std::vector<Entry_t> &&_entries, const Entry_t &_trigger)
     : entries( std::move(_entries) )
     , trigger( _trigger )
-    , de_by_ring( NUM_SI_DE_TEL, {nullptr, nullptr} )
+    , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
+                 {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
 {
     //
     index();
@@ -104,4 +114,19 @@ subvector<Entry_t> Triggered_event::GetRing(const size_t &ringNo)
     //    return {0, 0};
 
     return {begin, end};*/
+}
+
+std::pair<subvector<Entry_t>, subvector<Entry_t>> Triggered_event::GetTrap(const size_t &trapNo) const
+{
+    auto e_events = GetDetector(DetectorType::eDet);
+    auto e_begin = std::find_if(e_events.begin(), e_events.end(),
+                              [&trapNo](const Entry_t &evt){ return evt.detectorID == trapNo; });
+    auto e_end = std::find_if(e_begin, e_events.end(), [&trapNo](const Entry_t &evt){ return evt.detectorID > trapNo; });
+
+    auto de_events = GetDetector(DetectorType::deDet);
+    auto de_begin = std::find_if(de_events.begin(), de_events.end(),
+                                 [&trapNo](const Entry_t &evt){return (evt.detectorID / NUM_SI_DE_TEL) == trapNo;});
+    auto de_end = std::find_if(de_begin, de_events.end(),
+                               [&trapNo](const Entry_t &evt){ return (evt.detectorID / NUM_SI_DE_TEL) > trapNo; });
+    return std::make_pair(subvector(de_begin, de_end), subvector(e_begin, e_end));
 }

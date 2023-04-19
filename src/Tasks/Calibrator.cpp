@@ -20,6 +20,7 @@ Calibrator::Calibrator(Calibration &cal, XIAQueue_t &input, const size_t &capaci
 void Calibrator::Run()
 {
     const XIA_base_t *xia;
+    //XIA_base_t xia;
     while ( !done ){
         while ( !input_queue.wait_dequeue_timed(xia, std::chrono::seconds(1)) ){
             if ( done )
