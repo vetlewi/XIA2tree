@@ -5,7 +5,7 @@
 #ifndef ENTRY_H
 #define ENTRY_H
 
-#include "PhysicalParam/experimentsetup.h"
+#include "PhysicalParam/DetectorTypes.h"
 
 struct Entry_t {
 

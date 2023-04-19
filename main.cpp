@@ -3,7 +3,7 @@
 #include <thread>
 #include <signal.h>
 
-#include "PhysicalParam/Calibration.h"
+#include "PhysicalParam/ConfigManager.h"
 #include "PhysicalParam/ParticleRange.h"
 #include "histogram/RootWriter.h"
 
@@ -33,7 +33,7 @@ std::vector<std::string> RunSort(const CLI::Options &options)
     } catch ( std::exception &e ){
         // Pass, do nothing.
     }
-    Calibration cal(cal_file);
+    auto cal = OCL::ConfigManager::FromFile(cal_file);
 
     try {
 

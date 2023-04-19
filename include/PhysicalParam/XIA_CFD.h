@@ -10,10 +10,18 @@
 #include <cstdint>
 #include <utility>
 
-#include "PhysicalParam/experimentsetup.h"
+//#include "PhysicalParam/experimentsetup.h"
 
 
 namespace XIA {
+
+    enum ADCSamplingFreq {
+        f000MHz = 0,
+        f100MHz = 100,
+        f125MHz = 125,
+        f250MHz = 250,
+        f500MHz = 500,
+    };
 
 
     typedef std::pair<double, bool> XIA_CFD_t;

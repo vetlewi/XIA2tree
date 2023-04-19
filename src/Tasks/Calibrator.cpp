@@ -6,11 +6,12 @@
 
 
 
-#include "PhysicalParam/Calibration.h"
+//#include "PhysicalParam/Calibration.h"
+
 
 using namespace Task;
 
-Calibrator::Calibrator(Calibration &cal, XIAQueue_t &input, const size_t &capacity)
+Calibrator::Calibrator(OCL::ConfigManager &cal, XIAQueue_t &input, const size_t &capacity)
     : calibration( cal )
     , input_queue( input )
     , output_queue( capacity )

@@ -8,6 +8,8 @@
 
 #include <PhysicalParam/ParticleRange.h>
 
+#include <Tools/enumerate.h>
+
 const double a0[] = {14.008496, 14.020293, 14.032383, 14.044716,
                      14.057543, 14.070141, 14.082770, 14.095125};
 const double a1[] = {-1.214118, -1.209304, -1.204287, -1.199069,
@@ -27,7 +29,7 @@ private:
     ThreadSafeHistogram2D de_time_energy[NUM_SI_DE_TEL];
     ThreadSafeHistogram2D e_time_energy[NUM_SI_E_DET];
     ThreadSafeHistogram2D ede_energy, ex_energy, time_de_hoyle, ex_eg_matrix;
-    ThreadSafeHistogram2D gamgam_labr, time_energy_labr_hoyle;
+    ThreadSafeHistogram2D gamgam_labr, time_energy_labr_hoyle, time_time;
     ThreadSafeHistogram2D gamgam_time, gamgam_satelite, gamgam_prompt, gamgam_prompt_satelite;
     ThreadSafeHistogram1D range;
     ThreadSafeHistogram2D thick_mult, thick_time, mult_two_ring_ids;
@@ -73,6 +75,7 @@ TimingInvestigation::TimingInvestigation(ThreadSafeHistograms *hist)
     , gamgam_labr( hist->Create2D("gamgam_labr", "labr vs de time", 10000, -1000, 1000, "Timediff [ns]",
                                   30, 0, 30, "LaBr ID") )
     , time_energy_labr_hoyle( hist->Create2D("time_energy_labr_hoyle", "time erngy", 1000, 0, 5000, "LaBr energy [keV]", 1000, -250, 250, "Time labr - de [ns]") )
+    , time_time( hist->Create2D("time_time", "Time versus time", 2000, -1000, 1000, "Time first gamma", 2000, -1000, 1000, "Time second gamma") )
     , gamgam_time( hist->Create2D("gamgam_time", "Gamma gamma matrix 16 vs 26",
                                   5000, -250, 250, "Timediff [ns]",
                                   3, 0, 3, "WhatIs") )
@@ -130,19 +133,34 @@ void TimingInvestigation::FillEvent(const Triggered_event &event)
     auto deEvts = event.GetDetector(DetectorType::deDet);
     auto eEvts = event.GetDetector(DetectorType::eDet);
 
+    auto labr_tmp = event.GetDetector(DetectorType::labr);
+    std::vector<Entry_t> labrEvts;
+    for ( auto &l : labr_tmp ){ labrEvts.push_back(l); }
+
+    // Sort the labr events
+    std::sort(labrEvts.begin(), labrEvts.end(), [](const Entry_t &lhs, const Entry_t &rhs)
+    { return (double(rhs.timestamp - lhs.timestamp) + (rhs.cfdcorr - lhs.cfdcorr)) > 0; });
+
+
     if ( deEvts.size() ==1 ){
         auto deEvt = deEvts[0];
         if ( deEvt->energy > 1150 && deEvt->energy < 1455 && !deEvt->cfdfail && deEvt->detectorID % 8 < 7 ){
 
-            for ( auto &l : event.GetDetector(DetectorType::labr) ){
-                if ( l.energy < 2000 )
+            for ( size_t i = 0 ; i < labrEvts.size() ; ++i ){
+                if ( labrEvts[i].energy < 2000 )
                     continue;
-                double timediff = double(l.timestamp - deEvt->timestamp) + l.cfdcorr - deEvt->cfdcorr;
 
-                gamgam_labr.Fill(timediff, l.detectorID);
+                double timediff0 = double(labrEvts[i].timestamp - deEvt->timestamp) + labrEvts[i].cfdcorr - deEvt->cfdcorr;
+                gamgam_labr.Fill(timediff0, labrEvts[i].detectorID);
 
+                for ( size_t j = i+1 ; j < labrEvts.size() ; ++j ){
+                    if ( labrEvts[j].energy < 2000 )
+                        continue;
+                    double timediff1 = double(labrEvts[j].timestamp - deEvt->timestamp) + labrEvts[j].cfdcorr - deEvt->cfdcorr;
+                    time_time.Fill(timediff0, timediff1);
+
+                }
             }
-
         }
     }
 

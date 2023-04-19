@@ -17,7 +17,7 @@
 
 #include <cstdint>
 
-enum DetectorType {
+/*enum DetectorType {
     invalid,    //!< Invalid address
     labr,       //!< Is a labr detector
     deDet,      //!< Is a Delta-E segment
@@ -27,9 +27,9 @@ enum DetectorType {
     rfchan,     //!< Is a RF channel
     any,        //!< Any detector
     unused      //!< Is a unused XIA channel
-};
+};*/
 
-enum ADCSamplingFreq {
+/*enum ADCSamplingFreq {
     f100MHz,    //!< 100 MHz sampling frequency
     f250MHz,    //!< 250 MHz sampling frequency
     f500MHz,    //!< 500 MHz sampling frequency
@@ -46,23 +46,25 @@ struct DetectorInfo_ {
 
 typedef struct DetectorInfo_ DetectorInfo_t;
 
+ */
+
 //! Get detector method
 /*! \return Detector structure containing information about the
  *  detector at address.
  */
-DetectorInfo_t GetDetector(uint16_t address   /*!< Address of the detector to get */);
+//DetectorInfo_t GetDetector(uint16_t address   /*!< Address of the detector to get */);
 
 //! Get Detector ptr method
 /*!
  * \return pointer to the detector entry
  * Potentially unsafe as it isn't bounds checked.
  */
-const DetectorInfo_t *GetDetectorPtr(uint16_t address);
+//const DetectorInfo_t *GetDetectorPtr(uint16_t address);
 
 //! Get sampling frequency
 /*! \return The XIA module sampling frequency
  */
-enum ADCSamplingFreq GetSamplingFrequency(uint16_t address    /*!< ADC address    */);
+//enum ADCSamplingFreq GetSamplingFrequency(uint16_t address    /*!< ADC address    */);
 
 
 

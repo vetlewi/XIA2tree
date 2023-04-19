@@ -37,6 +37,18 @@ CPMAddPackage(
         OPTIONS "INDICATORS_BUILD_TESTS OFF" "INDICATORS_SAMPLES OFF" "INDICATORS_DEMO OFF"
 )
 
+CPMAddPackage(
+        NAME yaml-cpp
+        GITHUB_REPOSITORY jbeder/yaml-cpp
+        GIT_TAG yaml-cpp-0.7.0
+)
+
+CPMAddPackage(
+        NAME magic_enum
+        GITHUB_REPOSITORY Neargye/magic_enum
+        GIT_TAG 95c71dab42acb62bf5d4a781e8f29982f7f3046e
+)
+
 add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Format/event.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
@@ -48,8 +60,9 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/XIAReader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/RootInterface/TTreeManager.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Calibration.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/experimentsetup.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ConfigManager.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Calibration.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/experimentsetup.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Parameters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/XIA_CFD.cpp
@@ -101,7 +114,10 @@ target_link_libraries(XIAfuncs
         indicators::indicators
         structopt::structopt
         ROOT::RIO
-        ROOT::Tree)
+        ROOT::Tree
+        yaml-cpp::yaml-cpp
+        magic_enum::magic_enum
+)
 
 target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
 target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)

@@ -7,7 +7,8 @@
 
 #include <Task.h>
 #include <Queue.h>
-#include "PhysicalParam/Calibration.h"
+//#include "PhysicalParam/Calibration.h"
+#include "PhysicalParam/ConfigManager.h"
 
 
 namespace Task {
@@ -15,12 +16,12 @@ namespace Task {
     class Calibrator : public Base {
     private:
 
-        Calibration &calibration;
+        OCL::ConfigManager &calibration;
         EntryQueue_t output_queue;
         XIAQueue_t &input_queue;
 
     public:
-        Calibrator(Calibration &cal, XIAQueue_t &input, const size_t &capacity = 1024);
+        Calibrator(OCL::ConfigManager &cal, XIAQueue_t &input, const size_t &capacity = 1024);
 
         auto &GetQueue(){ return output_queue; }
 

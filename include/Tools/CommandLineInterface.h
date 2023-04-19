@@ -5,7 +5,7 @@
 #include <string>
 #include <optional>
 
-#include "experimentsetup.h"
+#include <PhysicalParam/DetectorTypes.h>
 
 namespace CLI {
 
