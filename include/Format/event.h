@@ -7,9 +7,9 @@
 
 #include <vector>
 #include <map>
-#include <entry.h>
 
-#include <experimentsetup.h>
+#include <Format/entry.h>
+#include <PhysicalParam/DetectorTypes.h>
 
 template<typename T>
 class subvector

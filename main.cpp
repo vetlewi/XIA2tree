@@ -13,7 +13,6 @@
 #include "Tasks/Buffer.h"
 #include "Tasks/Splitter.h"
 #include "Tasks/Trigger.h"
-//#include "Tasks/Sort.h"
 #include "Tasks/MTSort.h"
 
 #include "Tools/CommandLineInterface.h"

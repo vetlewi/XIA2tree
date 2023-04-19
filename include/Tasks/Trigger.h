@@ -7,7 +7,6 @@
 
 #include <Tasks.h>
 #include <Queue.h>
-#include <experimentsetup.h>
 #include <CommandLineInterface.h>
 
 namespace Task {

@@ -54,16 +54,12 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Calibrator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MemoryMap.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Sort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MTSort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/XIAReader.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/RootInterface/TTreeManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ConfigManager.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Calibration.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/experimentsetup.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/Parameters.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/XIA_CFD.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/CommandLineInterface.cpp

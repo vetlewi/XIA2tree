@@ -10,9 +10,6 @@
 #include <cstdint>
 #include <utility>
 
-//#include "PhysicalParam/experimentsetup.h"
-
-
 namespace XIA {
 
     enum ADCSamplingFreq {
