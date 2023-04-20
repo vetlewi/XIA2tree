@@ -39,7 +39,8 @@ std::vector<std::string> RunSort(const CLI::Options &options)
     } catch ( std::exception &e ){
         // Pass do nothing.
     }
-    ParticleRange particleRange( options.RangeFile.value() );
+
+    ParticleRange particleRange( options.RangeFile.value_or("") );
 
     std::string hist_file;
     std::string tree_file;

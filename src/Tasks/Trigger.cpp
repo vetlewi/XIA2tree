@@ -159,7 +159,7 @@ void STrigger::Run()
 
             // First we will find all the entries that corresponds to a "correct" trigger within the buffer
             //auto triggers = GetTriggers(input, trigger);
-            auto triggers = GetTriggersExclusive(input, trigger);
+            auto triggers = ( sort_type == CLI::sort_type::time ) ? GetTriggers(input, trigger) : GetTriggersExclusive(input, trigger);
 
             for ( auto &trig : triggers ){
 

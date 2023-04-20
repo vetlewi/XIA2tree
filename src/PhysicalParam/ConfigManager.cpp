@@ -118,7 +118,6 @@ ConfigManager::ConfigManager(const YAML::Node &setup)
 
     for ( auto &crate : setup["setup"]["crates"] ){
         for ( auto &slot : crate["slots"] ){
-            std::cout << slot << std::endl;
             auto freq = slot["speed"].as<XIA::ADCSamplingFreq>();
             for ( auto &channel : slot["detectors"] ){
                 size_t address = crate["crate"].as<size_t>() * NUMBER_OF_MODULES_PER_CRATE * NUMBER_OF_CHANNELS_PER_MODULE;
