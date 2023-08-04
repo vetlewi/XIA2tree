@@ -133,10 +133,13 @@ namespace Task {
                 // Get the lock...
                 if ( event.GetTrigger() )
                     trigger.Fill(event.GetTrigger());
-                for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac} ){
+                for ( auto &type : {DetectorType::labr, /*DetectorType::deDet,*/ DetectorType::eDet, DetectorType::ppac} ){
                     GetDet(type)->reset();
                     GetDet(type)->Fill(event.GetDetector(type), event.GetTrigger());
                 }
+                GetDet(DetectorType::deDet)->reset();
+                GetDet(DetectorType::deDet)->Fill(event.GetDetector(DetectorType::deDet), event.GetTrigger());
+
                 tree.Fill();
             }
 

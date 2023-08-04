@@ -49,6 +49,12 @@ CPMAddPackage(
         GIT_TAG 95c71dab42acb62bf5d4a781e8f29982f7f3046e
 )
 
+CPMAddPackage(
+        NAME zstr
+        GITHUB_REPOSITORY mateidavid/zstr
+        VERSION 1.0.7
+)
+
 add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Format/event.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
@@ -115,7 +121,7 @@ target_link_libraries(XIAfuncs
         magic_enum::magic_enum
 )
 
-target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
+target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort zstr::zstr)
 target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
 target_link_libraries(TimingInvestigation PRIVATE OCL::Histogram XIAfuncs UserSort)
 

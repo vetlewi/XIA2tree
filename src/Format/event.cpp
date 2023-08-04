@@ -9,6 +9,15 @@
 Triggered_event::Triggered_event(const Triggered_event &event)
     : entries( event.entries )
     , trigger( event.trigger )
+    , type_bounds{ std::pair{invalid, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{labr, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{deDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
                  {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
 {
@@ -18,6 +27,17 @@ Triggered_event::Triggered_event(const Triggered_event &event)
 Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries)
     : entries( _entries )
     , trigger( {DetectorType::unused, uint16_t(-1), 0, 0, -1, true, -1e9, -1e9, true} )
+    , type_bounds{ std::pair{invalid, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{labr, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{deDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
+    , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
+                 {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
 {
     index();
 }
@@ -25,6 +45,15 @@ Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries)
 Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries, const Entry_t &_trigger)
     : entries( _entries )
     , trigger( _trigger )
+    , type_bounds{ std::pair{invalid, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{labr, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{deDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
                  {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
 {
@@ -35,6 +64,15 @@ Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries, const Ent
 Triggered_event::Triggered_event(std::vector<Entry_t> &&_entries, const Entry_t &_trigger)
     : entries( std::move(_entries) )
     , trigger( _trigger )
+    , type_bounds{ std::pair{invalid, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{labr, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{deDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eDet, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
                  {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}}
 {
@@ -57,7 +95,8 @@ void Triggered_event::index()
         std::sort(begin, end, [](const auto &lhs, const auto &rhs){
             return lhs.detectorID < rhs.detectorID;
         });
-        type_bounds[type] = subvector(&(*begin), &(*(end)));
+        //type_bounds[type] = subvector(&(*begin), &(*(end)));
+        type_bounds.at(type) = subvector(&(*begin), &(*end));
     }
 
     // Lastly we will divide the DE by the ring numbers.

@@ -133,6 +133,9 @@ void TimingInvestigation::FillEvent(const Triggered_event &event)
     auto deEvts = event.GetDetector(DetectorType::deDet);
     auto eEvts = event.GetDetector(DetectorType::eDet);
 
+    if ( deEvts.size() != 1 )
+        return;
+
     auto labr_tmp = event.GetDetector(DetectorType::labr);
     std::vector<Entry_t> labrEvts;
     for ( auto &l : labr_tmp ){ labrEvts.push_back(l); }
@@ -164,7 +167,6 @@ void TimingInvestigation::FillEvent(const Triggered_event &event)
         }
     }
 
-    return;
     std::vector<particle_events> pevents;
     std::vector<particle_event> true_particle_events;
     for ( auto &e : eEvts ){
@@ -232,7 +234,7 @@ void TimingInvestigation::FillEvent(const Triggered_event &event)
 
 
             if ( particle_event.ringID < 5 ) {
-                gamgam_labr.Fill(timediff, l.detectorID);
+                //gamgam_labr.Fill(timediff, l.detectorID);
                 if ( l.detectorID == 16 && ( ex > 7500 && ex < 7900 ) )
                     time_energy_labr_hoyle.Fill(l.energy, timediff);
             }

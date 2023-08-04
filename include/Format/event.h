@@ -11,6 +11,32 @@
 #include <Format/entry.h>
 #include <PhysicalParam/DetectorTypes.h>
 
+template<typename Key, typename Value, std::size_t size>
+struct Map {
+    std::array<std::pair<Key, Value>, size> data;
+
+    [[nodiscard]] constexpr Value at(const Key &key) const {
+        const auto it = std::find_if(std::begin(data), std::end(data),
+                                     [&key](const auto &v){ return v.first == key; });
+        if ( it != std::end(data) ) {
+            return it->second;
+        } else {
+            throw std::range_error("Key not found");
+        }
+    }
+
+    [[nodiscard]] constexpr Value &at(const Key &key) {
+        const auto it = std::find_if(std::begin(data), std::end(data),
+                                     [&key](const auto &v){ return v.first == key; });
+        if ( it != std::end(data) ) {
+            return it->second;
+        } else {
+            throw std::range_error("Key not found");
+        }
+    }
+
+};
+
 template<typename T>
 class subvector
 {
@@ -39,7 +65,8 @@ class Triggered_event {
 private:
     std::vector<Entry_t> entries;
     Entry_t trigger;
-    std::map<DetectorType, subvector<Entry_t>> type_bounds;
+    Map<DetectorType, subvector<Entry_t>, 9> type_bounds;
+    //std::map<DetectorType, subvector<Entry_t>> type_bounds;
     subvector<Entry_t> de_by_ring[NUM_SI_DE_DET];
 
     void index(); // Should run each initialization, unless empty.
