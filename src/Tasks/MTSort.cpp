@@ -284,11 +284,19 @@ void MTHistManager::Flush()
     userSort.Flush();
 }
 
-MTSort::MTSort(Task::TEventQueue_t &input,ThreadSafeHistograms &histograms,
+/*MTSort::MTSort(Task::TEventQueue_t &input,ThreadSafeHistograms &histograms,
                const ParticleRange &particleRange, const char *tree_name, const char *custom_sort)
     : input_queue( input )
     , hm( histograms, particleRange, custom_sort )
     , tree( ( tree_name ) ? new ROOT::TTreeManager(tree_name) : nullptr )
+{
+}*/
+
+MTSort::MTSort(Task::TEventQueue_t &input,ThreadSafeHistograms &histograms,
+               const ParticleRange &particleRange, std::shared_ptr<TFile> file, const char *custom_sort)
+        : input_queue( input )
+        , hm( histograms, particleRange, custom_sort )
+        , tree( ( file ) ? new ROOT::TTreeManager(file) : nullptr )
 {
 }
 
@@ -350,8 +358,18 @@ MTSort *Sorters::GetNewSorter()
         fname += "_t" + std::to_string(tree_files.size()) + ".root";
         tree_files.push_back(fname);
     }
+
+
     sorters.push_back(new MTSort(input_queue, histograms, particleRange,
-                                 (fname.empty()) ? nullptr : fname.c_str(),
+                                 ( fname.empty() ) ? nullptr : std::make_shared<TFile>(fname.c_str(), "RECREATE"),
+                                 (user_sort_path.empty()) ? nullptr : user_sort_path.c_str()));
+    return sorters.back();
+}
+
+MTSort *Sorters::GetNewSorter(std::shared_ptr<TFile> file)
+{
+    sorters.push_back(new MTSort(input_queue, histograms, particleRange,
+                                 (file) ?  std::move(file) : nullptr,
                                  (user_sort_path.empty()) ? nullptr : user_sort_path.c_str()));
     return sorters.back();
 }

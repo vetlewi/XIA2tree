@@ -6,6 +6,8 @@
 #define TTREEMANAGER_H
 
 #include <TFile.h>
+//#include <ROOT/TBufferMerger.hxx>
+#include <utility>
 #include <TTree.h>
 
 #include <entry.h>
@@ -90,7 +92,8 @@ namespace Task {
     namespace ROOT {
         class TTreeManager {
         private:
-            TFile file;
+            //TFile file;
+            std::shared_ptr<TFile> file;
             TTree tree;
 
             details::TriggerEntry trigger;
@@ -112,20 +115,22 @@ namespace Task {
         public:
 
 
-            explicit TTreeManager(const char *fname)
-                    : file( fname, "RECREATE" )
+            explicit TTreeManager(std::shared_ptr<TFile> _file)
+                    : file( std::move( _file ) )
                     , tree( "ocl_events", "OCL events" )
                     , trigger( tree )
                     , deDet( tree, "deDet" )
                     , eDet( tree, "eDet" )
                     , ppacDet( tree, "ppac" )
                     , labrDet( tree, "labr" )
-            {}
+            {
+                file->Add(&tree);
+            }
 
             ~TTreeManager(){
                 tree.Write();
-                file.Write();
-                file.Close();
+                file->Write();
+                file->Close();
             }
 
             inline void Fill(const Triggered_event &event)
@@ -141,6 +146,7 @@ namespace Task {
                 GetDet(DetectorType::deDet)->Fill(event.GetDetector(DetectorType::deDet), event.GetTrigger());
 
                 tree.Fill();
+                file->Write();
             }
 
         };

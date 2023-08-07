@@ -3,6 +3,8 @@
 #include <thread>
 #include <signal.h>
 
+#include <ROOT/TBufferMerger.hxx>
+
 #include "PhysicalParam/ConfigManager.h"
 #include "PhysicalParam/ParticleRange.h"
 #include "histogram/RootWriter.h"
@@ -64,7 +66,15 @@ std::vector<std::string> RunSort(const CLI::Options &options)
     const char *user_sort = nullptr;
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
-    //const char *treef = ( tree_file.empty() ) ? nullptr : tree_file.c_str();
+    const char *treef = ( tree_file.empty() ) ? nullptr : tree_file.c_str();
+
+    // For some reason the TBufferMerger consumes extreme amounts of memory.
+    // I cannot see any easy way to fix it though....
+    //auto merger = ( tree_file.empty() ) ? std::make_unique<ROOT::TBufferMerger>(nullptr ) : std::make_unique<ROOT::TBufferMerger>(tree_file.c_str(), "RECREATE");
+    //if ( merger )
+    //    merger->SetAutoSave(16384);
+
+
     Task::Sorters sorters(triggers.GetQueue(), particleRange, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
 
     ThreadPool<std::thread> pool;
@@ -76,7 +86,10 @@ std::vector<std::string> RunSort(const CLI::Options &options)
     pool.AddTask(triggers.GetNewTrigger());
 
     for ( int i = 0 ; i < 4 ; ++i ){
-        pool.AddTask(sorters.GetNewSorter());
+        /*if ( merger )
+            pool.AddTask(sorters.GetNewSorter(merger->GetFile()));
+        else*/
+            pool.AddTask(sorters.GetNewSorter());
     }
 
     try {

@@ -7,6 +7,7 @@
 
 #include <histogram/ThreadSafeHistograms.h>
 #include <UserSort/UserSortManager.h>
+#include <TFile.h>
 
 #include "Task.h"
 #include "Queue.h"
@@ -112,8 +113,10 @@ namespace Task {
         std::unique_ptr<ROOT::TTreeManager> tree;
 
     public:
+        /*MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const ParticleRange &particleRange,
+               const char *tree_name = nullptr, const char *custom_sort = nullptr);*/
         MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const ParticleRange &particleRange,
-               const char *tree_name = nullptr, const char *custom_sort = nullptr);
+               std::shared_ptr<TFile> tree_name = nullptr, const char *custom_sort = nullptr);
         ~MTSort() = default;
         void Run() override;
         void Flush();
@@ -141,6 +144,7 @@ namespace Task {
         }
         [[nodiscard]] std::vector<std::string> GetTreeFiles() const { return tree_files; }
         MTSort *GetNewSorter();
+        MTSort *GetNewSorter(std::shared_ptr<TFile> file);
     };
 
 }
