@@ -22,10 +22,8 @@
 #include <TROOT.h>
 #include <TFileMerger.h>
 
-std::vector<std::string> RunSort(const CLI::Options &options)
+std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progress)
 {
-    ProgressUI progress;
-
     std::ifstream cal_file;
     try {
         cal_file = std::ifstream(options.CalibrationFile.value());
@@ -111,18 +109,21 @@ void MergeFiles(std::string &output_file, const std::vector<std::string> &files)
 int main(int argc, char *argv[])
 {
     ROOT::EnableThreadSafety();
-    ROOT::EnableImplicitMT();
+    //ROOT::EnableImplicitMT();
     CLI::Options options;
     try {
         options = CLI::ParseCLA(argc, argv);
     } catch ( std::exception &e ){
         return 1; // Error
     }
-
-    auto files = RunSort(options);
+    ProgressUI progress;
+    auto files = RunSort(options, progress);
     if ( files.size() == 1 ) // Do nothing. No files to merge.
         return 0;
-    else if ( files.size() > 1 )
+    else if ( files.size() > 1 ) {
+        auto spinner = progress.FinishSort(options.output.value());
         MergeFiles(options.output.value(), files);
+        spinner.Finish();
+    }
     return 0;
 }
