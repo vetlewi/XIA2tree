@@ -58,7 +58,7 @@ SpinnerBar::SpinnerBar(const std::string &fname)
                                   indicators::option::FontStyles{std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}}
     , filename( StripSlash(fname) )
 {
-    set_option(indicators::option::PostfixText{"Writing to file '" + filename + "'"});
+    set_option(indicators::option::PostfixText{"Merging to file '" + filename + "'"});
     runner = std::thread(&SpinnerBar::run, this);
 }
 
@@ -71,7 +71,7 @@ void SpinnerBar::run()
     set_option(indicators::option::ShowSpinner{false});
     set_option(indicators::option::ForegroundColor{indicators::Color::green});
     set_option(indicators::option::PrefixText{"✔"});
-    set_option(indicators::option::PostfixText{"Writing to file '" + filename + "'"});
+    set_option(indicators::option::PostfixText{"Merging to file '" + filename + "'"});
     mark_as_completed();
 }
 
