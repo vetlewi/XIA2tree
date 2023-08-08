@@ -75,7 +75,7 @@ struct const_count {
     void dec(){ std::lock_guard guard(mutex); --count; }
 };
 
-static output_stream<gamma_particle_hit> ede_table( "/Users/vetlewi/Git_Repositories/Nd-OCL-2019/sirius-20190313/exgamtime.csv.gz" );
+//static output_stream<gamma_particle_hit> ede_table( "/Users/vetlewi/Git_Repositories/Nd-OCL-2019/sirius-20190313/exgamtime.csv.gz" );
 static const_count construction_counter;
 
 // Ring 0 assumes Al absorber, the rest assumes no Al absorber
@@ -109,6 +109,7 @@ private:
     //ThreadSafeHistogram3D exgam_time;
 
     ThreadSafeHistogram2D gamgam_time;
+    ThreadSafeHistogram1D gamma_gamma_time;
     ThreadSafeHistogram2D gamma_time;
     ThreadSafeHistogram2D gamma_time1st0pGated;
     ThreadSafeHistogram2D gamma_1st0pGated_bgSubtr;
@@ -117,7 +118,7 @@ private:
 public:
     ParticleConicidence(ThreadSafeHistograms *hist);
     ~ParticleConicidence(){
-        ede_table.write(hits);
+        //ede_table.write(hits);
         construction_counter.dec();
         //if ( construction_counter.count == 0 )
         //    delete ede_table;
@@ -226,7 +227,8 @@ ParticleConicidence::ParticleConicidence(ThreadSafeHistograms *hist)
     , excitationCoincidence( hist->Create2D("exgam", "Excitation vs. gamma energy spectrum", 1500, 0, 15000, "LaBr3:Ce energy [keV]", 1700, -2000, 15000, "Excitation energy [keV]") )
     , excitationBackground( hist->Create2D("exgam_bg", "Excitation vs. gamma energy spectrum (bg)", 1500, 0, 15000, "LaBr3:Ce energy [keV]", 1700, -2000, 15000, "Excitation energy [keV]") )
     //, exgam_time( hist->Create3D("exgam_time", "Excitation vs. gamma energy spectrum vs timediff", 1000, 0, 10000, "LaBr3:Ce energy [keV]", 1200, -2000, 10000, "Excitation energy [keV]", 1000, -500, 500, "Time [ns]") )
-    , gamgam_time( hist->Create2D("gamgam_time", "Time for gamma-gamma after particle", 10000, -500, 500, "Time of first gamma [ns]", 10000, -500, 500, "Time of second gamma [ns]") )
+    , gamgam_time( hist->Create2D("gamgam_time", "Time for gamma-gamma after particle", 1000, -500, 500, "Time of first gamma [ns]", 1000, -500, 500, "Time of second gamma [ns]") )
+    , gamma_gamma_time( hist->Create1D("gamma_gamma_time", "Prompt gamma-gamma time", 2000, -10, 10, "Time t_{1779 keV} - t_{2838 keV} [ns]") )
     , gamma_time( hist->Create2D("gamma_time", "Time energy spectrum", 1500, 0, 15000, "Energy [keV]", 1000, -500, 500, "Time [ns]") )
     , gamma_time1st0pGated( hist->Create2D("gamma_time1st0pGated", "Time energy spectrum, gated on 1st 0+", 1500, 0, 15000, "Energy [keV]", 4000, -500, 500, "Time [ns]") )
     , gamma_1st0pGated_bgSubtr( hist->Create2D("gamma_1st0pGated_bgSubtr", "Time energy spectrum, gated on 1st 0+", 5000, 0, 5000, "Energy [keV]", 2, 0, 2, "Prompt/background") )
@@ -333,11 +335,26 @@ void ParticleConicidence::FillEvent(const Triggered_event &event)
             continue;
         double tdiff0 = double(labrEvts[n].timestamp - deEvent.timestamp) + (labrEvts[n].cfdcorr - deEvent.cfdcorr);
         gamma_time.Fill(labrEvts[n].energy, timediff);
-        for ( size_t m = n+1 ; m < labr_tmp.size() ; ++m ){
+        for ( size_t m = 0 ; m < labrEvts.size() ; ++m ){
+            if ( m == n ) // Skip same gamma
+                continue;
+        //for ( size_t m = n+1 ; m < labr_tmp.size() ; ++m ){
             if ( labrEvts[m].cfdfail )
                 continue;
             double tdiff1 = double(labrEvts[m].timestamp - deEvent.timestamp) + (labrEvts[m].cfdcorr - deEvent.cfdcorr);
-            gamgam_time.Fill(tdiff0, tdiff1);
+
+            if ( ex > 4200 && ex < 5600 ) {
+                gamgam_time.Fill(tdiff0, tdiff1);
+                if ( m < n ) // Continuing after this point we only want to fill the spectra once.
+                    continue;
+
+                if ( (labrEvts[n].energy > 1750 && labrEvts[n].energy < 1830) &&
+                     (labrEvts[m].energy > 2800 && labrEvts[m].energy < 2900) ){
+                    gamma_gamma_time.Fill(double(labrEvts[n].timestamp - labrEvts[m].timestamp) + labrEvts[n].cfdcorr - labrEvts[m].cfdcorr);
+                }
+
+
+            }
             /*if ( ex > 4772. && ex < 5200. ) {
                 if ( (labrEvts[n].energy > 1734 && labrEvts[n].energy < 1827) &&
                      (tdiff0 > -5 && tdiff0 < 5) ){
@@ -373,6 +390,7 @@ void ParticleConicidence::Flush()
     excitationBackground.force_flush();
     //exgam_time.force_flush();
     gamma_time.force_flush();
+    gamma_gamma_time.force_flush();
     gamgam_time.force_flush();
     gamma_time1st0pGated.force_flush();
     //gamma_1779keV.force_flush();
