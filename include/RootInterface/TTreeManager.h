@@ -91,7 +91,7 @@ namespace Task {
         class TTreeManager {
         private:
             TFile file;
-            TTree tree;
+            TTree *tree;
 
             details::TriggerEntry trigger;
             details::DetectorEntries deDet;
@@ -113,17 +113,18 @@ namespace Task {
 
 
             explicit TTreeManager(const char *fname)
-                    : file( fname, "RECREATE" )
-                    , tree( "ocl_events", "OCL events" )
-                    , trigger( tree )
-                    , deDet( tree, "deDet" )
-                    , eDet( tree, "eDet" )
-                    , ppacDet( tree, "ppac" )
-                    , labrDet( tree, "labr" )
-            {}
+                    : file( TFile(fname, "RECREATE") )
+                    , tree( new TTree("ocl_events", "OCL events") )
+                    , trigger( *tree )
+                    , deDet( *tree, "deDet" )
+                    , eDet( *tree, "eDet" )
+                    , ppacDet( *tree, "ppac" )
+                    , labrDet( *tree, "labr" )
+            {
+                tree->SetDirectory(&file);
+            }
 
             ~TTreeManager(){
-                tree.Write();
                 file.Write();
                 file.Close();
             }
@@ -140,7 +141,7 @@ namespace Task {
                 GetDet(DetectorType::deDet)->reset();
                 GetDet(DetectorType::deDet)->Fill(event.GetDetector(DetectorType::deDet), event.GetTrigger());
 
-                tree.Fill();
+                tree->Fill();
             }
 
         };
