@@ -15,11 +15,13 @@ std::string LeafList(const char *name, const char *varname, const bool &mult, co
 {
     std::string result;
     if ( mult ) {
-        result.reserve(snprintf(nullptr, 0, "%s%s[%s%s]/%c", name, varname, name, "Mult", type) + 1);
-        snprintf(result.data(), result.capacity(), "%s%s[%s%s]/%c", name, varname, name, "Mult", type);
+        result.reserve(snprintf(nullptr, 0, "%s[%s]/%c",
+                                BranchName(name, varname).c_str(), BranchName(name, "Mult").c_str(), type) + 1);
+        snprintf(result.data(), result.capacity(), "%s[%s]/%c",
+                 BranchName(name, varname).c_str(), BranchName(name, "Mult").c_str(), type);
     } else {
-        result.reserve(snprintf(nullptr, 0, "%s%s/%c", name, varname, type) + 1);
-        snprintf(result.data(), result.capacity(), "%s%s/%c", name, varname, type);
+        result.reserve(snprintf(nullptr, 0, "%s/%c", BranchName(name, varname).c_str(), type) + 1);
+        snprintf(result.data(), result.capacity(), "%s/%c", BranchName(name, varname).c_str(), type);
     }
     return result;
 }
@@ -33,6 +35,7 @@ TBranch *make_leaf(TTree *tree, T *addr, const char *base_name, const char *varn
 }
 
 details::TriggerEntry::TriggerEntry(TTree &tree)
+    : ID( ), finishflag( ), adcvalue( ), timestamp( ), energy( ), cfdfail( ), cfdcorr( ), idx( )
 {
     make_leaf(&tree, &ID, "Trigger", "ID", false, 's');
     make_leaf(&tree, &finishflag, "Trigger", "FinishFlag", false, 'O');
@@ -45,7 +48,7 @@ details::TriggerEntry::TriggerEntry(TTree &tree)
 }
 
 details::DetectorEntries::DetectorEntries(TTree &tree, const char *base_name)
-    : mult( 0 )
+    : mult( 0 ), ID( ), finishflag( ), adcvalue( ), timestamp( ), energy( ), cfdfail( ), cfdcorr( )
 {
     make_leaf(&tree, &mult, base_name, "Mult", false, 's');
     make_leaf(&tree, ID, base_name, "ID", true, 's');
