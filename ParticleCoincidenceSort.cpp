@@ -110,6 +110,8 @@ private:
 
     ThreadSafeHistogram2D gamgam_time;
     ThreadSafeHistogram1D gamma_gamma_time;
+    ThreadSafeHistogram2D prompt_timing_by_detector[30];
+    ThreadSafeHistogram2D gamma_time_energy;
     ThreadSafeHistogram2D gamma_time;
     ThreadSafeHistogram2D gamma_time1st0pGated;
     ThreadSafeHistogram2D gamma_1st0pGated_bgSubtr;
@@ -229,12 +231,42 @@ ParticleConicidence::ParticleConicidence(ThreadSafeHistograms *hist)
     //, exgam_time( hist->Create3D("exgam_time", "Excitation vs. gamma energy spectrum vs timediff", 1000, 0, 10000, "LaBr3:Ce energy [keV]", 1200, -2000, 10000, "Excitation energy [keV]", 1000, -500, 500, "Time [ns]") )
     , gamgam_time( hist->Create2D("gamgam_time", "Time for gamma-gamma after particle", 1000, -500, 500, "Time of first gamma [ns]", 1000, -500, 500, "Time of second gamma [ns]") )
     , gamma_gamma_time( hist->Create1D("gamma_gamma_time", "Prompt gamma-gamma time", 2000, -10, 10, "Time t_{1779 keV} - t_{2838 keV} [ns]") )
+    , gamma_time_energy( hist->Create2D("gamma_time_energy", "Time vs energy", 3000, 0, 3000, "Energy [keV]", 1000, -50, 50, "t_{E_\gamma} - t_{1779 keV} [ns]") )
     , gamma_time( hist->Create2D("gamma_time", "Time energy spectrum", 1500, 0, 15000, "Energy [keV]", 1000, -500, 500, "Time [ns]") )
     , gamma_time1st0pGated( hist->Create2D("gamma_time1st0pGated", "Time energy spectrum, gated on 1st 0+", 1500, 0, 15000, "Energy [keV]", 4000, -500, 500, "Time [ns]") )
     , gamma_1st0pGated_bgSubtr( hist->Create2D("gamma_1st0pGated_bgSubtr", "Time energy spectrum, gated on 1st 0+", 5000, 0, 5000, "Energy [keV]", 2, 0, 2, "Prompt/background") )
-    //, gamma_1779keV( hist->Create3D("gamma_1779keV", "Gamma gated on Ex=1779 keV", 2000, 0, 2000, "Energy [keV]",
-    //                                                                               1000, -500, 500, "Time #gamma-particle [ns]",
-    //                                                                               6, 0, 6, "OSCAR angle") )
+    , prompt_timing_by_detector{
+        hist->Create2D("prompt_timing_by_detector_00", "prompt_timing_by_detector_00", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_01", "prompt_timing_by_detector_01", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_02", "prompt_timing_by_detector_02", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_03", "prompt_timing_by_detector_03", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_04", "prompt_timing_by_detector_04", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_05", "prompt_timing_by_detector_05", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_06", "prompt_timing_by_detector_06", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_07", "prompt_timing_by_detector_07", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_08", "prompt_timing_by_detector_08", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_09", "prompt_timing_by_detector_09", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_10", "prompt_timing_by_detector_10", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_11", "prompt_timing_by_detector_11", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_12", "prompt_timing_by_detector_12", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_13", "prompt_timing_by_detector_13", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_14", "prompt_timing_by_detector_14", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_15", "prompt_timing_by_detector_15", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_16", "prompt_timing_by_detector_16", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_17", "prompt_timing_by_detector_17", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_18", "prompt_timing_by_detector_18", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_19", "prompt_timing_by_detector_19", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_20", "prompt_timing_by_detector_20", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_21", "prompt_timing_by_detector_21", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_22", "prompt_timing_by_detector_22", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_23", "prompt_timing_by_detector_23", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_24", "prompt_timing_by_detector_24", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_25", "prompt_timing_by_detector_25", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_26", "prompt_timing_by_detector_26", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_27", "prompt_timing_by_detector_27", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_28", "prompt_timing_by_detector_28", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+        hist->Create2D("prompt_timing_by_detector_29", "prompt_timing_by_detector_29", 1000, -20, 20, "Time [ns]", 30, 0, 30, "Stop ID"),
+    }
 {}
 
 void ParticleConicidence::FillEvent(const Triggered_event &event)
@@ -345,25 +377,25 @@ void ParticleConicidence::FillEvent(const Triggered_event &event)
 
             if ( ex > 4200 && ex < 5600 ) {
                 gamgam_time.Fill(tdiff0, tdiff1);
-                if ( m < n ) // Continuing after this point we only want to fill the spectra once.
+
+                if (!( (tdiff0 > -10 && tdiff0 < 10) &&
+                     (tdiff1 > -10 && tdiff1 < 10))){
                     continue;
+                }
+
+                if ( (labrEvts[n].energy > 1750 && labrEvts[n].energy < 1830) ){
+                    gamma_time_energy.Fill(labrEvts[m].energy, double(labrEvts[m].timestamp - labrEvts[n].timestamp) + labrEvts[m].cfdcorr - labrEvts[n].cfdcorr);
+                    prompt_timing_by_detector[labrEvts[n].detectorID].Fill(double(labrEvts[m].timestamp - labrEvts[n].timestamp) + labrEvts[m].cfdcorr - labrEvts[n].cfdcorr,
+                                                                           labrEvts[m].detectorID);
+                }
 
                 if ( (labrEvts[n].energy > 1750 && labrEvts[n].energy < 1830) &&
                      (labrEvts[m].energy > 2800 && labrEvts[m].energy < 2900) ){
-                    gamma_gamma_time.Fill(double(labrEvts[n].timestamp - labrEvts[m].timestamp) + labrEvts[n].cfdcorr - labrEvts[m].cfdcorr);
+                    gamma_gamma_time.Fill(double(labrEvts[m].timestamp - labrEvts[n].timestamp) + labrEvts[m].cfdcorr - labrEvts[n].cfdcorr);
                 }
 
 
             }
-            /*if ( ex > 4772. && ex < 5200. ) {
-                if ( (labrEvts[n].energy > 1734 && labrEvts[n].energy < 1827) &&
-                     (tdiff0 > -5 && tdiff0 < 5) ){
-                    gamma_time1st0pGated.Fill(labrEvts[m].energy, tdiff1);
-                } else if ( (labrEvts[m].energy > 1734 && labrEvts[m].energy < 1827) &&
-                            (tdiff1 > -5 && tdiff1 < 5)){
-                    gamma_time1st0pGated.Fill(labrEvts[n].energy, tdiff0);
-                }
-            }*/
         }
     }
 
