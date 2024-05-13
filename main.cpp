@@ -71,9 +71,9 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     pool.AddTask(&buffer);
     pool.AddTask(&splitter);
     pool.AddTask(triggers.GetNewTrigger());
-    pool.AddTask(triggers.GetNewTrigger());
+    //pool.AddTask(triggers.GetNewTrigger());
 
-    for ( int i = 0 ; i < 4 ; ++i ){
+    for ( int i = 0 ; i < 1 ; ++i ){
         pool.AddTask(sorters.GetNewSorter());
     }
 
