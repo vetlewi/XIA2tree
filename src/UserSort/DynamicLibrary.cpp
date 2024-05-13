@@ -24,16 +24,16 @@ DynamicLibrary::~DynamicLibrary()
     _handle = nullptr;
 }
 
-void *DynamicLibrary::GetObject(void *ptr, const char *constructor)
+void *DynamicLibrary::GetObject(void *hist_manager, const char *config_file, const char *constructor)
 {
     if ( !_handle ){
         return nullptr; // It is completely fine if we don't have anything. Skip if not present.
     }
-    using Func = void*(*)(void *);
+    using Func = void*(*)(void *, const char *);
     auto sym = reinterpret_cast<Func>(dlsym(_handle, constructor));
     if ( !sym ){
         std::cerr << "Could not load NewUserSort. Got error '" << dlerror() << "'" << std::endl;
         return nullptr;
     }
-    return sym(ptr);
+    return sym(hist_manager, config_file);
 }

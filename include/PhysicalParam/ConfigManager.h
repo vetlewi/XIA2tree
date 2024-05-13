@@ -19,7 +19,6 @@ namespace YAML {
 
 namespace OCL {
 
-
     class ConfigManager {
     private:
 
@@ -48,7 +47,7 @@ namespace OCL {
         std::vector<DetectorInfo_t> dinfo;
 
     public:
-        ConfigManager(const YAML::Node &setup);
+        explicit ConfigManager(const YAML::Node &setup);
         static ConfigManager FromFile(const char *file);
         static ConfigManager FromFile(std::istream &);
 

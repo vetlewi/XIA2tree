@@ -8,6 +8,8 @@
 #include <histogram/ThreadSafeHistograms.h>
 #include <UserSort/UserSortManager.h>
 
+#include "ConfigManager.h"
+
 #include "Task.h"
 #include "Queue.h"
 #include "event.h"
@@ -20,7 +22,7 @@ namespace Task {
         class TTreeManager;
     }
 
-    struct MT_Detector_Histograms_t
+    struct Detector_Histograms_t
     {
         ThreadSafeHistogram2D time;
         ThreadSafeHistogram2D time_CFDfail;
@@ -28,7 +30,7 @@ namespace Task {
         ThreadSafeHistogram2D energy_cal;
         ThreadSafeHistogram1D mult;
 
-        MT_Detector_Histograms_t(ThreadSafeHistograms &hist, const std::string &name, const size_t &num);
+        Detector_Histograms_t(ThreadSafeHistograms &hist, const std::string &name, const size_t &num);
 
         void Fill(const Entry_t &word);
         void Fill(const subvector<Entry_t> &subvec,
@@ -37,56 +39,37 @@ namespace Task {
 
     };
 
-    struct MT_Particle_telescope_t
+    struct Particle_telescope_t
     {
-        const ParticleRange &particleRange;
-        double lhs, rhs;
-        //ThreadSafeHistogram2D time_de_energy;
-        ThreadSafeHistogram2D time_e_energy;
-        ThreadSafeHistogram2D time_pe_energy, time_pde_energy;
         ThreadSafeHistogram2D ede_spectra[NUM_SI_DE_TEL];
         ThreadSafeHistogram2D ede_spectra_raw[NUM_SI_DE_TEL];
 
-        MT_Particle_telescope_t(ThreadSafeHistograms &hist, const ParticleRange &particleRange, const size_t &num, const double &lhs, const double &rhs);
-
-        void Fill(const subvector<Entry_t> &deltaE, const subvector<Entry_t> &E, const subvector<Entry_t> &labr = subvector<Entry_t>());
-        void Flush();
-    };
-
-    struct MT_Ring_t
-    {
-        const ParticleRange &particleRange;
-        double lhs, rhs;
-        ThreadSafeHistogram2D particle_range;
-        ThreadSafeHistogram2D ede_spectra[NUM_SI_DE_TEL];
-
-        MT_Ring_t(ThreadSafeHistograms &hist, const ParticleRange &particleRange, const double &lhs, const double &rhs);
-
+        Particle_telescope_t(ThreadSafeHistograms &hist, const size_t &num);
         void Fill(const subvector<Entry_t> &deltaE, const subvector<Entry_t> &E);
         void Flush();
     };
 
-    class MTHistManager {
-        MT_Detector_Histograms_t labr;
-        MT_Detector_Histograms_t si_de;
-        MT_Detector_Histograms_t si_e;
-        MT_Detector_Histograms_t ppacs;
-
-        //! Analysis of by ring
-        MT_Ring_t ring_analysis;
+    class HistManager {
+        Detector_Histograms_t labr;
+        Detector_Histograms_t si_de;
+        Detector_Histograms_t si_e;
+        Detector_Histograms_t ppacs;
 
         //! Time energy spectra for particles.
-        MT_Particle_telescope_t particle_coincidence[NUM_SI_E_DET]; // Sorted by back number
+        Particle_telescope_t particle_coincidence[NUM_SI_E_DET]; // Sorted by back number
+
+        ThreadSafeHistogram2D ede_spectra[NUM_SI_DE_TEL];
+        ThreadSafeHistogram2D ede_time;
 
         UserSortManager userSort;
 
-        MT_Detector_Histograms_t *GetSpec(const DetectorType &type);
-        inline MT_Particle_telescope_t *GetPart(const size_t &num){ return ( num < NUM_SI_DE_TEL ) ? particle_coincidence+num : nullptr; }
+        Detector_Histograms_t *GetSpec(const DetectorType &type);
+        inline Particle_telescope_t *GetPart(const size_t &num){ return ( num < NUM_SI_DE_TEL ) ? particle_coincidence+num : nullptr; }
 
     public:
-        MTHistManager(ThreadSafeHistograms &histograms, const ParticleRange &particleRange, const char *custom_sort = nullptr);
-        ~MTHistManager() = default;
-        //HistManager(Histograms &histograms);
+        HistManager(ThreadSafeHistograms &histograms, const char *custom_sort = nullptr,
+                    const char *config_file = nullptr);
+        ~HistManager() = default;
 
         //! Fill spectra with an event
         void AddEntry(Triggered_event &buffer);
@@ -108,13 +91,13 @@ namespace Task {
     {
     private:
         TEventQueue_t &input_queue;
-        MTHistManager hm;
+        HistManager hm;
         std::unique_ptr<ROOT::TTreeManager> tree;
 
     public:
-        MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const ParticleRange &particleRange,
-               const char *tree_name = nullptr, const char *custom_sort = nullptr);
-        ~MTSort() = default;
+        MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const char *tree_name = nullptr,
+               const char *custom_sort = nullptr, const char *config_file = nullptr);
+        ~MTSort() override = default;
         void Run() override;
         void Flush();
     };
@@ -124,15 +107,15 @@ namespace Task {
     private:
         TEventQueue_t &input_queue;
         ThreadSafeHistograms histograms;
-        const ParticleRange &particleRange;
         std::vector<MTSort *> sorters;
         std::string user_sort_path;
         std::string tree_file_name;
+        std::string config_filename;
         std::vector<std::string> tree_files; //! To be returned to the user when everything is said and done.
 
     public:
-        Sorters(TEventQueue_t &input, const ParticleRange &particleRange,
-                const char *tree_name = nullptr, const char *user_sort = nullptr);
+        Sorters(TEventQueue_t &input, const char *tree_name = nullptr,
+                const char *user_sort = nullptr, const char *config_file = nullptr);
         ~Sorters();
         void flush();
         Histograms &GetHistograms(){

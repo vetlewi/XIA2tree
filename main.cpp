@@ -29,19 +29,16 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
         cal_file = std::ifstream(options.CalibrationFile.value());
     } catch ( std::exception &e ){
         // Pass, do nothing.
+        std::cerr << "Configuration file is missing." << std::endl;
+        return {};
     }
     auto cal = OCL::ConfigManager::FromFile(cal_file);
-
-    try {
-
-    } catch ( std::exception &e ){
-        // Pass do nothing.
-    }
 
     ParticleRange particleRange( options.RangeFile.value_or("") );
 
     std::string hist_file;
     std::string tree_file;
+    std::string conf_file;
     if ( options.tree.value() ) {
         auto outname = options.output.value();
         outname = outname.substr(0, outname.find_last_of('.'));
@@ -62,8 +59,9 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     const char *user_sort = nullptr;
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
-    //const char *treef = ( tree_file.empty() ) ? nullptr : tree_file.c_str();
-    Task::Sorters sorters(triggers.GetQueue(), particleRange, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
+
+    Task::Sorters sorters(triggers.GetQueue(), ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort,
+                          ( conf_file.empty() ) ? nullptr : conf_file.c_str());
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);
@@ -124,6 +122,7 @@ int main(int argc, char *argv[])
         auto spinner = progress.FinishSort(options.output.value());
         MergeFiles(options.output.value(), files);
         spinner.Finish();
-    }
+    } else if ( files.empty() )
+        return 1;
     return 0;
 }

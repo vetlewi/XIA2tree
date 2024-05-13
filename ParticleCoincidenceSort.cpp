@@ -7,6 +7,7 @@
 #include <histogram/Histogram2D.h>
 #include <histogram/Histograms.h>
 #include <histogram/ThreadSafeHistograms.h>
+#include <PhysicalParam/ConfigManager.h>
 #include <PhysicalParam/ParticleRange.h>
 #include <Format/event.h>
 
@@ -16,86 +17,11 @@
 #include <sstream>
 #include <thread>
 
-struct particle_hit {
-    static const char *header;
-    int backID;
-    int frontID;
-    int backADC;
-    int frontADC;
-    particle_hit(int bid, int fid, int badc, int fadc)
-        : backID( bid ), frontID( fid ), backADC( badc ), frontADC( fadc ){}
-};
-std::ostream &operator<<(std::ostream &os, const particle_hit &hit)
-{
-    os << hit.backID << "," << hit.frontID << ",";
-    os << hit.backADC << "," << hit.frontADC;
-    return os;
-}
-const char *particle_hit::header = "backID,frontID,backADC,frontADC";
-
-struct gamma_particle_hit {
-    static const char *header;
-    double gamma_energy;
-    double excitation_energy;
-    double time;
-    int detectorID;
-    gamma_particle_hit(double gamma, double ex, double t, int dID)
-        : gamma_energy( gamma ), excitation_energy( ex ), time( t ), detectorID( dID ){}
-};
-
-const char *gamma_particle_hit::header = "gamma_energy,excitation_energy,time,detectorID";
-std::ostream &operator<<(std::ostream &os, const gamma_particle_hit &hit)
-{
-    os << hit.gamma_energy << "," << hit.excitation_energy << "," << hit.time << "," << hit.detectorID;
-    return os;
-}
-
-template<typename T>
-struct output_stream {
-    zstr::ofstream stream;
-    std::mutex mutex;
-
-    explicit output_stream( const char *fname ) : stream( fname ){
-        stream << T::header << "\n";
-    }
-    void write(const std::vector<T> &hits){
-        std::lock_guard guard(mutex);
-        for ( auto &hit : hits ) {
-            stream << hit << "\n";
-        }
-        stream << std::flush;
-    }
-};
-
-struct const_count {
-    int count;
-    std::mutex mutex;
-    const_count() : count( 0 ){}
-    void inc(){ std::lock_guard guard(mutex); ++count; }
-    void dec(){ std::lock_guard guard(mutex); --count; }
-};
-
-//static output_stream<gamma_particle_hit> ede_table( "/Users/vetlewi/Git_Repositories/Nd-OCL-2019/sirius-20190313/exgamtime.csv.gz" );
-static const_count construction_counter;
-
-// Ring 0 assumes Al absorber, the rest assumes no Al absorber
-//double a0[] = {1.49976291e+01,1.50104336e+01,1.50236071e+01,1.50372380e+01,1.50513566e+01,1.50660408e+01,1.50813841e+01,1.50975007e+01};
-double a0[] = {1.43174492e+01, 1.42996395e+01, 1.43103655e+01, 1.43488796e+01, 1.42875165e+01, 1.43039106e+01, 1.42948843e+01, 1.41759428e+01};
-//double a1[] = {-1.07657615e+00,-1.07545934e+00,-1.07428381e+00,-1.07306560e+00,-1.07180722e+00,-1.07052030e+00,-1.06921816e+00,-1.06791632e+00};
-double a1[] = {-1.02379060e+00, -1.01995670e+00, -1.02188160e+00, -1.02565232e+00, -1.01481838e+00, -1.01858570e+00, -1.01686834e+00, -9.98459298e-01};
-//double a2[] = {4.52779938e-04,4.42069732e-04,4.30409530e-04,4.18441444e-04,4.06110128e-04,3.93796843e-04,3.81941156e-04,3.71058429e-04};
-double a2[] = {4.74788032e-04, 4.32353182e-04, 6.18709009e-04, 8.39631663e-04, 4.55997197e-04, 7.13358937e-04, 7.38311069e-04, -6.54648264e-05};
-
-inline constexpr double CalcEx(const double &E, const int &ringID) {
-    double e = E / 1e3;
-    return (a0[ringID] + a1[ringID] * e + a2[ringID] * e * e) * 1e3;
-}
 
 class ParticleConicidence : public UserSort
 {
 private:
     ParticleRange range;
-    std::vector<gamma_particle_hit> hits;
 private:
     ThreadSafeHistogram1D trap_mult[8];
     ThreadSafeHistogram2D ede[8][8];
@@ -115,27 +41,17 @@ private:
     ThreadSafeHistogram2D gamma_time;
     ThreadSafeHistogram2D gamma_time1st0pGated;
     ThreadSafeHistogram2D gamma_1st0pGated_bgSubtr;
-    //ThreadSafeHistogram3D gamma_1779keV;
 
 public:
     ParticleConicidence(ThreadSafeHistograms *hist);
-    ~ParticleConicidence(){
-        //ede_table.write(hits);
-        construction_counter.dec();
-        //if ( construction_counter.count == 0 )
-        //    delete ede_table;
-    }
+    ~ParticleConicidence() = default;
     void FillEvent(const Triggered_event &event) override;
     void Flush() override;
 
 };
 
 extern "C" {
-    UserSort *NewUserSort(ThreadSafeHistograms *hist){
-
-        //if ( !ede_table )
-        //    ede_table = new output_stream( "/Users/vetlewi/Git_Repositories/Nd-OCL-2019/sirius-20190313/ede.csv" );
-        //construction_counter.inc();
+    UserSort *NewUserSort(ThreadSafeHistograms *hist, const OCL::ConfigManager &config){
         return new ParticleConicidence(hist);
     }
 }
@@ -324,7 +240,7 @@ void ParticleConicidence::FillEvent(const Triggered_event &event)
     ede_tot.Fill(eEvent.energy + deEvent.energy, deEvent.detectorID);
     ede_tot_strip.Fill(eEvent.energy + deEvent.energy, deEvent.detectorID % NUM_SI_DE_TEL);
 
-    double ex = CalcEx(eEvent.energy+deEvent.energy, deEvent.detectorID % NUM_SI_DE_TEL);
+    double ex = 0;//CalcEx(eEvent.energy+deEvent.energy, deEvent.detectorID % NUM_SI_DE_TEL);
     //ex = 1.09275494*ex + 355.18129813;
     excitation_singles.Fill(ex, deEvent.detectorID);
 
@@ -333,7 +249,6 @@ void ParticleConicidence::FillEvent(const Triggered_event &event)
         timediff = double(gamma.timestamp - deEvent.timestamp) + double(gamma.cfdcorr - deEvent.cfdcorr);
         if ( gamma.cfdfail )
             continue;
-        hits.emplace_back(gamma.energy, ex, timediff, gamma.detectorID);
 //        exgam_time.Fill(gamma.energy, ex, timediff);
         if ( timediff > -4.9020919 && timediff < 5.0979081 )
             excitationCoincidence.Fill(gamma.energy, ex);

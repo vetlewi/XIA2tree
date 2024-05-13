@@ -10,10 +10,10 @@ private:
     void *_handle;
 public:
     DynamicLibrary() = default;
-    DynamicLibrary(const char *libname);
+    explicit DynamicLibrary(const char *libname);
     ~DynamicLibrary();
 
-    void *GetObject(void *ptr, const char *constructor);
+    void *GetObject(void *hist_manager, const char *config_file, const char *constructor);
 
 };
 

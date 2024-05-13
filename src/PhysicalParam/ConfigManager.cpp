@@ -45,25 +45,6 @@ namespace YAML {
         }
     };
 
-    /*template<>
-    struct convert<XIA::ADCSamplingFreq> {
-        static Node encode(const XIA::ADCSamplingFreq &dtype){
-            Node node;
-            node.push_back(std::string(magic_enum::enum_name(dtype)));
-            return node;
-        }
-        static bool decode(const Node &node, XIA::ADCSamplingFreq &type){
-            if ( !node.IsScalar() )
-                return false;
-            auto type_opt = magic_enum::enum_cast<XIA::ADCSamplingFreq>(node.Scalar());
-            if ( type_opt.has_value() ) {
-                type = type_opt.value();
-                return true;
-            }
-            return false;
-        }
-    };*/
-
     template<>
     struct convert<XIA::ADCSamplingFreq> {
         static Node encode(const XIA::ADCSamplingFreq &dtype){

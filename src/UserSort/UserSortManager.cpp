@@ -6,10 +6,11 @@
 #include "UserSortManager.h"
 #include "UserSort.h"
 #include "event.h"
+#include "ConfigManager.h"
 
-UserSortManager::UserSortManager(ThreadSafeHistograms &hist, const char *libname)
+UserSortManager::UserSortManager(ThreadSafeHistograms &hist, const char *libname, const char *config_file)
         : library( libname )
-        , object( reinterpret_cast<UserSort *>(library.GetObject(&hist, "NewUserSort")) )
+        , object( reinterpret_cast<UserSort *>(library.GetObject(&hist, config_file, "NewUserSort")) )
 {
 }
 
