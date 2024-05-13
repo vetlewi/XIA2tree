@@ -1,8 +1,8 @@
 #include "CommandLineInterface.h"
 
 
-#include <structopt/app.hpp>
-#include <structopt/third_party/magic_enum/magic_enum.hpp>
+#include <third_party/structopt/app.hpp>
+#include <third_party/structopt/third_party/magic_enum/magic_enum.hpp>
 
 
 using namespace CLI;
