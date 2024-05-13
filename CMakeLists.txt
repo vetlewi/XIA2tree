@@ -12,11 +12,11 @@ find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
 CPMAddPackage("gh:vetlewi/Histogram@1.3.0")
 
-CPMAddPackage(
-        NAME structopt
-        GITHUB_REPOSITORY p-ranav/structopt
-        GIT_TAG ffe3473c1cf961ead13eda8e2e4f6e7e79fd9c5c
-        OPTIONS "STRUCTOPT_TESTS OFF" "STRUCTOPT_SAMPLES OFF")
+add_library(structopt INTERFACE)
+target_include_directories(structopt
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/third_party
+)
 
 CPMAddPackage(
         NAME readerwriterqueue
@@ -46,7 +46,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME magic_enum
         GITHUB_REPOSITORY Neargye/magic_enum
-        GIT_TAG 95c71dab42acb62bf5d4a781e8f29982f7f3046e
+        VERSION 0.9.5
 )
 
 CPMAddPackage(
@@ -79,7 +79,8 @@ target_include_directories(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/include/PhysicalParam
         ${CMAKE_CURRENT_SOURCE_DIR}/include/RootInterface
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Tasks
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools
+)
 
 add_library(UserSort
         ${CMAKE_CURRENT_SOURCE_DIR}/src/UserSort/DynamicLibrary.cpp
@@ -114,7 +115,7 @@ target_link_libraries(XIAfuncs
         readerwriterqueue
         concurrentqueue
         indicators::indicators
-        structopt::structopt
+        structopt
         ROOT::RIO
         ROOT::Tree
         yaml-cpp::yaml-cpp
