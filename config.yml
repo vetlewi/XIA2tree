@@ -402,4 +402,7 @@ calibration:
     gain: []
     shift: []
     time_shift: []
+
+user_parameters:
+
 ...
