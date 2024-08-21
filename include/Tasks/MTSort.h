@@ -5,6 +5,7 @@
 #ifndef XIA2TREE_MTSORT_H
 #define XIA2TREE_MTSORT_H
 
+
 #include <histogram/ThreadSafeHistograms.h>
 #include <UserSort/UserSortManager.h>
 
@@ -50,6 +51,9 @@ namespace Task {
     };
 
     class HistManager {
+    private:
+        const OCL::UserConfiguration configuration;
+
         Detector_Histograms_t labr;
         Detector_Histograms_t si_de;
         Detector_Histograms_t si_e;
@@ -67,8 +71,8 @@ namespace Task {
         inline Particle_telescope_t *GetPart(const size_t &num){ return ( num < NUM_SI_DE_TEL ) ? particle_coincidence+num : nullptr; }
 
     public:
-        HistManager(ThreadSafeHistograms &histograms, const char *custom_sort = nullptr,
-                    const char *config_file = nullptr);
+        HistManager(ThreadSafeHistograms &histograms, const OCL::UserConfiguration &configuration,
+                    const char *custom_sort = nullptr);
         ~HistManager() = default;
 
         //! Fill spectra with an event
@@ -95,8 +99,8 @@ namespace Task {
         std::unique_ptr<ROOT::TTreeManager> tree;
 
     public:
-        MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const char *tree_name = nullptr,
-               const char *custom_sort = nullptr, const char *config_file = nullptr);
+        MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const OCL::UserConfiguration &config,
+               const char *tree_name = nullptr, const char *user_sort = nullptr);
         ~MTSort() override = default;
         void Run() override;
         void Flush();
@@ -108,14 +112,13 @@ namespace Task {
         TEventQueue_t &input_queue;
         ThreadSafeHistograms histograms;
         std::vector<MTSort *> sorters;
+        const OCL::UserConfiguration &user_config;
         std::string user_sort_path;
         std::string tree_file_name;
-        std::string config_filename;
         std::vector<std::string> tree_files; //! To be returned to the user when everything is said and done.
 
     public:
-        Sorters(TEventQueue_t &input, const char *tree_name = nullptr,
-                const char *user_sort = nullptr, const char *config_file = nullptr);
+        Sorters(TEventQueue_t &input, OCL::UserConfiguration &config, const char *tree_name = nullptr, const char *user_sort = nullptr);
         ~Sorters();
         void flush();
         Histograms &GetHistograms(){

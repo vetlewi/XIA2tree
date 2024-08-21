@@ -13,7 +13,7 @@ public:
     explicit DynamicLibrary(const char *libname);
     ~DynamicLibrary();
 
-    void *GetObject(void *hist_manager, const char *config_file, const char *constructor);
+    void *GetObject(void *hist_manager, const void *config, const char *constructor);
 
 };
 

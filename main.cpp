@@ -33,8 +33,8 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
         return {};
     }
     auto cal = OCL::ConfigManager::FromFile(cal_file);
-
     ParticleRange particleRange( options.RangeFile.value_or("") );
+    auto userConfig = OCL::UserConfiguration::FromFile(cal_file, particleRange);
 
     std::string hist_file;
     std::string tree_file;
@@ -60,8 +60,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
 
-    Task::Sorters sorters(triggers.GetQueue(), ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort,
-                          ( conf_file.empty() ) ? nullptr : conf_file.c_str());
+    Task::Sorters sorters(triggers.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);

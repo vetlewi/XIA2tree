@@ -30,6 +30,16 @@ ParticleRange::ParticleRange(const std::string &filename)
 
 // ########################################################################
 
+ParticleRange::ParticleRange(const double *E, const double *val, const size_t &size)
+    : Emin( 200 )
+    , Estep( 10 )
+{
+    if ( size > 0 && E && val )
+        Read(E, val, size);
+}
+
+// ########################################################################
+
 //! Read one line from a zrange file.
 /*! Jumps over comments (# at start) and empty lines. At the end of
  *  the file, energy, range, and uncertainty will be 0.
@@ -88,6 +98,40 @@ void ParticleRange::Read(const std::string & filename)
     }
     //std::cout << "ParticleRange: " << values.size() << " interpolation points" << std::endl;
 }
+
+// ########################################################################
+
+void ParticleRange::Read(const double *Eval, const double *val, const size_t &size)
+{
+    // forget old interpolation
+    values.clear();
+
+    double flE=0, flR=0; // last energy, range, drange from file
+    double fE=0, fR=0;
+
+    flE = Eval[0];
+    flR = val[0];
+    fE = Eval[1];
+    fR = val[1];
+
+    size_t i = 2;
+    const double hstep = Estep/2.0;
+    for ( double E = Emin ; i < size ; E += Estep ){
+        while ( i < size && fE < E+hstep ){
+            flE = fE;
+            flR = fR;
+            fE = Eval[i];
+            fR = val[i];
+            ++i;
+        }
+        if (i >= size || fE == 0 )
+            break;
+        const double x = (E+hstep-flE)/(fE-flE);
+        const double eR = fR*x + flR*(1-x);
+        values.push_back( eR );
+    }
+}
+
 
 // ########################################################################
 

@@ -12,7 +12,7 @@ class UserSort;
 class Triggered_event;
 
 namespace OCL {
-    class ConfigManager;
+    class UserConfiguration;
 }
 
 class UserSortManager
@@ -22,7 +22,7 @@ private:
     UserSort *object;
 
 public:
-    UserSortManager(ThreadSafeHistograms &hist, const char *libname = nullptr, const char *configfile = nullptr);
+    UserSortManager(ThreadSafeHistograms &hist, const OCL::UserConfiguration &config_file, const char *libname = nullptr);
     ~UserSortManager();
     void FillEvent(const Triggered_event &event);
     void Flush();

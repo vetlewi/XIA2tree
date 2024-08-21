@@ -3,17 +3,19 @@
 //
 
 #include "PhysicalParam/ConfigManager.h"
+#include "PhysicalParam/ParticleRange.h"
 #include "Tools/enumerate.h"
 
 #include <magic_enum.hpp>
 #include <yaml-cpp/yaml.h>
 
 #include <istream>
-#include <iostream>
 
 #define NUMBER_OF_MODULES_PER_CRATE 16      //! There are 4 bits for denoting module number (slot number)
 #define NUMBER_OF_CHANNELS_PER_MODULE 16    //! There are 4 bits for denoting the channel number
 #define NUMBER_OF_CRATES 2                  //! For now, we assume two crates. More could be supported...
+
+
 
 
 
@@ -79,6 +81,24 @@ namespace YAML {
 }
 
 using namespace OCL;
+
+UserConfiguration UserConfiguration::FromFile(const char *file, const ParticleRange &r)
+{
+    return UserConfiguration(YAML::LoadFile(file), r);
+}
+
+UserConfiguration UserConfiguration::FromFile(std::istream &s, const ParticleRange &r)
+{
+    return UserConfiguration(YAML::Load(s), r);
+}
+
+UserConfiguration::UserConfiguration(const YAML::Node &_userConfig, const ParticleRange &_range)
+    : userConfig( _userConfig )
+    , range( _range )
+{
+}
+
+
 ConfigManager ConfigManager::FromFile(const char *file)
 {
     return ConfigManager(YAML::LoadFile(file));

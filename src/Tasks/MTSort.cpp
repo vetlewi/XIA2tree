@@ -116,8 +116,9 @@ void Particle_telescope_t::Flush()
 }
 
 
-HistManager::HistManager(ThreadSafeHistograms &histograms, const char *custom_sort, const char *config_file)
-        : labr( histograms, "labr", NUM_LABR_DETECTORS )
+HistManager::HistManager(ThreadSafeHistograms &histograms, const OCL::UserConfiguration &user_config, const char *custom_sort)
+        : configuration( user_config )
+        , labr( histograms, "labr", NUM_LABR_DETECTORS )
         , si_de( histograms, "si_de", NUM_SI_DE_DET )
         , si_e( histograms, "si_e", NUM_SI_E_DET )
         , ppacs( histograms, "ppac", NUM_PPAC )
@@ -156,7 +157,7 @@ HistManager::HistManager(ThreadSafeHistograms &histograms, const char *custom_so
        , ede_time( histograms.Create2D("ede_time", "E time spectrum",
                                        2500, 0, 25000, "E energy [keV]",
                                        1000, -500, 500, "Time [ns]"))
-       , userSort( histograms, custom_sort, config_file )
+       , userSort( histograms, configuration, custom_sort )
 {
 }
 
@@ -214,10 +215,10 @@ void HistManager::Flush()
     userSort.Flush();
 }
 
-MTSort::MTSort(Task::TEventQueue_t &input, ThreadSafeHistograms &histograms, const char *tree_name,
-               const char *custom_sort, const char *config_file)
+MTSort::MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const OCL::UserConfiguration &config,
+               const char *tree_name, const char *user_sort)
     : input_queue( input )
-    , hm( histograms, custom_sort, config_file )
+    , hm( histograms, config, user_sort )
     , tree( ( tree_name ) ? new ROOT::TTreeManager(tree_name) : nullptr )
 {
 }
@@ -246,13 +247,13 @@ void MTSort::Flush()
     hm.Flush();
 }
 
-Sorters::Sorters(TEventQueue_t &input, const char *tree_name, const char *_user_sort, const char *_config_filename)
+Sorters::Sorters(TEventQueue_t &input, OCL::UserConfiguration &config, const char *tree_name, const char *_user_sort)
     : input_queue( input )
     , histograms( )
     , sorters( )
+    , user_config( config )
     , user_sort_path( ( _user_sort ) ? _user_sort : "" )
     , tree_file_name( ( tree_name ) ? tree_name : "" )
-    , config_filename( ( _config_filename ) ? _config_filename : "" )
     , tree_files( )
 {
 
@@ -280,9 +281,8 @@ MTSort *Sorters::GetNewSorter()
         fname += "_t" + std::to_string(tree_files.size()) + ".root";
         tree_files.push_back(fname);
     }
-    sorters.push_back(new MTSort(input_queue, histograms,
+    sorters.push_back(new MTSort(input_queue, histograms, user_config,
                                  (fname.empty()) ? nullptr : fname.c_str(),
-                                 (user_sort_path.empty()) ? nullptr : user_sort_path.c_str(),
-                                 (config_filename.empty()) ? nullptr : config_filename.c_str() ));
+                                 (user_sort_path.empty()) ? nullptr : user_sort_path.c_str()));
     return sorters.back();
 }

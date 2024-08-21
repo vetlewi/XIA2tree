@@ -12,12 +12,27 @@
 #include <Format/xiaformat.h>
 #include <Format/entry.h>
 
+class ParticleRange;
 
 namespace YAML {
     class Node;
 }
 
 namespace OCL {
+
+    class UserConfiguration {
+    private:
+        const YAML::Node &userConfig;
+        const ParticleRange &range;
+
+    public:
+        UserConfiguration(const YAML::Node &userConfig, const ParticleRange &range);
+        static UserConfiguration FromFile(const char *file, const ParticleRange &range);
+        static UserConfiguration FromFile(std::istream &, const ParticleRange &);
+
+        inline const YAML::Node &GetConfig() const { return userConfig; }
+        inline const ParticleRange &GetRange() const { return range; }
+    };
 
     class ConfigManager {
     private:

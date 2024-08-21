@@ -8,9 +8,9 @@
 #include "event.h"
 #include "ConfigManager.h"
 
-UserSortManager::UserSortManager(ThreadSafeHistograms &hist, const char *libname, const char *config_file)
+UserSortManager::UserSortManager(ThreadSafeHistograms &hist, const OCL::UserConfiguration &config, const char *libname)
         : library( libname )
-        , object( reinterpret_cast<UserSort *>(library.GetObject(&hist, config_file, "NewUserSort")) )
+        , object( reinterpret_cast<UserSort *>(library.GetObject(&hist, &config, "NewUserSort")) )
 {
 }
 
