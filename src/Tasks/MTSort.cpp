@@ -71,7 +71,7 @@ Particle_telescope_t::Particle_telescope_t(ThreadSafeHistograms &hm, const size_
                       hm.Create2D("ede_spectra_b"+std::to_string(num)+"f6", "E energy vs dE energy",
                                   3000, 0, 30000, "E energy [keV]", 1500, 0, 15000, "dE energy [keV]"),
                       hm.Create2D("ede_spectra_b"+std::to_string(num)+"f7", "E energy vs dE energy",
-                                  2048, 0, 15000, "E energy [keV]", 2048, 0, 16384, "dE energy [keV]")}
+                                  3000, 0, 30000, "E energy [keV]", 2048, 0, 16384, "dE energy [keV]")}
         , ede_spectra_raw{ hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f0", "E energy vs dE energy (raw, uncalibrated)",
                                    2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f1", "E energy vs dE energy (raw, uncalibrated)",
@@ -100,7 +100,7 @@ void Particle_telescope_t::Fill(const subvector<Entry_t> &deltaE, const subvecto
             if ( de.detectorID / NUM_SI_DE_TEL != e.detectorID )
                 continue;
 
-            ede_spectra[de.detectorID % NUM_SI_DE_TEL].Fill(e.adcvalue, de.adcvalue);
+            ede_spectra[de.detectorID % NUM_SI_DE_TEL].Fill(e.energy, de.energy);
             ede_spectra_raw[de.detectorID % NUM_SI_DE_TEL].Fill(e.adcvalue, de.adcvalue);
         }
     }
@@ -157,6 +157,12 @@ HistManager::HistManager(ThreadSafeHistograms &histograms, const OCL::UserConfig
        , ede_time( histograms.Create2D("ede_time", "E time spectrum",
                                        2500, 0, 25000, "E energy [keV]",
                                        1000, -500, 500, "Time [ns]"))
+       , thickness( histograms.Create2D("thickness", "dE thickness",
+                                        1000, 0, 1000, "dE thickness [keV]",
+                                        8, 0, 8, "Ring #"))
+       , particle_energy( histograms.Create2D("particle_energy", "Total particle energy",
+                                              16384, 0, 16384, "Etot(Ede+Ee) [keV]",
+                                              8, 0, 8, "Ring #") )
        , userSort( histograms, configuration, custom_sort )
 {
 }
@@ -186,17 +192,29 @@ void HistManager::AddEntry(Triggered_event &buffer)
         GetSpec(type)->Fill(buffer.GetDetector(type), trigger);
     }
 
+    auto trapID = trigger->detectorID / 8;
+    auto ringID = trigger->detectorID % 8;
+    auto [de_evts, e_evts] = buffer.GetTrap(trapID);
+    GetPart(trapID)->Fill(de_evts, e_evts);
+
+    if ( de_evts.size() != 1 && e_evts.size() != 1 )
+        return; // DONE!!
 
 
-    // Next we will get by back ID
-    for ( auto &trap : {0, 1, 2, 3, 4, 5, 6, 7}){
-        auto [de_evts, e_evts] = buffer.GetTrap(trap);
-        GetPart(trap)->Fill(de_evts, e_evts);
-        for ( auto &e_entry : e_evts ){
-            ede_time.Fill(e_entry.energy,
-                          double(e_entry.timestamp - trigger->timestamp) + (e_entry.cfdcorr - trigger->cfdcorr));
-        }
+
+    double etot = e_evts[0]->energy + trigger->energy;
+    auto a = configuration.GetRange().GetRange(etot);
+    double thick = configuration.GetRange().GetRange(etot) - configuration.GetRange().GetRange(e_evts[0]->energy);
+    thickness.Fill(thick, ringID);
+
+    if ( (thick > 110) && ( thick < 160) ){
+        ede_time.Fill(e_evts[0]->energy,
+                      double(e_evts[0]->timestamp - trigger->timestamp) + (e_evts[0]->cfdcorr - trigger->cfdcorr));
+        ede_spectra[ringID].Fill(e_evts[0]->energy, trigger->energy);
+        particle_energy.Fill(etot, ringID);
     }
+
+
 
     userSort.FillEvent(buffer);
 }

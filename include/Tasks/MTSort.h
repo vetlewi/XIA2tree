@@ -64,6 +64,8 @@ namespace Task {
 
         ThreadSafeHistogram2D ede_spectra[NUM_SI_DE_TEL];
         ThreadSafeHistogram2D ede_time;
+        ThreadSafeHistogram2D thickness;
+        ThreadSafeHistogram2D particle_energy;
 
         UserSortManager userSort;
 
