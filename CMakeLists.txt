@@ -46,7 +46,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME magic_enum
         GITHUB_REPOSITORY Neargye/magic_enum
-        VERSION 0.9.5
+        VERSION 0.9.6
 )
 
 CPMAddPackage(
