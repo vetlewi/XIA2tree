@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.15)
 project(XIA2tree VERSION 0.9.0 LANGUAGES C CXX)
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
@@ -10,7 +10,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
-CPMAddPackage("gh:vetlewi/Histogram@1.3.0")
+CPMAddPackage("gh:vetlewi/Histogram@1.3.1")
 
 add_library(structopt INTERFACE)
 target_include_directories(structopt
