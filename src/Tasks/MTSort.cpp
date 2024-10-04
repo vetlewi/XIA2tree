@@ -203,7 +203,6 @@ void HistManager::AddEntry(Triggered_event &buffer)
 
 
     double etot = e_evts[0]->energy + trigger->energy;
-    auto a = configuration.GetRange().GetRange(etot);
     double thick = configuration.GetRange().GetRange(etot) - configuration.GetRange().GetRange(e_evts[0]->energy);
     thickness.Fill(thick, ringID);
 
