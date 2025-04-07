@@ -108,7 +108,7 @@ void ParticleCoincidence::FillEvent(const Triggered_event &event)
     if ( coincident_gammas.size() == 2 ){
         auto max = ( coincident_gammas[0].energy > coincident_gammas[1].energy) ? coincident_gammas[0].energy : coincident_gammas[1].energy;
         auto min = ( coincident_gammas[0].energy < coincident_gammas[1].energy) ? coincident_gammas[0].energy : coincident_gammas[1].energy;
-        if ( (excitation > 4500) && (excitation < 5000) )
+        if ( (excitation > 4650) && (excitation < 4950) )
             gamgam.Fill(min, max);
     }
 
