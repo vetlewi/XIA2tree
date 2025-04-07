@@ -1,4 +1,6 @@
 # XIA2tree
+[![MacOS](https://github.com/vetlewi/XIA2tree/actions/workflows/macos.yml/badge.svg)](https://github.com/vetlewi/XIA2tree/actions/workflows/macos.yml)
+---
 A package for sorting XIA list mode date at OCL
 
 ### Building
