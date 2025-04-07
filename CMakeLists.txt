@@ -33,7 +33,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME indicators
         GITHUB_REPOSITORY p-ranav/indicators
-        VERSION 2.2
+        VERSION 2.3
         OPTIONS "INDICATORS_BUILD_TESTS OFF" "INDICATORS_SAMPLES OFF" "INDICATORS_DEMO OFF"
 )
 
