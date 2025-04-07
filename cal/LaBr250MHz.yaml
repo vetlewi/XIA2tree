@@ -1,0 +1,402 @@
+calibration:
+  labr:
+    quad:  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    shift: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    time_shift: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  deDet:
+    quad: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    gain: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    shift: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    time_shift: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  eDet:
+    quad: [0, 0, 0, 0, 0, 0, 0, 0]
+    gain: [1, 1, 1, 1, 1, 1, 1, 1]
+    shift: [0, 0, 0, 0, 0, 0, 0, 0]
+    time_shift: [0, 0, 0, 0, 0, 0, 0, 0]
+  eGuard:
+    quad: [0, 0, 0, 0, 0, 0, 0, 0]
+    gain: [1, 1, 1, 1, 1, 1, 1, 1]
+    shift: [0, 0, 0, 0, 0, 0, 0, 0]
+    time_shift: [0, 0, 0, 0, 0, 0, 0, 0]
+  ppac:
+    quad: []
+    gain: []
+    shift: []
+    time_shift: []
+
+setup:
+  detectors:
+    labr: 30
+    deDet: 64
+    eDet: 8
+    eGuard: 8
+    ppac: 0
+
+  crates:
+    - crate: 0
+      slots:
+        - slot: 2
+          channels: 16
+          speed: 250
+          bits: 16
+          detectors:
+            - channel: 0
+              type: labr
+              detectorID: 0
+            - channel: 1
+              type: labr
+              detectorID: 1
+            - channel: 2
+              type: labr
+              detectorID: 2
+            - channel: 3
+              type: labr
+              detectorID: 3
+            - channel: 4
+              type: labr
+              detectorID: 4
+            - channel: 5
+              type: labr
+              detectorID: 5
+            - channel: 6
+              type: labr
+              detectorID: 6
+            - channel: 7
+              type: labr
+              detectorID: 7
+            - channel: 8
+              type: labr
+              detectorID: 8
+            - channel: 9
+              type: labr
+              detectorID: 9
+            - channel: 10
+              type: labr
+              detectorID: 10
+            - channel: 11
+              type: labr
+              detectorID: 11
+            - channel: 12
+              type: labr
+              detectorID: 12
+            - channel: 13
+              type: labr
+              detectorID: 13
+            - channel: 14
+              type: labr
+              detectorID: 14
+        - slot: 3
+          channels: 16
+          speed: 250
+          bits: 16
+          detectors:
+            - channel: 0
+              type: labr
+              detectorID: 15
+            - channel: 1
+              type: labr
+              detectorID: 16
+            - channel: 2
+              type: labr
+              detectorID: 17
+            - channel: 3
+              type: labr
+              detectorID: 18
+            - channel: 4
+              type: labr
+              detectorID: 19
+            - channel: 5
+              type: labr
+              detectorID: 20
+            - channel: 6
+              type: labr
+              detectorID: 21
+            - channel: 7
+              type: labr
+              detectorID: 22
+            - channel: 8
+              type: labr
+              detectorID: 23
+            - channel: 9
+              type: labr
+              detectorID: 24
+            - channel: 10
+              type: labr
+              detectorID: 25
+            - channel: 11
+              type: labr
+              detectorID: 26
+            - channel: 12
+              type: labr
+              detectorID: 27
+            - channel: 13
+              type: labr
+              detectorID: 28
+            - channel: 14
+              type: labr
+              detectorID: 29
+        - slot: 4
+          channels: 16
+          speed: 250
+          bits: 16
+          detectors:
+            - channel: 0
+              type: deDet
+              detectorID: 0
+            - channel: 1
+              type: deDet
+              detectorID: 1
+            - channel: 2
+              type: deDet
+              detectorID: 2
+            - channel: 3
+              type: deDet
+              detectorID: 3
+            - channel: 4
+              type: deDet
+              detectorID: 4
+            - channel: 5
+              type: deDet
+              detectorID: 5
+            - channel: 6
+              type: deDet
+              detectorID: 6
+            - channel: 7
+              type: deDet
+              detectorID: 7
+            - channel: 8
+              type: deDet
+              detectorID: 8
+            - channel: 9
+              type: deDet
+              detectorID: 9
+            - channel: 10
+              type: deDet
+              detectorID: 10
+            - channel: 11
+              type: deDet
+              detectorID: 11
+            - channel: 12
+              type: deDet
+              detectorID: 12
+            - channel: 13
+              type: deDet
+              detectorID: 13
+            - channel: 14
+              type: deDet
+              detectorID: 14
+            - channel: 15
+              type: deDet
+              detectorID: 15
+        - slot: 5
+          channels: 16
+          speed: 250
+          bits: 16
+          detectors:
+            - channel: 0
+              type: deDet
+              detectorID: 16
+            - channel: 1
+              type: deDet
+              detectorID: 17
+            - channel: 2
+              type: deDet
+              detectorID: 18
+            - channel: 3
+              type: deDet
+              detectorID: 19
+            - channel: 4
+              type: deDet
+              detectorID: 20
+            - channel: 5
+              type: deDet
+              detectorID: 21
+            - channel: 6
+              type: deDet
+              detectorID: 22
+            - channel: 7
+              type: deDet
+              detectorID: 23
+            - channel: 8
+              type: deDet
+              detectorID: 24
+            - channel: 9
+              type: deDet
+              detectorID: 25
+            - channel: 10
+              type: deDet
+              detectorID: 26
+            - channel: 11
+              type: deDet
+              detectorID: 27
+            - channel: 12
+              type: deDet
+              detectorID: 28
+            - channel: 13
+              type: deDet
+              detectorID: 29
+            - channel: 14
+              type: deDet
+              detectorID: 30
+            - channel: 15
+              type: deDet
+              detectorID: 31
+        - slot: 6
+          channels: 16
+          speed: 250
+          bits: 16
+          detectors:
+            - channel: 0
+              type: deDet
+              detectorID: 32
+            - channel: 1
+              type: deDet
+              detectorID: 33
+            - channel: 2
+              type: deDet
+              detectorID: 34
+            - channel: 3
+              type: deDet
+              detectorID: 35
+            - channel: 4
+              type: deDet
+              detectorID: 36
+            - channel: 5
+              type: deDet
+              detectorID: 37
+            - channel: 6
+              type: deDet
+              detectorID: 38
+            - channel: 7
+              type: deDet
+              detectorID: 39
+            - channel: 8
+              type: deDet
+              detectorID: 40
+            - channel: 9
+              type: deDet
+              detectorID: 41
+            - channel: 10
+              type: deDet
+              detectorID: 42
+            - channel: 11
+              type: deDet
+              detectorID: 43
+            - channel: 12
+              type: deDet
+              detectorID: 44
+            - channel: 13
+              type: deDet
+              detectorID: 45
+            - channel: 14
+              type: deDet
+              detectorID: 46
+            - channel: 15
+              type: deDet
+              detectorID: 47
+        - slot: 7
+          channels: 16
+          speed: 250
+          bits: 16
+          detectors:
+            - channel: 0
+              type: deDet
+              detectorID: 48
+            - channel: 1
+              type: deDet
+              detectorID: 49
+            - channel: 2
+              type: deDet
+              detectorID: 50
+            - channel: 3
+              type: deDet
+              detectorID: 51
+            - channel: 4
+              type: deDet
+              detectorID: 52
+            - channel: 5
+              type: deDet
+              detectorID: 53
+            - channel: 6
+              type: deDet
+              detectorID: 54
+            - channel: 7
+              type: deDet
+              detectorID: 55
+            - channel: 8
+              type: deDet
+              detectorID: 56
+            - channel: 9
+              type: deDet
+              detectorID: 57
+            - channel: 10
+              type: deDet
+              detectorID: 58
+            - channel: 11
+              type: deDet
+              detectorID: 59
+            - channel: 12
+              type: deDet
+              detectorID: 60
+            - channel: 13
+              type: deDet
+              detectorID: 61
+            - channel: 14
+              type: deDet
+              detectorID: 62
+            - channel: 15
+              type: deDet
+              detectorID: 63
+        - slot: 8
+          channels: 16
+          speed: 500
+          bits: 14
+          detectors:
+            - channel: 0
+              type: eGuard
+              detectorID: 0
+            - channel: 1
+              type: eDet
+              detectorID: 0
+            - channel: 2
+              type: eGuard
+              detectorID: 1
+            - channel: 3
+              type: eDet
+              detectorID: 1
+            - channel: 4
+              type: eGuard
+              detectorID: 2
+            - channel: 5
+              type: eDet
+              detectorID: 2
+            - channel: 6
+              type: eGuard
+              detectorID: 3
+            - channel: 7
+              type: eDet
+              detectorID: 3
+            - channel: 8
+              type: eGuard
+              detectorID: 4
+            - channel: 9
+              type: eDet
+              detectorID: 4
+            - channel: 10
+              type: eGuard
+              detectorID: 5
+            - channel: 11
+              type: eDet
+              detectorID: 5
+            - channel: 12
+              type: eGuard
+              detectorID: 6
+            - channel: 13
+              type: eDet
+              detectorID: 6
+            - channel: 14
+              type: eGuard
+              detectorID: 7
+            - channel: 15
+              type: eDet
+              detectorID: 7
