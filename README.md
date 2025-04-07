@@ -62,5 +62,6 @@ The options:
 ### Configuration and calibration file
 The sorting code requires a calibration/configuration file.
 This file describes the data acquisition system, the number of detectors, what detector are connected to what DAQ channel, and the calibration of the detectors.
-Examples of these files are `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a $500$ MHz module.
-The file `cal/LaBr500MHz.yaml` is for a OSCAR setup where the LaBr$_3$:Ce detectors are read out with 500 MHz modules and all Si detectors with 250 MHz modules.
+Examples of these files are:
+* `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a $500$ MHz module.
+* `cal/LaBr500MHz.yaml` is for a OSCAR setup where the LaBr$_3$:Ce detectors are read out with 500 MHz modules and all Si detectors with 250 MHz modules.
