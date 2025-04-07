@@ -47,6 +47,8 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     } else {
         hist_file = options.output.value();
     }
+    hist_file = options.output.value();
+    tree_file = options.output.value();
 
     Task::XIAReader reader(options.input.value(), &progress);
     Task::Calibrator calibrator(cal, reader.GetQueue());
@@ -68,9 +70,8 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     pool.AddTask(&buffer);
     pool.AddTask(&splitter);
     pool.AddTask(triggers.GetNewTrigger());
-    //pool.AddTask(triggers.GetNewTrigger());
 
-    for ( int i = 0 ; i < 1 ; ++i ){
+    for ( int i = 0 ; i < 4 ; ++i ){
         pool.AddTask(sorters.GetNewSorter());
     }
 
@@ -81,7 +82,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     }
 
     Histograms &hm = sorters.GetHistograms();
-    RootWriter::Write(hm, hist_file.c_str());
+    RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
     auto root_files = sorters.GetTreeFiles();
     root_files.push_back(hist_file);
     return root_files;
