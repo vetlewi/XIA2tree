@@ -47,8 +47,8 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     } else {
         hist_file = options.output.value();
     }
-    hist_file = options.output.value();
-    tree_file = options.output.value();
+    //hist_file = options.output.value();
+    //tree_file = options.output.value();
 
     Task::XIAReader reader(options.input.value(), &progress);
     Task::Calibrator calibrator(cal, reader.GetQueue());
@@ -100,6 +100,7 @@ void MergeFiles(std::string &output_file, const std::vector<std::string> &files)
     }
     // We can now delete all the files
     for ( auto &file : files ){
+        std::cout << "Deleting file " << file << std::endl;
         system(std::string("rm " + file).c_str());
     }
 }
