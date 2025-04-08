@@ -37,10 +37,17 @@ jobs:
       - name: Bottle binary
         run: brew bottle --root-url="https://github.com/vetlewi/XIA2tree/releases/download/${{ github.ref_name }}" --no-rebuild xia2tree
 
+      - name: Rename bottle file
+        run: |
+          for f in xia2tree--*.bottle.tar.gz; do
+            new_name=$(echo "$f" | sed 's/--/-/')
+            mv "$f" "$new_name"
+          done
+
       - name: Upload bottle to release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./xia2tree--*.tar.gz
+          files: ./xia2tree-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
 
