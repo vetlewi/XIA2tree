@@ -41,7 +41,7 @@ jobs:
         with:
           files: ./xia2tree--*.tar.gz
         env:
-          GITHUB_TOKEN: {{ secrets.COMMITTER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
 
       - name: Commit updated bottle block
         run: |
