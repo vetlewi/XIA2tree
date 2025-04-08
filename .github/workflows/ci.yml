@@ -11,7 +11,8 @@ jobs:
         with:
           homebrew-tap: 'vetlewi/homebrew-formula'
           formula-name: 'xia2tree'
-          formula-path: '/'
+          formula-path: 'xia2tree.rb'
+          base-branch: 'main'
         env:
           # the personal access token should have "repo" & "workflow" scopes
           COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
