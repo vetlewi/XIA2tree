@@ -5,7 +5,7 @@ list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 include(cmake/CPM.cmake)
 
 # PackageProject.cmake will be used to make our target installable
-CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
+CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.13.0")
 
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
@@ -130,3 +130,8 @@ add_executable(XIA2tree main.cpp)
 set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 17)
 target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwriterqueue concurrentqueue)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
+
+include(GNUInstallDirs)
+install(TARGETS XIA2tree
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
