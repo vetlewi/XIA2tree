@@ -27,7 +27,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME concurrentqueue
         GITHUB_REPOSITORY cameron314/concurrentqueue
-        VERSION 1.0.3
+        VERSION 1.0.4
 )
 
 CPMAddPackage(
@@ -40,7 +40,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME yaml-cpp
         GITHUB_REPOSITORY jbeder/yaml-cpp
-        GIT_TAG yaml-cpp-0.7.0
+        GIT_TAG 28f93bdec6387d42332220afa9558060c8016795
 )
 
 CPMAddPackage(
