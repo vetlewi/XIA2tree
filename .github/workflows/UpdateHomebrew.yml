@@ -2,7 +2,8 @@ name: UpdateHomebrew
 
 on:
   push:
-    tags: 'v*'
+    tags:
+      - 'v*'
 
 jobs:
   homebrew:
@@ -46,6 +47,7 @@ jobs:
       - name: Commit updated bottle block
         run: |
           # Clone the tap repo
+          brew tap vetlewi/formula
           git clone https://x-access-token:${{ secrets.COMMITTER_TOKEN }}@github.com/vetlewi/homebrew-formula.git
           cd homebrew-formula
 
