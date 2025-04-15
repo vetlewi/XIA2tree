@@ -14,67 +14,8 @@ jobs:
         with:
           homebrew-tap: 'vetlewi/homebrew-formula'
           formula-name: 'xia2tree'
-          formula-path: 'xia2tree.rb'
+          formula-path: 'Formula/xia2tree.rb'
           base-branch: 'main'
         env:
           # the personal access token should have "repo" & "workflow" scopes
           COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
-  deploy:
-    needs: homebrew
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Add tap
-        run: brew tap vetlewi/formula
-
-      - name: Update homebrew
-        run: brew update
-
-      - name: Install via homebrew
-        run: brew install --build-bottle xia2tree
-
-      - name: Bottle binary
-        run: brew bottle --root-url="https://github.com/vetlewi/XIA2tree/releases/download/${{ github.ref_name }}" --no-rebuild xia2tree
-
-      - name: Rename bottle file
-        run: |
-          for f in xia2tree--*.bottle.tar.gz; do
-            new_name=$(echo "$f" | sed 's/--/-/')
-            mv "$f" "$new_name"
-          done
-
-      - name: Upload bottle to release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ./xia2tree-*.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
-
-      - name: Commit updated bottle block
-        run: |
-          # Clone the tap repo
-          brew tap vetlewi/formula
-          git clone https://x-access-token:${{ secrets.COMMITTER_TOKEN }}@github.com/vetlewi/homebrew-formula.git
-          cd homebrew-formula
-
-          # Replace the old bottle block using Ruby logic
-          FORMULA_PATH="xia2tree.rb"
-          NEW_BOTTLE_BLOCK=$(brew bottle ./xia2tree.rb --json | jq -r '.formula.bottle | "  bottle do\n    root_url \"" + .root_url + "\"\n    sha256 cellar: :any_skip_relocation, " + (.tags | to_entries[] | "\(.key): \"" + .value.sha256 + "\"") + "\n  end"')
-
-          # Use sed to replace old bottle block (naively here, better if you use Ruby)
-          awk '
-            BEGIN { skip = 0 }
-            /^  bottle do/, /^  end$/ { skip = 1 }
-            skip && /^  end$/ { skip = 0; next }
-            !skip { print }
-          ' "$FORMULA_PATH" > tmp.rb
-
-          echo "$NEW_BOTTLE_BLOCK" >> tmp.rb
-          mv tmp.rb "$FORMULA_PATH"
-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add "$FORMULA_PATH"
-          git commit -m "Update bottle block for xia2tree ${{ github.ref_name }}"
-          git push origin main
