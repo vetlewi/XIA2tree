@@ -21,6 +21,12 @@ struct Entry_t {
     double energy;
     double cfdcorr;
     bool cfdfail;
+
+    // QDC values
+    std::vector<uint32_t> qdc;
+
+    // Traces
+    std::vector<uint16_t> trace;
 };
 
 #endif // ENTRY_H

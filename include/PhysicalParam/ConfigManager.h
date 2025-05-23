@@ -100,7 +100,9 @@ namespace OCL {
                     raw->finishCode,
                     energy,
                     cfdcorr,
-                    cfdres
+                    cfdres,
+                    getQDC(raw),
+                    getTrace(raw)
             };
         }
 
