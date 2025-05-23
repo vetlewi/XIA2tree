@@ -5,6 +5,15 @@
 #ifndef XIAFORMAT_H
 #define XIAFORMAT_H
 
+struct XIA_event_4_t;
+struct XIA_event_6_t;
+struct XIA_event_8_t;
+struct XIA_event_10_t;
+struct XIA_event_12_t;
+struct XIA_event_14_t;
+struct XIA_event_16_t;
+struct XIA_event_18_t;
+
 struct XIA_address_t {
     // First 32-bit word
     unsigned short chanID : 4;
@@ -36,14 +45,128 @@ struct XIA_base_t {
     unsigned traceLen : 15;
     bool traceOutOfRange : 1;
 
-    inline unsigned short index() const { return (crateID << 8) + (slotID << 4) + chanID; }
-    inline int64_t timestamp() const {
+    [[nodiscard]] inline unsigned short index() const { return (crateID << 8) + (slotID << 4) + chanID; }
+    [[nodiscard]] inline int64_t timestamp() const {
         int64_t timestamp = event_time_high;
         timestamp <<= 32;
         timestamp |= event_time_low;
         return timestamp;
     }
 };
+
+struct XIA_event_4_t : public XIA_base_t {
+    uint16_t trace[];
+};
+
+struct XIA_event_6_t : public XIA_base_t {
+    unsigned timestamp_low : 32;
+    unsigned timestamp_high : 16;
+    unsigned unused : 16;
+    uint16_t trace[];
+};
+
+struct XIA_event_8_t : public XIA_base_t {
+    unsigned trailing : 32;
+    unsigned leading : 32;
+    unsigned gap : 32;
+    unsigned baseline : 32;
+    uint16_t trace[];
+};
+
+struct XIA_event_10_t : public XIA_base_t {
+    unsigned trailing : 32;
+    unsigned leading : 32;
+    unsigned gap : 32;
+    unsigned baseline : 32;
+    unsigned timestamp_low : 32;
+    unsigned timestamp_high : 16;
+    unsigned unused : 16;
+    uint16_t trace[];
+};
+
+struct XIA_event_12_t : public XIA_base_t {
+    unsigned qdc[8];
+    uint16_t trace[];
+};
+
+struct XIA_event_14_t : public XIA_base_t {
+    unsigned qdc[8];
+    unsigned timestamp_low : 32;
+    unsigned timestamp_high : 16;
+    unsigned unused : 16;
+    uint16_t trace[];
+};
+
+struct XIA_event_16_t : public XIA_base_t {
+    unsigned trailing : 32;
+    unsigned leading : 32;
+    unsigned gap : 32;
+    unsigned baseline : 32;
+    unsigned qdc[8];
+    uint16_t trace[];
+};
+
+struct XIA_event_18_t : public XIA_base_t {
+    unsigned trailing : 32;
+    unsigned leading : 32;
+    unsigned gap : 32;
+    unsigned baseline : 32;
+    unsigned qdc[8];
+    unsigned timestamp_low : 32;
+    unsigned timestamp_high : 16;
+    unsigned unused : 16;
+    uint16_t trace[];
+};
+
+inline std::vector<uint32_t> getQDC(const XIA_base_t *event) {
+    switch ( event->headerLen ) {
+        case 12 :
+            return {reinterpret_cast<const XIA_event_12_t *>(event)->qdc,
+                reinterpret_cast<const XIA_event_12_t *>(event)->qdc+8};
+        case 14 :
+            return {reinterpret_cast<const XIA_event_14_t *>(event)->qdc,
+                reinterpret_cast<const XIA_event_14_t *>(event)->qdc+8};
+        case 16 :
+            return {reinterpret_cast<const XIA_event_16_t *>(event)->qdc,
+               reinterpret_cast<const XIA_event_16_t *>(event)->qdc+8};
+        case 18 :
+            return {reinterpret_cast<const XIA_event_18_t *>(event)->qdc,
+               reinterpret_cast<const XIA_event_18_t *>(event)->qdc+8};
+        default:
+            return std::vector<uint32_t>(0);
+    }
+}
+
+inline std::vector<uint16_t> getTrace(const XIA_base_t *event) {
+    switch ( event->headerLen ) {
+        case 4 :
+            return {reinterpret_cast<const XIA_event_4_t *>(event)->trace,
+                reinterpret_cast<const XIA_event_4_t *>(event)->trace + event->traceLen};
+        case 6 :
+            return {reinterpret_cast<const XIA_event_6_t *>(event)->trace,
+                reinterpret_cast<const XIA_event_6_t *>(event)->trace + event->traceLen};
+        case 8 :
+            return {reinterpret_cast<const XIA_event_8_t *>(event)->trace,
+                reinterpret_cast<const XIA_event_8_t *>(event)->trace + event->traceLen};
+        case 10 :
+            return {reinterpret_cast<const XIA_event_10_t *>(event)->trace,
+                reinterpret_cast<const XIA_event_10_t *>(event)->trace + event->traceLen};
+        case 12 :
+            return {reinterpret_cast<const XIA_event_12_t *>(event)->trace,
+                reinterpret_cast<const XIA_event_12_t *>(event)->trace+event->traceLen};
+        case 14 :
+            return {reinterpret_cast<const XIA_event_14_t *>(event)->trace,
+                reinterpret_cast<const XIA_event_14_t *>(event)->trace+event->traceLen};
+        case 16 :
+            return {reinterpret_cast<const XIA_event_16_t *>(event)->trace,
+               reinterpret_cast<const XIA_event_16_t *>(event)->trace+event->traceLen};
+        case 18 :
+            return {reinterpret_cast<const XIA_event_18_t *>(event)->trace,
+               reinterpret_cast<const XIA_event_18_t *>(event)->trace+event->traceLen};
+        default:
+            return std::vector<uint16_t>(0);
+    }
+}
 
 struct XIA_esums_t {
     unsigned trailing : 32;
