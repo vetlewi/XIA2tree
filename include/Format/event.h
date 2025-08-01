@@ -83,7 +83,8 @@ public:
     [[nodiscard]] inline const Entry_t *GetTrigger() const { return ( trigger.type == unused ) ? nullptr : &trigger; }
 
     [[nodiscard]] subvector<Entry_t> GetRing(const size_t &ringNo);
-    [[nodiscard]] std::pair<subvector<Entry_t>, subvector<Entry_t>> GetTrap(const size_t &ringNo) const;
+    //[[nodiscard]] std::pair<subvector<Entry_t>, subvector<Entry_t>> GetTrap(const size_t &ringNo) const;
+    [[nodiscard]] std::pair<std::vector<Entry_t>, std::vector<Entry_t>> GetTrap(const size_t &ringNo) const;
 };
 
 #endif //XIA2TREE_EVENT_H

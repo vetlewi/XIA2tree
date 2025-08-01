@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 0.9.9 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.0.0 LANGUAGES C CXX)
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 include(cmake/CPM.cmake)
+include(cmake/GitVersion.cmake)
+get_version_from_git()
 
 # PackageProject.cmake will be used to make our target installable
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.13.0")
@@ -21,19 +23,21 @@ target_include_directories(structopt
 CPMAddPackage(
         NAME readerwriterqueue
         GITHUB_REPOSITORY cameron314/readerwriterqueue
-        GIT_TAG 09732844aff873e8ec489e9005c775b6b1c58fa2
+        GIT_TAG 211616e0554f93152ab3108b8d93fbc23174a9d9
 )
 
 CPMAddPackage(
         NAME concurrentqueue
         GITHUB_REPOSITORY cameron314/concurrentqueue
-        VERSION 1.0.4
+        #VERSION 1.0.4
+        GIT_TAG c68072129c8a5b4025122ca5a0c82ab14b30cb03
 )
 
 CPMAddPackage(
         NAME indicators
         GITHUB_REPOSITORY p-ranav/indicators
-        VERSION 2.3
+        #VERSION 2.3
+        GIT_TAG 3872f37abd90d7557bac5f834bfb45bd6c75259a
         OPTIONS "INDICATORS_BUILD_TESTS OFF" "INDICATORS_SAMPLES OFF" "INDICATORS_DEMO OFF"
 )
 
@@ -53,6 +57,12 @@ CPMAddPackage(
         NAME zstr
         GITHUB_REPOSITORY mateidavid/zstr
         VERSION 1.0.7
+)
+
+### Generate version file ###
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/version.h.in
+        ${CMAKE_CURRENT_BINARY_DIR}/version.h
 )
 
 add_library(XIAfuncs
@@ -80,6 +90,8 @@ target_include_directories(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/include/RootInterface
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Tasks
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_library(UserSort

@@ -1,5 +1,5 @@
 #include "CommandLineInterface.h"
-
+#include "version.h"
 
 #include <third_party/structopt/app.hpp>
 #include <third_party/structopt/third_party/magic_enum/magic_enum.hpp>
@@ -12,6 +12,17 @@ STRUCTOPT(Options, input, output, CalibrationFile, RangeFile, userSort, coincide
 
 std::ostream &operator<<(std::ostream &os, const Options &opt)
 {
+    os << "XIA2tree\n";
+    os << "\tVersion: " << FULL_VERSION << "\n";
+    os << "\tBuild date: " << __DATE__ << "\n";
+    os << "\tBuild time: " << __TIME__ << "\n";
+    os << "\tBuild type: " << BUILD_TYPE << "\n";
+    os << "\tArchitecture: " << ARCHITECTURE << "\n";
+    os << "\tCompiler: " << COMPILER << "\n";
+    os << "\tCompiler version: " << COMPILER_VERSION << "\n";
+    os << "\tC++ version: " << CPLUSPLUS_VERSION << "\n";
+
+
     os << "Sorting with following options:\n";
     os << "\tInput file(s):\n";
     for ( auto &file : opt.input.value() ){
@@ -34,8 +45,8 @@ Options CLI::ParseCLA(const int &argc, char *argv[])
 {
     Options options;
     try {
-        structopt::app app("XIA2tree", "0.9.9");
-        structopt::details::visitor vis("XIA2tree", "0.9.9");
+        structopt::app app("XIA2tree", FULL_VERSION);
+        structopt::details::visitor vis("XIA2tree", FULL_VERSION);
         visit_struct::for_each(options, vis);
         options = app.parse<Options>(argc, argv);
         if ( !options.input.has_value() ){

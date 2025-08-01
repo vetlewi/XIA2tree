@@ -155,7 +155,8 @@ subvector<Entry_t> Triggered_event::GetRing(const size_t &ringNo)
     return {begin, end};*/
 }
 
-std::pair<subvector<Entry_t>, subvector<Entry_t>> Triggered_event::GetTrap(const size_t &trapNo) const
+//std::pair<subvector<Entry_t>, subvector<Entry_t>> Triggered_event::GetTrap(const size_t &trapNo) const
+std::pair<std::vector<Entry_t>, std::vector<Entry_t>> Triggered_event::GetTrap(const size_t &trapNo) const
 {
     auto e_events = GetDetector(DetectorType::eDet);
     auto e_begin = std::find_if(e_events.begin(), e_events.end(),
@@ -167,5 +168,6 @@ std::pair<subvector<Entry_t>, subvector<Entry_t>> Triggered_event::GetTrap(const
                                  [&trapNo](const Entry_t &evt){return (evt.detectorID / NUM_SI_DE_TEL) == trapNo;});
     auto de_end = std::find_if(de_begin, de_events.end(),
                                [&trapNo](const Entry_t &evt){ return (evt.detectorID / NUM_SI_DE_TEL) > trapNo; });
-    return std::make_pair(subvector(de_begin, de_end), subvector(e_begin, e_end));
+    //return std::make_pair(subvector(de_begin, de_end), subvector(e_begin, e_end));
+    return std::make_pair(std::vector(de_begin, de_end), std::vector(e_begin, e_end));
 }

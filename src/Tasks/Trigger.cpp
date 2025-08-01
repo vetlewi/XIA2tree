@@ -202,9 +202,7 @@ Triggers::Triggers(Task::MCEventQueue_t &input,
     , output_queue( cap )
     , coincidence_time( time )
     , trigger( trig )
-    , sort_type( _sort_type )
-    , triggers( )
-{
+    , sort_type( _sort_type ) {
 }
 
 Triggers::~Triggers()
