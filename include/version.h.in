@@ -1,0 +1,61 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+#define PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define PROJECT_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define PROJECT_VERSION "@PROJECT_VERSION@"
+#define FULL_VERSION "@FULL_VERSION@"
+#define BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+
+#if defined(__x86_64__) || defined(_M_X64)
+#define ARCHITECTURE "x86_64"
+#elif defined(__i386__) || defined(_M_IX86)
+#define ARCHITECTURE "x86"
+#elif defined(__arm__) || defined(_M_ARM)
+#define ARCHITECTURE "ARM"
+#elif defined(__aarch64__)
+#define ARCHITECTURE "ARM64"
+#elif defined(__powerpc__) || defined(__ppc__)
+#define ARCHITECTURE "PowerPC"
+#elif defined(__riscv) || defined(__riscv__)
+#define ARCHITECTURE "RISC-V"
+#else
+#define ARCHITECTURE "Unknown architecture"
+#endif
+
+// Define C++ version
+#if __cplusplus == 201103L
+#define CPLUSPLUS_VERSION "C++11"
+#elif __cplusplus == 201402L
+#define CPLUSPLUS_VERSION "C++14"
+#elif __cplusplus == 201703L
+#define CPLUSPLUS_VERSION "C++17"
+#elif __cplusplus > 201703L
+#define CPLUSPLUS_VERSION "C++20 or newer"
+#else
+#define CPLUSPLUS_VERSION "C++98"
+#endif
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#if defined(__clang__)
+#define COMPILER "Clang"
+#define COMPILER_VERSION TOSTRING(__clang_major__) "." TOSTRING(__clang_minor__) "." TOSTRING(__clang_patchlevel__)
+#elif defined(__GNUC__) || defined(__GNUG__)
+#define COMPILER "GCC"
+#define COMPILER_VERSION TOSTRING(__GNUC__) "." TOSTRING(__GNUC_MINOR__) "." TOSTRING(__GNUC_PATCHLEVEL__)
+#elif defined(_MSC_VER)
+#define COMPILER "Microsoft Visual Studio"
+#define COMPILER_VERSION _MSC_VER
+#define COMPILER_VERSION TOSTRING(_MSC_VER) // _MSC_VER is interpreted as a version number
+#elif defined(__INTEL_COMPILER)
+#define COMPILER "Intel C Compiler"
+#define COMPILER_VERSION TOSTRING(__INTEL_COMPILER)
+#else
+#define COMPILER "Unknown Compiler"
+#define COMPILER_VERSION "Unknown Version"
+#endif
+
+#endif
