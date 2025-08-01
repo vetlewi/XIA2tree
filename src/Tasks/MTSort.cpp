@@ -16,6 +16,26 @@
 
 using namespace Task;
 
+
+// For 59Co
+/*constexpr double a2[] = {0.000123, 0.000097, 0.000070, 0.000040, 0.000008, -0.000025, -0.000061, -0.000097};
+constexpr double a1[] = {-1.033612, -1.032484, -1.031292, -1.030005, -1.028671, -1.027260, -1.025767, -1.024225};
+constexpr double a0[] = {15.482874, 15.482970, 15.482859, 15.482356, 15.481656, 15.480574, 15.479027, 15.477125};*/
+
+// For 106Pd
+/*constexpr double a2[] = {-0.000004, -0.000020, -0.000038, -0.000057, -0.000077, -0.000099, -0.000121, -0.000146};
+constexpr double a1[] = {-1.016472, -1.015782, -1.015050, -1.014245, -1.013415, -1.012532, -1.011625, -1.010621};
+constexpr double a0[] = {15.680808, 15.680103, 15.679198, 15.677920, 15.676482, 15.674706, 15.672703, 15.670059};*/
+
+// For 117Sn
+constexpr double a2[] = { 0.000126,  0.000115,  0.000103,  0.000091,  0.000078,  0.000065,  0.000050,  0.000035};
+constexpr double a1[] = {-1.018782, -1.018272, -1.017734, -1.017168, -1.016573, -1.015948, -1.015291, -1.014599};
+constexpr double a0[] = {15.759522, 15.760104, 15.760629, 15.761086, 15.761454, 15.761709, 15.761821, 15.761756};
+
+constexpr double CalcEx(const size_t& ringNo, const double& p_energy) {
+    return a0[ringNo] + a1[ringNo] * p_energy + a2[ringNo] * p_energy * p_energy;
+}
+
 Detector_Histograms_t::Detector_Histograms_t(ThreadSafeHistograms &hm, const std::string &name, const size_t &num)
     : time( hm.Create2D(std::string("time_"+name), std::string("Time spectra "+name), 30000, -1500, 1500, "Time [ns]", num, 0, num, std::string(name+" ID")) )
     , time_CFDfail( hm.Create2D(std::string("time_"+name+"_CFDfail"), std::string("Time spectra"+name+" CFD fail"), 30000, -1500, 1500, "Time [ns]", num, 0, num, std::string(name+" ID")) )
@@ -91,7 +111,8 @@ Particle_telescope_t::Particle_telescope_t(ThreadSafeHistograms &hm, const size_
 {
 }
 
-void Particle_telescope_t::Fill(const subvector<Entry_t> &deltaE, const subvector<Entry_t> &E)
+void Particle_telescope_t::Fill(const std::vector<Entry_t> &deltaE, const std::vector<Entry_t> &E)
+//void Particle_telescope_t::Fill(const subvector<Entry_t> &deltaE, const subvector<Entry_t> &E)
 {
     for ( auto &de : deltaE ){
         for ( auto &e : E ){
@@ -163,6 +184,18 @@ HistManager::HistManager(ThreadSafeHistograms &histograms, const OCL::UserConfig
        , particle_energy( histograms.Create2D("particle_energy", "Total particle energy",
                                               16384, 0, 16384, "Etot(Ede+Ee) [keV]",
                                               8, 0, 8, "Ring #") )
+       , alfna_prompt( histograms.Create2D("alfna_prompt", "Particle - gamma coincidence",
+                                            1500, 0, 15000, "E gamma [keV]",
+                                            1800, -2000, 15000, "Excitation [keV]") )
+       , alfna_background( histograms.Create2D("alfna_background", "Particle - gamma coincidence",
+                                                        1500, 0, 15000, "E gamma [keV]",
+                                                        1800, -2000, 15000, "Excitation [keV]") )
+       , ts_ex_above_Sn( histograms.Create2D("ts_ex_above_Sn", "Time spectra (LaBr) above Sn",
+                                             30000, -1500, 1500, "Time [ns]",
+                                             NUM_LABR_DETECTORS, 0, NUM_LABR_DETECTORS, "Detector ID") )
+       , mult_ex( histograms.Create2D("mult_ex", "Multiplicity as function of Ex (± 10 ns)",
+                                                 15000, 0, 15000, "Excitation energy [keV]",
+                                                    20, 0, 20, "Multiplicity") )
        , userSort( histograms, configuration, custom_sort )
 {
 }
@@ -197,20 +230,39 @@ void HistManager::AddEntry(Triggered_event &buffer)
     auto [de_evts, e_evts] = buffer.GetTrap(trapID);
     GetPart(trapID)->Fill(de_evts, e_evts);
 
-    if ( de_evts.size() != 1 && e_evts.size() != 1 )
+    if ( de_evts.size() != 1 || e_evts.size() != 1 )
         return; // DONE!!
 
+    auto e_evt = e_evts[0];
 
+    //double etot = e_evt->energy + trigger->energy;
+    double etot = e_evt.energy + trigger->energy;
 
-    double etot = e_evts[0]->energy + trigger->energy;
-    double thick = configuration.GetRange().GetRange(etot) - configuration.GetRange().GetRange(e_evts[0]->energy);
+    //double thick = configuration.GetRange().GetRange(etot) - configuration.GetRange().GetRange(e_evts[0]->energy);
+    double thick = configuration.GetRange().GetRange(etot) - configuration.GetRange().GetRange(e_evt.energy);
     thickness.Fill(thick, ringID);
 
     if ( (thick > 110) && ( thick < 160) ){
-        ede_time.Fill(e_evts[0]->energy,
-                      double(e_evts[0]->timestamp - trigger->timestamp) + (e_evts[0]->cfdcorr - trigger->cfdcorr));
-        ede_spectra[ringID].Fill(e_evts[0]->energy, trigger->energy);
+        ede_time.Fill(e_evts[0].energy,
+                      double(e_evts[0].timestamp - trigger->timestamp) + (e_evts[0].cfdcorr - trigger->cfdcorr));
+        ede_spectra[ringID].Fill(e_evts[0].energy, trigger->energy);
         particle_energy.Fill(etot, ringID);
+
+        auto Ex = CalcEx(ringID, etot/1e3)*1e3;
+        int coinc = 0;
+        for ( int i = 0 ; i < buffer.GetDetector(DetectorType::labr).size() ; ++i ){
+            auto labr_evt = buffer.GetDetector(DetectorType::labr)[i];
+            double time = double(labr_evt->timestamp - trigger->timestamp) + (labr_evt->cfdcorr - trigger->cfdcorr);
+            if ( Ex > 7000 )
+                ts_ex_above_Sn.Fill(time, labr_evt->detectorID);
+            if ( time > -2 && time < 2 )
+                alfna_prompt.Fill(labr_evt->energy, Ex);
+            else if (time > 57 && time < 60)
+                alfna_background.Fill(labr_evt->energy, Ex);
+            if ( time > -10 && time < 10 )
+                coinc += 1;
+        }
+        mult_ex.Fill(Ex, coinc);
     }
 
 

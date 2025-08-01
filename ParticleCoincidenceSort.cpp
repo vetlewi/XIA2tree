@@ -85,16 +85,16 @@ void ParticleCoincidence::FillEvent(const Triggered_event &event)
         return;
 
     auto e_evt = e_evts[0];
-    double etot = e_evt->energy + trigger->energy;
+    double etot = e_evt.energy + trigger->energy;
 
-    double thick = user_config->GetRange().GetRange(etot) - user_config->GetRange().GetRange(e_evt->energy);
+    double thick = user_config->GetRange().GetRange(etot) - user_config->GetRange().GetRange(e_evt.energy);
     de_thickness.Fill(thick, ringID);
 
     double excitation = CalculateEx(etot*1e-3, ringID) * 1e3;
     excitation_energy.Fill(excitation, ringID);
 
     std::vector<Entry_t> coincident_gammas;
-    for ( auto labr_event : event.GetDetector(DetectorType::labr) ){
+    for ( const auto& labr_event : event.GetDetector(DetectorType::labr) ){
         double tdiff = double(labr_event.timestamp - trigger->timestamp) + (labr_event.cfdcorr - trigger->cfdcorr);
         gam_part_time.Fill(tdiff);
         if ( (tdiff > -4)&&(tdiff < 4) ){

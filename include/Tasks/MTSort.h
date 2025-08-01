@@ -47,6 +47,7 @@ namespace Task {
 
         Particle_telescope_t(ThreadSafeHistograms &hist, const size_t &num);
         void Fill(const subvector<Entry_t> &deltaE, const subvector<Entry_t> &E);
+        void Fill(const std::vector<Entry_t> &deltaE, const std::vector<Entry_t> &E);
         void Flush();
     };
 
@@ -66,6 +67,9 @@ namespace Task {
         ThreadSafeHistogram2D ede_time;
         ThreadSafeHistogram2D thickness;
         ThreadSafeHistogram2D particle_energy;
+        ThreadSafeHistogram2D alfna_prompt, alfna_background;
+        ThreadSafeHistogram2D ts_ex_above_Sn;
+        ThreadSafeHistogram2D mult_ex;
 
         UserSortManager userSort;
 
