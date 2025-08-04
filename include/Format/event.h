@@ -6,6 +6,7 @@
 #define XIA2TREE_EVENT_H
 
 #include <vector>
+#include <algorithm>
 #include <map>
 #include <stdexcept>
 #include <cstddef>
