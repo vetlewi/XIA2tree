@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <map>
+#include <stdexcept>
+#include <cstddef>
 
 #include <Format/entry.h>
 #include <PhysicalParam/DetectorTypes.h>
