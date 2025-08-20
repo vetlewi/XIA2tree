@@ -12,7 +12,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.13.0")
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
-CPMAddPackage("gh:vetlewi/Histogram@1.3.1")
+CPMAddPackage("gh:vetlewi/Histogram@1.3.3")
 
 add_library(structopt INTERFACE)
 target_include_directories(structopt
