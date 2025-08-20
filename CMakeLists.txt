@@ -81,7 +81,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/CommandLineInterface.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/ProgressUI.cpp
 )
-
+set_target_properties(XIAfuncs PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(XIAfuncs
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
