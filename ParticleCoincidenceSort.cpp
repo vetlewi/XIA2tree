@@ -111,9 +111,11 @@ void ParticleCoincidence::FillEvent(const Triggered_event &event)
         if ( (excitation > 4650) && (excitation < 4950) )
             gamgam.Fill(min, max);
     }
-
-    auto total_gamma_energy = std::reduce(coincident_gammas.begin(), coincident_gammas.end(), 0.0,
-                                          [](const auto &a, const auto &b){ return a + b.energy; });
+    
+    double total_gamma_energy = 0;
+    for ( auto& entry : coincident_gammas ) {
+        total_gamma_energy += entry.energy;
+    }
 
     sum_ex_gam.Fill(excitation - total_gamma_energy);
 
