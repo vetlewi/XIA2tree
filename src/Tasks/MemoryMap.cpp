@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <cstring>
 #include <cerrno>
 #include <iostream>
 #include <string>
@@ -12,7 +13,7 @@
 using namespace IO;
 
 MemoryMap::MemoryMap(const char *fname) : memory_buffer(nullptr), file(0), size(0) {
-  struct stat sb;
+  struct stat sb{};
 
   file = open(fname, O_RDONLY, NULL);
 

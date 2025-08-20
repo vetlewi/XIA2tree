@@ -5,6 +5,7 @@
 #ifndef CONFIGMANAGER_H
 #define CONFIGMANAGER_H
 
+#include <cstdlib>
 #include <iosfwd>
 #include <vector>
 #include <PhysicalParam/DetectorTypes.h>

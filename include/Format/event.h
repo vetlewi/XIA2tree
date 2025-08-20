@@ -5,8 +5,12 @@
 #ifndef XIA2TREE_EVENT_H
 #define XIA2TREE_EVENT_H
 
+#include <array>
 #include <vector>
+#include <algorithm>
 #include <map>
+#include <stdexcept>
+#include <cstddef>
 
 #include <Format/entry.h>
 #include <PhysicalParam/DetectorTypes.h>

@@ -7,6 +7,9 @@
 
 #include "PhysicalParam/DetectorTypes.h"
 
+#include <cstdint>
+#include <vector>
+
 struct Entry_t {
 
     DetectorType type;
