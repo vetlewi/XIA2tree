@@ -5,6 +5,7 @@
 #ifndef XIA2TREE_MTSORT_H
 #define XIA2TREE_MTSORT_H
 
+#include <functional>
 
 #include <histogram/ThreadSafeHistograms.h>
 #include <UserSort/UserSortManager.h>
