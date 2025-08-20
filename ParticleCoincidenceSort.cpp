@@ -19,9 +19,9 @@
 #include <algorithm>
 #include <numeric>
 
-double a0[] = {15.578528, 15.579984, 15.581394, 15.582739, 15.583966, 15.585056, 15.585966, 15.586646};
-double a1[] = {-1.035590, -1.034681, -1.033726, -1.032726, -1.031676, -1.030575, -1.029422, -1.028214};
-double a2[] = {0.000272, 0.000252, 0.000232, 0.000211, 0.000188, 0.000164, 0.000139, 0.000112};
+constexpr double a0[] = {15.578528, 15.579984, 15.581394, 15.582739, 15.583966, 15.585056, 15.585966, 15.586646};
+constexpr double a1[] = {-1.035590, -1.034681, -1.033726, -1.032726, -1.031676, -1.030575, -1.029422, -1.028214};
+constexpr double a2[] = {0.000272, 0.000252, 0.000232, 0.000211, 0.000188, 0.000164, 0.000139, 0.000112};
 
 constexpr double CalculateEx(const double &Etot, const int &ringID){
     return a0[ringID] + a1[ringID] * Etot + a2[ringID] * Etot*Etot;
@@ -111,7 +111,7 @@ void ParticleCoincidence::FillEvent(const Triggered_event &event)
         if ( (excitation > 4650) && (excitation < 4950) )
             gamgam.Fill(min, max);
     }
-    
+
     double total_gamma_energy = 0;
     for ( auto& entry : coincident_gammas ) {
         total_gamma_energy += entry.energy;
