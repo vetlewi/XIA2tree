@@ -45,7 +45,7 @@ namespace OCL {
 
         [[nodiscard]] bool IsPrompt(const double &ts) const { return ( ts > prompt.lhs && ts < prompt.rhs ); }
         [[nodiscard]] bool IsBackground(const double &ts) const { return ( ts > background.lhs && ts < background.rhs ); }
-
+        [[nodiscard]] bool ParticleGatePass(const double& thick) const { return ((thick > particle_gate.lhs) && ( thick < particle_gate.rhs); }
         [[nodiscard]] double CalculateExcitation(const size_t& ringID, const double& p_energy) const {
             return ex_a0[ringID] + ex_a1[ringID] * p_energy + ex_a2[ringID] * p_energy * p_energy;
         }
