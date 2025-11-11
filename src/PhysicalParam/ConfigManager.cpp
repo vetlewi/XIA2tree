@@ -3,6 +3,9 @@
 //
 
 #include "PhysicalParam/ConfigManager.h"
+
+#include <iostream>
+
 #include "PhysicalParam/ParticleRange.h"
 #include "Tools/enumerate.h"
 
@@ -96,6 +99,44 @@ UserConfiguration::UserConfiguration(const YAML::Node &_userConfig, const Partic
     : userConfig( _userConfig )
     , range( _range )
 {
+    // Try to find the Excitation curve setup
+    try {
+        for ( auto &v : userConfig["analysis"]["a0"] ) {
+            ex_a0.push_back(v.as<double>());
+        }
+        for ( auto &v : userConfig["analysis"]["a1"] ) {
+            ex_a1.push_back(v.as<double>());
+        }
+        for ( auto &v : userConfig["analysis"]["a2"] ) {
+            ex_a2.push_back(v.as<double>());
+        }
+    } catch (std::exception &e) { // The error is not so severe that we cannot live with it. Just ignore for now...
+        //std::cerr << e.what() << std::endl;
+
+        for ( auto &v : {0.000123, 0.000097, 0.000070, 0.000040, 0.000008, -0.000025, -0.000061, -0.000097} ) {
+            ex_a0.push_back(v);
+        }
+        for ( auto &v : {-1.033612, -1.032484, -1.031292, -1.030005, -1.028671, -1.027260, -1.025767, -1.024225} ) {
+            ex_a1.push_back(v);
+        }
+        for ( auto &v : {15.482874, 15.482970, 15.482859, 15.482356, 15.481656, 15.480574, 15.479027, 15.477125} ) {
+            ex_a2.push_back(v);
+        }
+    }
+
+    try {
+        prompt = {userConfig["analysis"]["prompt"]["lhs"].as<double>(),userConfig["analysis"]["prompt"]["rhs"].as<double>()};
+        background = {userConfig["analysis"]["background"]["lhs"].as<double>(),userConfig["analysis"]["background"]["rhs"].as<double>()};
+    } catch (std::exception &e) {
+        prompt = {-5., 5.};
+        background = {58.5-5, 58.5+5};
+    }
+
+    try {
+        particle_gate = {userConfig["analysis"]["particle_gate"]["lhs"].as<double>(),userConfig["analysis"]["particle_gate"]["rhs"].as<double>()};
+    } catch (std::exception &e) {
+        particle_gate = {110, 160};
+    }
 }
 
 
@@ -116,7 +157,6 @@ ConfigManager::ConfigManager(const YAML::Node &setup)
     for ( auto [num, det] : enumerate(dinfo) ){
         det = {num, XIA::f000MHz, unused, 0};
     }
-
     for ( auto &crate : setup["setup"]["crates"] ){
         for ( auto &slot : crate["slots"] ){
             auto freq = slot["speed"].as<XIA::ADCSamplingFreq>();

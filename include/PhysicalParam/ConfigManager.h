@@ -26,6 +26,15 @@ namespace OCL {
         const YAML::Node &userConfig;
         const ParticleRange &range;
 
+        std::vector<double> ex_a0;
+        std::vector<double> ex_a1;
+        std::vector<double> ex_a2;
+
+        struct gate_t { double lhs; double rhs; };
+        gate_t prompt;
+        gate_t background;
+        gate_t particle_gate;
+
     public:
         UserConfiguration(const YAML::Node &userConfig, const ParticleRange &range);
         static UserConfiguration FromFile(const char *file, const ParticleRange &range);
@@ -33,6 +42,13 @@ namespace OCL {
 
         inline const YAML::Node &GetConfig() const { return userConfig; }
         inline const ParticleRange &GetRange() const { return range; }
+
+        [[nodiscard]] bool IsPrompt(const double &ts) const { return ( ts > prompt.lhs && ts < prompt.rhs ); }
+        [[nodiscard]] bool IsBackground(const double &ts) const { return ( ts > background.lhs && ts < background.rhs ); }
+
+        [[nodiscard]] double CalculateExcitation(const size_t& ringID, const double& p_energy) const {
+            return ex_a0[ringID] + ex_a1[ringID] * p_energy + ex_a2[ringID] * p_energy * p_energy;
+        }
     };
 
     class ConfigManager {
