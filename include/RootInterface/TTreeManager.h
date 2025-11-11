@@ -28,6 +28,7 @@ namespace Task {
             bool cfdfail;
             double cfdcorr;
             unsigned short idx;     //!< Index in list of detectors that the trigger corresponds to.
+            std::vector<uint32_t> qdc;
 
         public:
             explicit TriggerEntry(TTree &tree);
@@ -41,6 +42,7 @@ namespace Task {
                 energy = trigger->energy;
                 cfdfail = trigger->cfdfail;
                 cfdcorr = trigger->cfdcorr;
+                qdc = trigger->qdc;
             }
         };
 
@@ -57,6 +59,7 @@ namespace Task {
             double time[MAX_ENTRIES];   //!< Time w.r.t. trigger    */
             bool cfdfail[MAX_ENTRIES];  //!< Result of the CFD filter   */
             double cfdcorr[MAX_ENTRIES]; //!< CFD correction to the timestamp    */
+            unsigned qdc[MAX_ENTRIES][8];
 
         public:
             DetectorEntries(TTree &tree, const char *base_name);
@@ -77,8 +80,12 @@ namespace Task {
                     } else {
                         time[mult] = 0;
                     }
+
+                    for (int i = 0; i < 8; i++) qdc[mult][i] = entry.qdc.at(i);
+
                     cfdfail[mult] = entry.cfdfail;
                     cfdcorr[mult++] = entry.cfdcorr;
+
                 }
             }
 

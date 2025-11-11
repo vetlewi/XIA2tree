@@ -14,10 +14,18 @@ Splitter::Splitter(EventQueue_t &input, const double &time_gap, const size_t &ca
 template<typename T>
 T Split(T begin, T end, const double gap)
 {
-    return std::adjacent_find(begin, end,
+    /*return std::adjacent_find(begin, end,
                                   [gap](const Entry_t &lhs, const Entry_t &rhs){
         return  abs((double(rhs.timestamp - lhs.timestamp) + (rhs.cfdcorr - lhs.cfdcorr))) > gap;
-    }) + 1;
+    }) + 1;*/
+
+    for ( auto i = 0 ; i < end - begin - 1 ; ++i ) {
+        auto p = begin + i;
+        auto q = begin + i + 1;
+        if ( abs( double(q->timestamp - p->timestamp) + (q->cfdcorr - p->cfdcorr) ) > gap )
+            return q;
+    }
+    return end;
 }
 
 void Splitter::Run()

@@ -21,10 +21,34 @@ namespace YAML {
 
 namespace OCL {
 
+    class AnalysisParameters_t {
+    private:
+        double ex_a0[64];
+        double ex_a1[64];
+        double ex_a2[64];
+
+        struct gate_t { double lhs; double rhs; };
+        gate_t prompt;
+        gate_t background;
+        gate_t particle_gate;
+
+    public:
+        AnalysisParameters_t(const YAML::Node &userConfig);
+
+        [[nodiscard]] bool IsPrompt(const double &ts) const { return ( (ts > prompt.lhs) && (ts < prompt.rhs) ); }
+        [[nodiscard]] bool IsBackground(const double &ts) const { return ( (ts > background.lhs) && (ts < background.rhs) ); }
+        [[nodiscard]] bool ParticleGatePass(const double& thick) const { return ( (thick > particle_gate.lhs) && ( thick < particle_gate.rhs) ); }
+        [[nodiscard]] double CalculateExcitation(const size_t& ringID, const double& p_energy) const {
+            return ex_a0[ringID] + ex_a1[ringID] * p_energy + ex_a2[ringID] * p_energy * p_energy;
+        }
+
+    };
+
     class UserConfiguration {
     private:
         const YAML::Node &userConfig;
         const ParticleRange &range;
+        const AnalysisParameters_t analysisParameters;
 
     public:
         UserConfiguration(const YAML::Node &userConfig, const ParticleRange &range);
@@ -33,6 +57,7 @@ namespace OCL {
 
         inline const YAML::Node &GetConfig() const { return userConfig; }
         inline const ParticleRange &GetRange() const { return range; }
+        inline const AnalysisParameters_t &GetAnalysisParameters() const { return analysisParameters; }
     };
 
     class ConfigManager {

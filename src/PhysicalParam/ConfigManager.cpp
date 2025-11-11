@@ -3,6 +3,9 @@
 //
 
 #include "PhysicalParam/ConfigManager.h"
+
+#include <iostream>
+
 #include "PhysicalParam/ParticleRange.h"
 #include "Tools/enumerate.h"
 
@@ -14,8 +17,6 @@
 #define NUMBER_OF_MODULES_PER_CRATE 16      //! There are 4 bits for denoting module number (slot number)
 #define NUMBER_OF_CHANNELS_PER_MODULE 16    //! There are 4 bits for denoting the channel number
 #define NUMBER_OF_CRATES 2                  //! For now, we assume two crates. More could be supported...
-
-
 
 
 
@@ -82,6 +83,54 @@ namespace YAML {
 
 using namespace OCL;
 
+void convert_array(const YAML::Node &node, double data[]) {
+    if ( node.size() > 64 ) {
+        throw std::out_of_range("Node size not supported.");
+    }
+    for ( size_t i = 0 ; i < node.size(); i++ ) {
+        data[i] = node[i].as<double>();
+    }
+}
+
+AnalysisParameters_t::AnalysisParameters_t(const YAML::Node &userConfig){
+    // Try to find the Excitation curve setup
+
+    try {
+        convert_array(userConfig["analysis"]["a0"], ex_a0);
+        convert_array(userConfig["analysis"]["a1"], ex_a1);
+        convert_array(userConfig["analysis"]["a2"], ex_a2);
+    } catch (std::exception &e) { // The error is not so severe that we cannot live with it. Just ignore for now...
+        //std::cerr << e.what() << std::endl;
+        std::cerr << "Could not read excitation curves. Got error '" << e.what() << "'" << std::endl;
+        const double a0[] = {15.482874, 15.482970, 15.482859, 15.482356, 15.481656, 15.480574, 15.479027, 15.477125};
+        const double a1[] = {-1.033612, -1.032484, -1.031292, -1.030005, -1.028671, -1.027260, -1.025767, -1.024225};
+        const double a2[] = {0.000123, 0.000097, 0.000070, 0.000040, 0.000008, -0.000025, -0.000061, -0.000097};
+        for ( int i = 0 ; i < 8 ; ++i) {
+            ex_a0[i] = a0[i];
+            ex_a1[i] = a1[i];
+            ex_a2[i] = a2[i];
+        }
+    }
+
+    try {
+        prompt = {userConfig["analysis"]["prompt"]["lhs"].as<double>(),userConfig["analysis"]["prompt"]["rhs"].as<double>()};
+        background = {userConfig["analysis"]["background"]["lhs"].as<double>(),userConfig["analysis"]["background"]["rhs"].as<double>()};
+    } catch (std::exception &e) {
+        std::cerr << "Could not read time gates. Got error '" << e.what() << "'" << std::endl;
+        prompt = {-5., 5.};
+        background = {58.5-5, 58.5+5};
+    }
+
+    try {
+        particle_gate = {userConfig["analysis"]["particle_gate"]["lhs"].as<double>(),userConfig["analysis"]["particle_gate"]["rhs"].as<double>()};
+    } catch (std::exception &e) {
+        std::cerr << "Could not read particle gate. Got error '" << e.what() << "'" << std::endl;
+        particle_gate = {110, 160};
+    }
+    return;
+}
+
+
 UserConfiguration UserConfiguration::FromFile(const char *file, const ParticleRange &r)
 {
     return UserConfiguration(YAML::LoadFile(file), r);
@@ -95,6 +144,7 @@ UserConfiguration UserConfiguration::FromFile(std::istream &s, const ParticleRan
 UserConfiguration::UserConfiguration(const YAML::Node &_userConfig, const ParticleRange &_range)
     : userConfig( _userConfig )
     , range( _range )
+    , analysisParameters( _userConfig )
 {
 }
 
@@ -116,7 +166,6 @@ ConfigManager::ConfigManager(const YAML::Node &setup)
     for ( auto [num, det] : enumerate(dinfo) ){
         det = {num, XIA::f000MHz, unused, 0};
     }
-
     for ( auto &crate : setup["setup"]["crates"] ){
         for ( auto &slot : crate["slots"] ){
             auto freq = slot["speed"].as<XIA::ADCSamplingFreq>();

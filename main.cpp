@@ -32,9 +32,10 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
         std::cerr << "Configuration file is missing." << std::endl;
         return {};
     }
-    auto cal = OCL::ConfigManager::FromFile(cal_file);
+    cal_file.close();
+    auto cal = OCL::ConfigManager::FromFile(options.CalibrationFile.value().c_str());
     ParticleRange particleRange( options.RangeFile.value_or("") );
-    auto userConfig = OCL::UserConfiguration::FromFile(cal_file, particleRange);
+    auto userConfig = OCL::UserConfiguration::FromFile(options.CalibrationFile.value().c_str(), particleRange);
 
     std::string hist_file;
     std::string tree_file;
