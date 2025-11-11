@@ -248,19 +248,17 @@ void HistManager::AddEntry(Triggered_event &buffer)
         ede_spectra[ringID].Fill(e_evts[0].energy, trigger->energy);
         particle_energy.Fill(etot, ringID);
 
-        auto Ex = CalcEx(ringID, etot/1e3)*1e3;
+        auto Ex = configuration.CalculateExcitation(ringID, etot/1e3)*1e3;
         int coinc = 0;
         for ( int i = 0 ; i < buffer.GetDetector(DetectorType::labr).size() ; ++i ){
             auto labr_evt = buffer.GetDetector(DetectorType::labr)[i];
             double time = double(labr_evt->timestamp - trigger->timestamp) + (labr_evt->cfdcorr - trigger->cfdcorr);
             if ( Ex > 7000 )
                 ts_ex_above_Sn.Fill(time, labr_evt->detectorID);
-            if ( time > -2 && time < 2 )
+            if ( configuration.IsPrompt(time) )
                 alfna_prompt.Fill(labr_evt->energy, Ex);
-            else if (time > 57 && time < 60)
+            else if (configuration.IsBackground(time) )
                 alfna_background.Fill(labr_evt->energy, Ex);
-            if ( time > -10 && time < 10 )
-                coinc += 1;
         }
         mult_ex.Fill(Ex, coinc);
     }
