@@ -68,6 +68,7 @@ namespace Task {
         ThreadSafeHistogram2D ede_time;
         ThreadSafeHistogram2D thickness;
         ThreadSafeHistogram2D particle_energy;
+        ThreadSafeHistogram2D labr_energy_gated, labr_energy_cal_gated;
         ThreadSafeHistogram2D alfna_prompt, alfna_background;
         ThreadSafeHistogram2D ts_ex_above_Sn;
         ThreadSafeHistogram2D mult_ex;

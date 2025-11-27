@@ -175,28 +175,34 @@ HistManager::HistManager(ThreadSafeHistograms &histograms, const OCL::UserConfig
                        histograms.Create2D("ede_spectra_f7", "Particle identification, ring 7",
                                            2500, 0, 25000, "E energy [keV]",
                                            1500, 0, 15000, "#Delta E energy [keV]"),}
-       , ede_time( histograms.Create2D("ede_time", "E time spectrum",
+        , ede_time( histograms.Create2D("ede_time", "E time spectrum",
                                        2500, 0, 25000, "E energy [keV]",
                                        1000, -500, 500, "Time [ns]"))
-       , thickness( histograms.Create2D("thickness", "dE thickness",
+        , thickness( histograms.Create2D("thickness", "dE thickness",
                                         1000, 0, 1000, "dE thickness [keV]",
                                         8, 0, 8, "Ring #"))
-       , particle_energy( histograms.Create2D("particle_energy", "Total particle energy",
+        , particle_energy( histograms.Create2D("particle_energy", "Total particle energy",
                                               16384, 0, 16384, "Etot(Ede+Ee) [keV]",
                                               8, 0, 8, "Ring #") )
-       , alfna_prompt( histograms.Create2D("alfna_prompt", "Particle - gamma coincidence",
+        , labr_energy_gated( histograms.Create2D("labr_energy_gated", "Uncalibrated LaBr3 - particle gated",
+                                            65536, 0, 65536, "Energy [ch]",
+                                                 NUM_LABR_DETECTORS, 0, NUM_LABR_DETECTORS, "Detector ID") )
+        , labr_energy_cal_gated( histograms.Create2D("labr_energy_cal_gated", "Calibrated LaBr3 - particle gated",
+                                            32768, 0, 32768, "Energy [keV]",
+                                            NUM_LABR_DETECTORS, 0, NUM_LABR_DETECTORS, "Detector ID") )
+        , alfna_prompt( histograms.Create2D("alfna_prompt", "Particle - gamma coincidence",
                                             1500, 0, 15000, "E gamma [keV]",
-                                            1800, -2000, 15000, "Excitation [keV]") )
-       , alfna_background( histograms.Create2D("alfna_background", "Particle - gamma coincidence",
-                                                        1500, 0, 15000, "E gamma [keV]",
-                                                        1800, -2000, 15000, "Excitation [keV]") )
-       , ts_ex_above_Sn( histograms.Create2D("ts_ex_above_Sn", "Time spectra (LaBr) above Sn",
+                                            1700, -2000, 15000, "Excitation [keV]") )
+        , alfna_background( histograms.Create2D("alfna_background", "Particle - gamma coincidence",
+                                                1500, 0, 15000, "E gamma [keV]",
+                                                1700, -2000, 15000, "Excitation [keV]") )
+        , ts_ex_above_Sn( histograms.Create2D("ts_ex_above_Sn", "Time spectra (LaBr) above Sn",
                                              30000, -1500, 1500, "Time [ns]",
                                              NUM_LABR_DETECTORS, 0, NUM_LABR_DETECTORS, "Detector ID") )
-       , mult_ex( histograms.Create2D("mult_ex", "Multiplicity as function of Ex (± 10 ns)",
+        , mult_ex( histograms.Create2D("mult_ex", "Multiplicity as function of Ex (± 10 ns)",
                                                  15000, 0, 15000, "Excitation energy [keV]",
                                                     20, 0, 20, "Multiplicity") )
-       , userSort( histograms, configuration, custom_sort )
+        , userSort( histograms, configuration, custom_sort )
 {
 }
 
@@ -255,9 +261,11 @@ void HistManager::AddEntry(Triggered_event &buffer)
             double time = double(labr_evt->timestamp - trigger->timestamp) + (labr_evt->cfdcorr - trigger->cfdcorr);
             if ( Ex > 7000 )
                 ts_ex_above_Sn.Fill(time, labr_evt->detectorID);
-            if ( configuration.GetAnalysisParameters().IsPrompt(time) )
+            if ( configuration.GetAnalysisParameters().IsPrompt(time) ) {
                 alfna_prompt.Fill(labr_evt->energy, Ex);
-            else if (configuration.GetAnalysisParameters().IsBackground(time) )
+                labr_energy_gated.Fill(labr_evt->adcvalue, labr_evt->detectorID);
+                labr_energy_cal_gated.Fill(labr_evt->energy, labr_evt->detectorID);
+            } else if (configuration.GetAnalysisParameters().IsBackground(time) )
                 alfna_background.Fill(labr_evt->energy, Ex);
         }
         mult_ex.Fill(Ex, coinc);
