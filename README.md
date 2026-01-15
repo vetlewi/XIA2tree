@@ -1,5 +1,6 @@
 # XIA2tree
 [![MacOS](https://github.com/vetlewi/XIA2tree/actions/workflows/macos.yml/badge.svg)](https://github.com/vetlewi/XIA2tree/actions/workflows/macos.yml)
+[![Linux](https://github.com/vetlewi/XIA2tree/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/vetlewi/XIA2tree/actions/workflows/ubuntu.yml)
 ---
 A package for sorting XIA list mode date at OCL
 
@@ -55,7 +56,7 @@ The options:
   * `time`: Same as `coincidence` but only triggers on detector #0 of the type given by `-T`.
   * `gap`: Events are bundled together whenever there is a gap in timestamps larger than the value set by `-S`.
 * `-T`: Trigger (default dEdet), can be
-  * `labr`: LaBr$_3$:Ce detectors
+  * `labr`: LaBr3:Ce detectors
   * `deDet` (default): Front $\Delta$E detectors 
   * `eDet`: Back E-detectors
 
