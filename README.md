@@ -4,6 +4,18 @@
 ---
 A package for sorting XIA list mode date at OCL
 
+
+### Install
+Precompiled packages can be installed for MacOS with Homebrew. To install you will first need to add tap:
+```
+$ brew tap vetlewi/formula
+```
+To install:
+```
+$ brew install xia2tree
+```
+See Usage for how to run the code.
+
 ### Building
 The `XIA2tree` has a minimal number of dependencies. You only need `ROOT` and `CMake` installed on your computer.
 To build:
