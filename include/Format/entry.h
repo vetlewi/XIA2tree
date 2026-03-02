@@ -26,10 +26,10 @@ struct Entry_t {
     bool cfdfail;
 
     // QDC values
-    std::vector<uint32_t> qdc;
+    std::vector<uint32_t> qdc{0};
 
     // Traces
-    std::vector<uint16_t> trace;
+    std::vector<uint16_t> trace{0};
 };
 
 #endif // ENTRY_H

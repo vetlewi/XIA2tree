@@ -81,7 +81,11 @@ namespace Task {
                         time[mult] = 0;
                     }
 
-                    for (int i = 0; i < 8; i++) qdc[mult][i] = entry.qdc.at(i);
+                    if ( !entry.qdc.empty() ) {
+                        for (int i = 0; i < 8; ++i) qdc[mult][i] = entry.qdc[i];
+                    } else {
+                        for (int i = 0; i < 8; ++i) qdc[mult][i] = 0;
+                    }
 
                     cfdfail[mult] = entry.cfdfail;
                     cfdcorr[mult++] = entry.cfdcorr;
