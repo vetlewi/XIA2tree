@@ -248,7 +248,7 @@ void HistManager::AddEntry(Triggered_event &buffer)
     double thick = configuration.GetRange().GetRange(etot) - configuration.GetRange().GetRange(e_evt.energy);
     thickness.Fill(thick, ringID);
 
-    if ( (thick > 110) && ( thick < 160) ){
+    if ( configuration.GetAnalysisParameters().ParticleGatePass(thick) ){
         ede_time.Fill(e_evts[0].energy,
                       double(e_evts[0].timestamp - trigger->timestamp) + (e_evts[0].cfdcorr - trigger->cfdcorr));
         ede_spectra[ringID].Fill(e_evts[0].energy, trigger->energy);
