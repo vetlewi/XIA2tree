@@ -1,17 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 1.1.0 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.1.1 LANGUAGES C CXX)
 
 option(ENABLE_TESTS "Build and register tests" OFF)
-option(ENABLE_TESTING "Enable unit testing (deprecated; use ENABLE_TESTS)" OFF)
 option(ENABLE_SANITIZERS "Enable sanitizers for tests" OFF)
-
-if(ENABLE_TESTING AND NOT ENABLE_TESTS)
-    set(ENABLE_TESTS ON)
-endif()
-
-if(ENABLE_SANITIZERS)
-    set(SANITIZER_FLAGS "-fsanitize=address,undefined -fno-omit-frame-pointer")
-endif()
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 include(cmake/CPM.cmake)
@@ -163,3 +154,4 @@ install(TARGETS XIA2tree
 if(ENABLE_TESTS)
     add_subdirectory(test)
 endif()
+
