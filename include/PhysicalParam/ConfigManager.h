@@ -105,6 +105,7 @@ namespace OCL {
                 case deDet:
                 case eDet:
                 case ppac:
+                case qint:
                     return true;
                 default:
                     return false;
