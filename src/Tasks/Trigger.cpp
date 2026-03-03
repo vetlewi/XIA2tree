@@ -145,9 +145,17 @@ void STrigger::Run()
 
         if ( input_queue.wait_dequeue_timed(input, std::chrono::seconds(1)) ){
 
+            if ( sort_type == CLI::sort_type::gap && trigger == DetectorType::any ) {
+                auto evt = std::make_pair<std::vector<Entry_t>, int>(std::move(input), -1);
+                while ( !output_queue.try_enqueue(evt) ){
+                    if ( done )
+                        break;
+                }
+                continue;
+            }
             if ( sort_type == CLI::sort_type::gap ){
                 // Check if there is an entry that satisfies the trigger
-                if ( std::find_if(input.begin(), input.end(), [this](auto e){ return e.type == trigger; }) == input.end() )
+                if ( std::find_if(input.begin(), input.end(), [this](const auto& e){ return e.type == trigger; }) == input.end() )
                     continue;
                 auto evt = std::make_pair(input, -1);
                 while ( !output_queue.try_enqueue(evt) ){
