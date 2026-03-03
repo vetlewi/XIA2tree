@@ -39,6 +39,8 @@ void Splitter::Run()
         while ( entries_end < entries.end() ){
             entries_end = Split(entries_begin, entries.end(), gap);
             std::vector<Entry_t> split_entries(entries_begin, entries_end);
+            if (split_entries.empty())
+                continue;
             //while ( !output_queue.try_enqueue(std::vector(entries_begin, entries_end)) ){
             while ( !output_queue.try_enqueue(std::move(split_entries)) ){
                 if ( done )
