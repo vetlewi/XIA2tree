@@ -35,7 +35,9 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     cal_file.close();
     auto cal = OCL::ConfigManager::FromFile(options.CalibrationFile.value().c_str());
     ParticleRange particleRange( options.RangeFile.value_or("") );
-    auto userConfig = OCL::UserConfiguration::FromFile(options.CalibrationFile.value().c_str(), particleRange);
+    auto userConfig = OCL::UserConfiguration::FromFile(options.CalibrationFile.value().c_str(),
+                                                                options.Trigger.value(),
+                                                                options.sortType.value(), particleRange);
 
     std::string hist_file;
     std::string tree_file;
@@ -72,7 +74,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     pool.AddTask(&splitter);
     pool.AddTask(triggers.GetNewTrigger());
 
-    for ( int i = 0 ; i < 4 ; ++i ){
+    for ( int i = 0 ; i < 1 ; ++i ){
         pool.AddTask(sorters.GetNewSorter());
     }
 

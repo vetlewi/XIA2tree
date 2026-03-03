@@ -131,20 +131,22 @@ AnalysisParameters_t::AnalysisParameters_t(const YAML::Node &userConfig){
 }
 
 
-UserConfiguration UserConfiguration::FromFile(const char *file, const ParticleRange &r)
+UserConfiguration UserConfiguration::FromFile(const char *file, const DetectorType& trig, const CLI::sort_type& stype, const ParticleRange &r)
 {
-    return UserConfiguration(YAML::LoadFile(file), r);
+    return UserConfiguration(YAML::LoadFile(file), trig, stype, r);
 }
 
-UserConfiguration UserConfiguration::FromFile(std::istream &s, const ParticleRange &r)
+UserConfiguration UserConfiguration::FromFile(std::istream &s, const DetectorType& trig, const CLI::sort_type& stype, const ParticleRange &r)
 {
-    return UserConfiguration(YAML::Load(s), r);
+    return UserConfiguration(YAML::Load(s), trig, stype, r);
 }
 
-UserConfiguration::UserConfiguration(const YAML::Node &_userConfig, const ParticleRange &_range)
+UserConfiguration::UserConfiguration(const YAML::Node &_userConfig, const DetectorType& trig, const CLI::sort_type& stype, const ParticleRange &_range)
     : userConfig( _userConfig )
     , range( _range )
     , analysisParameters( _userConfig )
+    , trigger( trig )
+    , sortType( stype )
 {
 }
 
