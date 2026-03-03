@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 1.1.1 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.2.0 LANGUAGES C CXX)
+
+# Default to the project version when git information is unavailable
+set(FULL_VERSION "${PROJECT_VERSION}")
 
 option(ENABLE_TESTS "Build and register tests" OFF)
-option(ENABLE_SANITIZERS "Enable sanitizers for tests" OFF)
+option(ENABLE_SANITIZERS "Enable all sanetizers on binary" OFF)
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 include(cmake/CPM.cmake)
@@ -61,6 +64,18 @@ CPMAddPackage(
         GITHUB_REPOSITORY mateidavid/zstr
         VERSION 1.0.7
 )
+
+CPMAddPackage(
+        NAME cmake-scripts
+        GITHUB_REPOSITORY StableCoder/cmake-scripts
+        GIT_TAG 003c241725972de76e87afc0986209829b9a7d4f
+)
+
+### Setup sanetizers if ON ###
+if ( ENABLE_SANITIZERS )
+    include(${cmake-scripts_SOURCE_DIR}/sanitizers.cmake)
+    add_sanitizer_support(thread)
+endif()
 
 ### Generate version file ###
 configure_file(
@@ -154,4 +169,3 @@ install(TARGETS XIA2tree
 if(ENABLE_TESTS)
     add_subdirectory(test)
 endif()
-
