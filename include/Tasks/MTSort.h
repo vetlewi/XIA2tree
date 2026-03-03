@@ -72,7 +72,7 @@ namespace Task {
         ThreadSafeHistogram2D alfna_prompt, alfna_background;
         ThreadSafeHistogram2D ts_ex_above_Sn;
         ThreadSafeHistogram2D mult_ex;
-
+        ThreadSafeHistogram1D chargeIntegrator;
         UserSortManager userSort;
 
         Detector_Histograms_t *GetSpec(const DetectorType &type);
@@ -104,6 +104,7 @@ namespace Task {
     private:
         TEventQueue_t &input_queue;
         HistManager hm;
+        const OCL::UserConfiguration& userConfig;
         std::unique_ptr<ROOT::TTreeManager> tree;
 
     public:
