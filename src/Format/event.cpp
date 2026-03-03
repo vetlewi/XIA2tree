@@ -16,6 +16,7 @@ Triggered_event::Triggered_event(const Triggered_event &event)
                    std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{qint, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
@@ -34,6 +35,7 @@ Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries)
                    std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{qint, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
@@ -52,6 +54,7 @@ Triggered_event::Triggered_event(const std::vector<Entry_t> &_entries, const Ent
                    std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{qint, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
@@ -71,6 +74,7 @@ Triggered_event::Triggered_event(std::vector<Entry_t> &&_entries, const Entry_t 
                    std::pair{eGuard, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{ppac, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{rfchan, subvector<Entry_t>{nullptr, nullptr}},
+                   std::pair{qint, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{any, subvector<Entry_t>{nullptr, nullptr}},
                    std::pair{unused, subvector<Entry_t>{nullptr, nullptr}}}
     , de_by_ring{{nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr}, {nullptr, nullptr},
@@ -89,7 +93,7 @@ void Triggered_event::index()
     });
 
     // Now we will sort through the detector types and fill our mapping for fast lookup later.
-    for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac} ){
+    for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac, DetectorType::rfchan, DetectorType::qint} ){
         auto begin = std::find_if(entries.begin(), entries.end(), [&type](const auto &c){ return c.type == type; });
         auto end = std::find_if_not(begin, entries.end(), [&type](const auto &c){ return c.type == type; });
         std::sort(begin, end, [](const auto &lhs, const auto &rhs){
@@ -135,24 +139,6 @@ void Triggered_event::index()
 subvector<Entry_t> Triggered_event::GetRing(const size_t &ringNo)
 {
     return de_by_ring[ringNo];
-    /*auto ring_events = GetDetector(DetectorType::deDet);
-    if ( ring_events.size() == 0 )
-        return {0, 0};
-
-    // Find the first ring event with ring No
-    auto begin = std::find_if(ring_events.begin(), ring_events.end(), [&ringNo](const auto &r){
-        //auto dnum = r.detectorID / NUM_SI_DE_TEL;
-        return ( ( r.detectorID / NUM_SI_DE_TEL ) == ringNo );
-    });
-
-    auto end = std::find_if_not(begin, ring_events.end(), [&ringNo](const auto &r){
-        return ( (r.detectorID / NUM_SI_DE_TEL ) == ringNo );
-    });
-
-    //if ( end - begin == 0 )
-    //    return {0, 0};
-
-    return {begin, end};*/
 }
 
 //std::pair<subvector<Entry_t>, subvector<Entry_t>> Triggered_event::GetTrap(const size_t &trapNo) const

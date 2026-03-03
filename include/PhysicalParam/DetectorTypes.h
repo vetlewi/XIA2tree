@@ -20,6 +20,7 @@ enum DetectorType {
     eGuard,     //!< Is a E guard ring
     ppac,       //!< Is a PPAC
     rfchan,     //!< Is a RF channel
+    qint,       //!< Is a charge integrator
     any,        //!< Any detector
     unused      //!< Is a unused XIA channel
 };
