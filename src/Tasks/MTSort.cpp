@@ -202,6 +202,7 @@ HistManager::HistManager(ThreadSafeHistograms &histograms, const OCL::UserConfig
         , mult_ex( histograms.Create2D("mult_ex", "Multiplicity as function of Ex (± 10 ns)",
                                                  15000, 0, 15000, "Excitation energy [keV]",
                                                     20, 0, 20, "Multiplicity") )
+        , chargeIntegrator( histograms.Create1D("chargeIntegrator", "Charge integrator", 86400, 0, 86400, "Time [ns]") )
         , userSort( histograms, configuration, custom_sort )
 {
 }
@@ -221,6 +222,12 @@ void HistManager::AddEntry(Triggered_event &buffer)
 {
     auto trigger = buffer.GetTrigger();
 
+    // We get the qint and increment the time spectrum.
+    for ( const auto& Qint : buffer.GetDetector(DetectorType::qint) ) {
+        auto time = double(Qint.timestamp) / 1e9; // Convert to second
+        chargeIntegrator.Fill(time);
+    }
+
     // For now, we will discard events with bad CFD
     // We have this req. if we get a trigger
     if ( trigger )
@@ -229,6 +236,17 @@ void HistManager::AddEntry(Triggered_event &buffer)
 
     for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac} ){
         GetSpec(type)->Fill(buffer.GetDetector(type), trigger);
+    }
+
+    // No trigger, turn over to the userSort
+    if ( !trigger ) {
+        userSort.FillEvent(buffer);
+        return;
+    }
+
+    if ( trigger->type != DetectorType::deDet ) { // All analysis below requires the trigger to be a dE detector
+        userSort.FillEvent(buffer);
+        return;
     }
 
     auto trapID = trigger->detectorID / 8;
@@ -294,23 +312,29 @@ MTSort::MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const OCL
                const char *tree_name, const char *user_sort)
     : input_queue( input )
     , hm( histograms, config, user_sort )
+    , userConfig( config )
     , tree( ( tree_name ) ? new ROOT::TTreeManager(tree_name) : nullptr )
 {
 }
 
 void MTSort::Run()
 {
-    std::pair<std::vector<Entry_t>, size_t> entries;
+    std::pair<std::vector<Entry_t>, int> entries;
     while ( !done ){
         if ( input_queue.wait_dequeue_timed(entries, std::chrono::seconds(1)) ){
-            if ( entries.second == -1 ){
+            if ( entries.first.empty() )
+                continue;
+            if ( userConfig.GetSortType() == CLI::sort_type::gap ){
+                if ( entries.second > 0 )
+                    continue;
                 Triggered_event event(entries.first);
                 hm.AddEntry(event);
+                if ( tree ) tree->Fill(event);
+            } else {
+                Triggered_event event(entries.first, entries.first[entries.second]);
+                hm.AddEntry(event);
+                if ( tree ) tree->Fill(event);
             }
-
-            Triggered_event event(entries.first, entries.first[entries.second]);
-            hm.AddEntry(event);
-            if ( tree ) tree->Fill(event);
         }
     }
     is_done = true;

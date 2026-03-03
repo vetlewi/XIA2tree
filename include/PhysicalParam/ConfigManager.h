@@ -13,6 +13,8 @@
 #include <Format/xiaformat.h>
 #include <Format/entry.h>
 
+#include "CommandLineInterface.h"
+
 class ParticleRange;
 
 namespace YAML {
@@ -49,15 +51,19 @@ namespace OCL {
         const YAML::Node &userConfig;
         const ParticleRange &range;
         const AnalysisParameters_t analysisParameters;
+        const DetectorType trigger;
+        const CLI::sort_type sortType;
 
     public:
-        UserConfiguration(const YAML::Node &userConfig, const ParticleRange &range);
-        static UserConfiguration FromFile(const char *file, const ParticleRange &range);
-        static UserConfiguration FromFile(std::istream &, const ParticleRange &);
+        UserConfiguration(const YAML::Node &userConfig, const DetectorType& trigger, const CLI::sort_type& sortType, const ParticleRange &range);
+        static UserConfiguration FromFile(const char *file, const DetectorType& trigger, const CLI::sort_type& sortType, const ParticleRange &range);
+        static UserConfiguration FromFile(std::istream &, const DetectorType& trigger, const CLI::sort_type& sortType, const ParticleRange &);
 
-        inline const YAML::Node &GetConfig() const { return userConfig; }
-        inline const ParticleRange &GetRange() const { return range; }
-        inline const AnalysisParameters_t &GetAnalysisParameters() const { return analysisParameters; }
+        [[nodiscard]] inline const YAML::Node &GetConfig() const { return userConfig; }
+        [[nodiscard]] inline const ParticleRange &GetRange() const { return range; }
+        [[nodiscard]] inline const AnalysisParameters_t &GetAnalysisParameters() const { return analysisParameters; }
+        [[nodiscard]] const DetectorType &GetTrigger() const { return trigger; }
+        [[nodiscard]] const CLI::sort_type &GetSortType() const { return sortType; }
     };
 
     class ConfigManager {

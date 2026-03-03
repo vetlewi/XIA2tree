@@ -53,8 +53,8 @@ public:
     inline T *begin(){ return _begin; }
     inline T *end(){ return _end; }
 
-    inline T *begin() const { return _begin; }
-    inline T *end() const { return _end; }
+    [[nodiscard]] T *begin() const { return _begin; }
+    [[nodiscard]] T *end() const { return _end; }
 
     [[nodiscard]] inline size_t size() const { return _end - _begin; }
 
@@ -69,8 +69,7 @@ class Triggered_event {
 private:
     std::vector<Entry_t> entries;
     Entry_t trigger;
-    Map<DetectorType, subvector<Entry_t>, 9> type_bounds;
-    //std::map<DetectorType, subvector<Entry_t>> type_bounds;
+    Map<DetectorType, subvector<Entry_t>, 10> type_bounds;
     subvector<Entry_t> de_by_ring[NUM_SI_DE_DET];
 
     void index(); // Should run each initialization, unless empty.
@@ -87,7 +86,6 @@ public:
     [[nodiscard]] inline const Entry_t *GetTrigger() const { return ( trigger.type == unused ) ? nullptr : &trigger; }
 
     [[nodiscard]] subvector<Entry_t> GetRing(const size_t &ringNo);
-    //[[nodiscard]] std::pair<subvector<Entry_t>, subvector<Entry_t>> GetTrap(const size_t &ringNo) const;
     [[nodiscard]] std::pair<std::vector<Entry_t>, std::vector<Entry_t>> GetTrap(const size_t &ringNo) const;
 };
 

@@ -42,14 +42,14 @@ namespace Task {
         template<typename U>
         inline void wait_enqueue(U &&u){ queue.wait_enqueue(u); }
 
-        template <typename U, typename V>
+        /*template <typename U, typename V>
         inline bool wait_enqueue_timed(U &u, V const &v){ return queue.wait_enqueue(u); }
 
         template <typename U, typename V>
         inline bool wait_enqueue_timed(U &&u, V const &v){ return queue.wait_enqueue(u); }
 
         template<typename U, typename V>
-        inline bool wait_dequeue_timed(U &u, V const &v){ return queue.wait_dequeue_timed(u, v); }
+        inline bool wait_dequeue_timed(U &u, V const &v){ return queue.wait_dequeue_timed(u, v); }*/
 
         QueueWrapper(const size_t &capacity) : queue( capacity ), done( false ){}
     };
