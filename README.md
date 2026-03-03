@@ -1,5 +1,6 @@
 # XIA2tree
 [![MacOS](https://github.com/vetlewi/XIA2tree/actions/workflows/macos.yml/badge.svg)](https://github.com/vetlewi/XIA2tree/actions/workflows/macos.yml)
+[![Linux](https://github.com/vetlewi/XIA2tree/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/vetlewi/XIA2tree/actions/workflows/ubuntu.yml)
 ---
 XIA2tree is a package for sorting XIA list mode data from experiments at the Oslo Cyclotron Laboratory (OCL).  
 It reads raw digitizer data, applies detector-specific calibration and time/event building, and produces ROOT histograms and optionally ROOT TTrees for further physics analysis.
@@ -27,6 +28,7 @@ brew install xia2tree
 ```
 Note that to install the three first letters are not capitalized, while when running the software from command line you
 need to captialize the first three letters.
+
 ### Building
 The `XIA2tree` project has a minimal number of dependencies. You only need `ROOT` and `CMake` installed on your computer.
 
