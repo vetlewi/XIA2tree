@@ -87,6 +87,7 @@ OPTIONS:
 - **`-c`, `--coincidenceTime <coincidenceTime>`**
   - Width of the coincidence window (in ns) around each trigger.
   - Hits within this window relative to the trigger time are grouped into a single event (for `coincidence` and `time` sort types).
+  - No effect if `-s gap` is used.
 
 - **`-S`, `--SplitTime <SplitTime>`**
   - Time gap (in ns) used to identify separate clusters in the `Splitter` stage.
@@ -204,7 +205,7 @@ setup:
 ```
 
 - `crate`, `slot`, `channel` identify a physical digitizer channel.
-- `type` is the detector type (e.g. `labr`, `deDet`, `eDet`, `eGuard`), which maps to internal enums.
+- `type` is the detector type (e.g. `labr`, `deDet`, `eDet`, `eGuard`, `ppac`, `qint`), which maps to internal enums.
 - `detectorID` is the index of that detector (0-based).
 - `speed` and `bits` are used to set the sampling frequency and ADC resolution.
 
@@ -295,22 +296,45 @@ XIA2tree \
   -i sirius-20201211-084928.data \
   -o sirius_timeAlign.root \
   -C config.yml \
-  -T deDet \
+  -T labr \
   -S 1500 \
   -c 1500 \
-  -s time \
-  -t
+  -s time
 ```
 
-- `-s time`: only detector ID `0` of type `deDet` serves as the trigger.
+- `-s time`: only detector ID `0` of type `labr` serves as the trigger.
 - `-c 1500`: coincidence window of 1500 ns around the trigger.
 - `-S 1500`: clusters separated by more than 1500 ns are treated as separate groups.
-- `-t`: write a TTree to inspect individual events in ROOT.
 
 Typical histograms to inspect:
 
 - Time differences between detectors and the trigger.
 - Energy spectra to check basic calibration.
+
+Rough time alignment parameters can be extracted with the [`cal/CalibrateLaBrL.C`](cal/CalibrateLaBrL.C):
+In ROOT:
+1) Open the result file in ROOT: the script:
+```bash
+root sirius-20260207-152341.root
+```
+2) Load the calibration script:
+```bash
+root [1] .L CalibrateLaBrL.C
+```
+3) Run the `calibrateSpectra` function on the time alignment spectra:
+```bash
+root [2] calibrateSpectra(time_labr)
+```
+
+```bash
+root [3] calibrateSpectra(time_si_de)
+```
+and 
+```bash
+root [4] calibrateSpectra(time_si_e)
+```
+Each will give back a list of time alignment coefficients.
+Make sure that your reference detector have its coefficient set to zero. If `labr`, set first value to zero.
 
 #### 2. Calibrated physics run with particle trigger
 

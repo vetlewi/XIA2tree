@@ -119,7 +119,7 @@ The timing and event-building options are:
   - `deDet` (default): front $\Delta$E detectors.
   - `eDet`: back E-detectors.
 
-See `docs/architecture.md` for how these parameters affect the internal pipeline.
+See [`docs/architecture.md`](docs/architecture.md) for how these parameters affect the internal pipeline.
 
 ### Configuration and calibration file
 The sorting code requires a calibration/configuration file.
@@ -130,11 +130,11 @@ Examples of these files are:
 - `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a $500$ MHz module.
 - `cal/LaBr500MHz.yaml` for an OSCAR setup where the LaBr$_3$:Ce detectors are read out with 500 MHz modules and all Si detectors with 250 MHz modules.
 
-A more detailed description of the expected YAML structure (including `setup`, `calibration`, `analysis`, and `user_parameters` sections) is available in `docs/usage.md`.
+A more detailed description of the expected YAML structure (including `setup`, `calibration`, `analysis`, and `user_parameters` sections) is available in [`docs/usage.md`](docs/usage.md).
 
 ### Further documentation
 
-- `docs/architecture.md`: internal architecture and data flow (pipeline stages, threads, queues, ROOT output).
-- `docs/usage.md`: detailed usage examples, YAML configuration structure, and recommended workflows.
-- `docs/plugins.md`: how to write, build and load user sorting plugins.
+- [`docs/architecture.md`](docs/architecture.md): internal architecture and data flow (pipeline stages, threads, queues, ROOT output).
+- [`docs/usage.md`](docs/usage.md): detailed usage examples, YAML configuration structure, and recommended workflows.
+- [`docs/plugins.md`](docs/plugins.md): how to write, build and load user sorting plugins.
 
