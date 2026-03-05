@@ -74,7 +74,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     pool.AddTask(&splitter);
     pool.AddTask(triggers.GetNewTrigger());
 
-    for ( int i = 0 ; i < 4 ; ++i ){
+    for ( int i = 0 ; i < 1 ; ++i ){
         pool.AddTask(sorters.GetNewSorter());
     }
 
@@ -83,7 +83,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     } catch ( const std::exception &ex ){
         std::cerr << "Got exception: " << ex.what() << std::endl;
     }
-
+    sorters.flush(); // Ensure that all histograms are fully written!
     Histograms &hm = sorters.GetHistograms();
     RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
     auto root_files = sorters.GetTreeFiles();

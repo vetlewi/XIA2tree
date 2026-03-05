@@ -25,7 +25,6 @@ public:
     UserSortManager(ThreadSafeHistograms &hist, const OCL::UserConfiguration &config_file, const char *libname = nullptr);
     ~UserSortManager();
     void FillEvent(const Triggered_event &event);
-    void Flush();
 };
 
 #endif //XIA2TREE_USERSORTMANAGER_H

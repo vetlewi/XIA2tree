@@ -304,8 +304,6 @@ void HistManager::Flush()
     for ( auto &i : {0, 1, 2, 3, 4, 5, 6, 7}){
         GetPart(i)->Flush();
     }
-
-    userSort.Flush();
 }
 
 MTSort::MTSort(TEventQueue_t &input, ThreadSafeHistograms &histograms, const OCL::UserConfiguration &config,
@@ -367,6 +365,7 @@ Sorters::~Sorters()
 
 void Sorters::flush()
 {
+    histograms.force_flush();
     for ( auto &v : sorters ){
         v->Flush();
     }

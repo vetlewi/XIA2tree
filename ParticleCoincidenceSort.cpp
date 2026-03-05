@@ -46,7 +46,6 @@ public:
     ParticleCoincidence(ThreadSafeHistograms *hist, const OCL::UserConfiguration *user_config);
     ~ParticleCoincidence() override = default;
     void FillEvent(const Triggered_event &event) override;
-    void Flush() override;
 
 };
 
@@ -151,20 +150,4 @@ void ParticleCoincidence::FillEvent(const Triggered_event &event)
             }
         }
     }
-
-}
-
-void ParticleCoincidence::Flush()
-{
-    de_thickness.force_flush();
-    particle_energy.force_flush();
-    excitation_energy.force_flush();
-    exgam.force_flush();
-    exgam_full.force_flush();
-    gamgam.force_flush();
-    part_gamgam.force_flush();
-    sum_ex_gam.force_flush();
-    gam_part_time.force_flush();
-    std::cout << "Average thickness: " << thickness << std::endl;
-    std::cout << "Counts: " << counts << std::endl;
 }

@@ -24,9 +24,3 @@ void UserSortManager::FillEvent(const Triggered_event &event)
     if ( object )
         object->FillEvent(event);
 }
-
-void UserSortManager::Flush()
-{
-    if ( object )
-        object->Flush();
-}

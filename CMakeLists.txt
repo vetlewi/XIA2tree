@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 1.2.1 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.3.0 LANGUAGES C CXX)
 
 # Default to the project version when git information is unavailable
 set(FULL_VERSION "${PROJECT_VERSION}")
@@ -18,7 +18,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.13.0")
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
-CPMAddPackage("gh:vetlewi/Histogram@1.3.3")
+CPMAddPackage("gh:vetlewi/Histogram@2.0.0")
 
 add_library(structopt INTERFACE)
 target_include_directories(structopt
