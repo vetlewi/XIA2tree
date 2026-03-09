@@ -127,15 +127,19 @@ target_include_directories(UserSort
 target_link_libraries(UserSort PRIVATE XIAfuncs)
 
 set_target_properties(UserSort PROPERTIES CXX_STANDARD 20)
+set_target_properties(UserSort PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_library(OCL::UserSort ALIAS UserSort)
 
 add_library(ParticleCoincidenceSort MODULE ParticleCoincidenceSort.cpp)
+set_target_properties(ParticleCoincidenceSort PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(ParticleCoincidenceSort PUBLIC OCL::UserSort)
 
 add_library(Co60CoincidenceSort MODULE Co60_coincidence_sort.cpp)
+set_target_properties(Co60CoincidenceSort PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(Co60CoincidenceSort PUBLIC OCL::UserSort)
 
 add_library(TimingInvestigation MODULE TimingInvestigation.cpp)
+set_target_properties(TimingInvestigation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(TimingInvestigation PUBLIC OCL::UserSort)
 
 set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 20)
