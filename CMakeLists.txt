@@ -88,6 +88,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Calibrator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MemoryMap.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Sort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MTSort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
@@ -125,7 +126,7 @@ target_include_directories(UserSort
 
 target_link_libraries(UserSort PRIVATE XIAfuncs)
 
-set_target_properties(UserSort PROPERTIES CXX_STANDARD 17)
+set_target_properties(UserSort PROPERTIES CXX_STANDARD 20)
 add_library(OCL::UserSort ALIAS UserSort)
 
 add_library(ParticleCoincidenceSort MODULE ParticleCoincidenceSort.cpp)
@@ -137,7 +138,7 @@ target_link_libraries(Co60CoincidenceSort PUBLIC OCL::UserSort)
 add_library(TimingInvestigation MODULE TimingInvestigation.cpp)
 target_link_libraries(TimingInvestigation PUBLIC OCL::UserSort)
 
-set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 17)
+set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 20)
 target_link_libraries(XIAfuncs
     PUBLIC
         OCL::Histogram
@@ -157,7 +158,7 @@ target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSo
 target_link_libraries(TimingInvestigation PRIVATE OCL::Histogram XIAfuncs UserSort)
 
 add_executable(XIA2tree main.cpp)
-set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 17)
+set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 20)
 target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwriterqueue concurrentqueue)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
 

@@ -7,6 +7,7 @@
 
 #include <UserSort/DynamicLibrary.h>
 
+class Histograms;
 class ThreadSafeHistograms;
 class UserSort;
 class Triggered_event;

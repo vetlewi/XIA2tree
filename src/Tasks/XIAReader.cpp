@@ -53,7 +53,8 @@ void check_consistency(const uint32_t *begin, const uint32_t *end)
 }
 
 XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui, const size_t &capacity)
-    : output_queue( capacity )
+    //: output_queue( capacity )
+    : output_queue( )
     , ui( _ui )
 {
     for ( auto &file : files ){
@@ -81,11 +82,12 @@ void XIAReader::RunWithUI()
             // That will not be done by this thread.
             // We can therefor focus on reading these.
             // Every time we reach 128k we will update the progress bar.
-            while ( !output_queue.wait_enqueue_timed(reinterpret_cast<const XIA_base_t *>(pos),
+            /*while ( !output_queue.wait_enqueue_timed(reinterpret_cast<const XIA_base_t *>(pos),
                                                      std::chrono::seconds(1)) ){
                 if ( done )
                     break;
-            }
+            }*/
+            output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
 
             // Since the if test is very rare, and very predictable this shouldn't affect the runtime that much.
             if ( read++ % UPDATE_COUNT == 0 ){
@@ -97,6 +99,7 @@ void XIAReader::RunWithUI()
         }
         bar.FinishProgress();
     }
+    output_queue.mark_as_finish();
 }
 
 void XIAReader::RunWithoutUI()
@@ -112,16 +115,18 @@ void XIAReader::RunWithoutUI()
             // Next step is to read the contents and calibrate them.
             // That will not be done by this thread.
             // We can therefor focus on reading these.
-            while ( !output_queue.wait_enqueue_timed(reinterpret_cast<const XIA_base_t *>(pos),
+            /*while ( !output_queue.wait_enqueue_timed(reinterpret_cast<const XIA_base_t *>(pos),
                                                      std::chrono::seconds(1)) ){
                 if ( done )
                     break;
-            }
+            }*/
+            output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
 
             // Increment position to the next event
             pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
         }
     }
+    output_queue.mark_as_finish();
 }
 
 void XIAReader::Run()
