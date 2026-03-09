@@ -7,6 +7,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <Compression.h>
 
 #include <entry.h>
 #include <event.h>
@@ -28,7 +29,7 @@ namespace Task {
             bool cfdfail;
             double cfdcorr;
             unsigned short idx;     //!< Index in list of detectors that the trigger corresponds to.
-            std::vector<uint32_t> qdc;
+            std::array<uint32_t, 8> qdc;
 
         public:
             explicit TriggerEntry(TTree &tree);

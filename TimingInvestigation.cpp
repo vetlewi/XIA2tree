@@ -39,7 +39,6 @@ private:
 public:
     TimingInvestigation(ThreadSafeHistograms *hist);
     void FillEvent(const Triggered_event &event) override;
-    void Flush() override;
 
 };
 
@@ -352,17 +351,4 @@ void TimingInvestigation::FillEvent(const Triggered_event &event)
             }*/
         }
     }
-}
-
-void TimingInvestigation::Flush()
-{
-    gamgam_time.force_flush();
-    for ( auto &m : de_time_energy )
-        m.force_flush();
-    for ( auto &m : e_time_energy )
-        m.force_flush();
-    range.force_flush();
-    gamgam_satelite.force_flush();
-    gamgam_prompt.force_flush();
-    gamgam_prompt_satelite.force_flush();
 }

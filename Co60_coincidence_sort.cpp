@@ -18,7 +18,6 @@ private:
 public:
     Co60CoincidenceSort(ThreadSafeHistograms *hist);
     void FillEvent(const Triggered_event &event) override;
-    void Flush() override;
 };
 
 
@@ -69,11 +68,4 @@ void Co60CoincidenceSort::FillEvent(const Triggered_event &event)
         }
     }
 
-}
-
-void Co60CoincidenceSort::Flush()
-{
-    gamgam.force_flush();
-    time_labr_fine.force_flush();
-    timediff_de.force_flush();
 }

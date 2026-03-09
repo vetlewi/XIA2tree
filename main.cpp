@@ -13,6 +13,7 @@
 #include "Tasks/Buffer.h"
 #include "Tasks/Splitter.h"
 #include "Tasks/Trigger.h"
+//#include "Tasks/Sort.h"
 #include "Tasks/MTSort.h"
 
 #include "Tools/CommandLineInterface.h"
@@ -42,13 +43,17 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     std::string hist_file;
     std::string tree_file;
     std::string conf_file;
+    std::vector<std::string> root_files;
     if ( options.tree.value() ) {
         auto outname = options.output.value();
         outname = outname.substr(0, outname.find_last_of('.'));
         tree_file = outname + "_tree.root";
         hist_file = outname + "_hist.root";
+        root_files.push_back(tree_file);
+        root_files.push_back(hist_file);
     } else {
         hist_file = options.output.value();
+        root_files.push_back(hist_file);
     }
     //hist_file = options.output.value();
     //tree_file = options.output.value();
@@ -57,24 +62,27 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     Task::Calibrator calibrator(cal, reader.GetQueue());
     Task::Buffer buffer(calibrator.GetQueue());
     Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());
-
-    Task::Triggers triggers(splitter.GetQueue(), options.coincidenceTime.value(),
+    Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
                             options.Trigger.value(), options.sortType.value());
+
 
     const char *user_sort = nullptr;
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
 
-    Task::Sorters sorters(triggers.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
+    //Task::Sorter sorter(trigger.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
+
+    Task::Sorters sorters(trigger.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);
     pool.AddTask(&calibrator);
     pool.AddTask(&buffer);
     pool.AddTask(&splitter);
-    pool.AddTask(triggers.GetNewTrigger());
+    pool.AddTask(&trigger);
+    //pool.AddTask(&sorter);
 
-    for ( int i = 0 ; i < 4 ; ++i ){
+    for ( int i = 0 ; i < 8 ; ++i ){
         pool.AddTask(sorters.GetNewSorter());
     }
 
@@ -83,10 +91,9 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     } catch ( const std::exception &ex ){
         std::cerr << "Got exception: " << ex.what() << std::endl;
     }
-
     Histograms &hm = sorters.GetHistograms();
+    root_files = sorters.GetTreeFiles();
     RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
-    auto root_files = sorters.GetTreeFiles();
     root_files.push_back(hist_file);
     return root_files;
 }

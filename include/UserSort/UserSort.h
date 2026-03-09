@@ -11,7 +11,6 @@ class UserSort {
 public:
     virtual ~UserSort() = default;
     virtual void FillEvent(const Triggered_event &event) = 0;
-    virtual void Flush() = 0;
 };
 
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 1.2.1 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.3.0 LANGUAGES C CXX)
 
 # Default to the project version when git information is unavailable
 set(FULL_VERSION "${PROJECT_VERSION}")
@@ -18,7 +18,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.13.0")
 find_package(Threads REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS RIO Tree Hist)
 
-CPMAddPackage("gh:vetlewi/Histogram@1.3.3")
+CPMAddPackage("gh:vetlewi/Histogram@2.0.0")
 
 add_library(structopt INTERFACE)
 target_include_directories(structopt
@@ -88,6 +88,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Calibrator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MemoryMap.cpp
+        #${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Sort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MTSort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
@@ -125,19 +126,23 @@ target_include_directories(UserSort
 
 target_link_libraries(UserSort PRIVATE XIAfuncs)
 
-set_target_properties(UserSort PROPERTIES CXX_STANDARD 17)
+set_target_properties(UserSort PROPERTIES CXX_STANDARD 20)
+set_target_properties(UserSort PROPERTIES POSITION_INDEPENDENT_CODE ON)
 add_library(OCL::UserSort ALIAS UserSort)
 
 add_library(ParticleCoincidenceSort MODULE ParticleCoincidenceSort.cpp)
+set_target_properties(ParticleCoincidenceSort PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(ParticleCoincidenceSort PUBLIC OCL::UserSort)
 
 add_library(Co60CoincidenceSort MODULE Co60_coincidence_sort.cpp)
+set_target_properties(Co60CoincidenceSort PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(Co60CoincidenceSort PUBLIC OCL::UserSort)
 
 add_library(TimingInvestigation MODULE TimingInvestigation.cpp)
+set_target_properties(TimingInvestigation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(TimingInvestigation PUBLIC OCL::UserSort)
 
-set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 17)
+set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 20)
 target_link_libraries(XIAfuncs
     PUBLIC
         OCL::Histogram
@@ -157,7 +162,7 @@ target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSo
 target_link_libraries(TimingInvestigation PRIVATE OCL::Histogram XIAfuncs UserSort)
 
 add_executable(XIA2tree main.cpp)
-set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 17)
+set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 20)
 target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwriterqueue concurrentqueue)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
 
