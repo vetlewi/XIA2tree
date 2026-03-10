@@ -74,7 +74,7 @@ void Trigger::Run()
 {
     std::vector<Entry_t> input;
 
-    while ( input_queue.is_not_finish() || input_queue.empty() ) {
+    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
         if ( !input_queue.try_pop(input)) {
             continue;
         }
@@ -138,7 +138,7 @@ void STrigger::Run()
 {
     std::vector<Entry_t> input;
 
-    while ( input_queue.is_not_finish() || input_queue.empty() ) {
+    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
         if ( !input_queue.try_pop(input)) {
             continue;
         }
