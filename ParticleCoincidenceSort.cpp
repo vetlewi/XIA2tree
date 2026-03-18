@@ -11,7 +11,6 @@
 #include <PhysicalParam/ParticleRange.h>
 #include <Format/event.h>
 
-#include <zstr.hpp>
 
 #include <fstream>
 #include <sstream>
