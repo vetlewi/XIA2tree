@@ -53,7 +53,7 @@ namespace Task {
             unsigned short mult;    //!< Number of entries of the detector type in event    */
             unsigned short ID[MAX_ENTRIES]; //!< ID number of the detector event.           */
             bool finishflag[MAX_ENTRIES];   //!< Pile-up flag   */
-            unsigned short adcvalue[MAX_ENTRIES]; //!< 16-bit ADC reading */
+            unsigned int adcvalue[MAX_ENTRIES]; //!< 16-bit ADC reading */
             //unsigned short cfdvalue[MAX_ENTRIES]; //!< 16-bit CFD result (obmitted for now since this should not be done afterwards...) */
             long long timestamp[MAX_ENTRIES];   //!< Timestamp in ns    */
             double energy[MAX_ENTRIES]; //!< Energy of the event    */
