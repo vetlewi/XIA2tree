@@ -62,7 +62,7 @@ details::TriggerEntry::TriggerEntry(TTree &tree)
 {
     make_leaf(&tree, &ID, "Trigger", "ID", false, 's');
     make_leaf(&tree, &finishflag, "Trigger", "FinishFlag", false, 'O');
-    make_leaf(&tree, &adcvalue, "Trigger", "ADCValue", false, 's');
+    make_leaf(&tree, &adcvalue, "Trigger", "ADCValue", false, 'i');
     make_leaf(&tree, &timestamp, "Trigger", "timestamp", false, 'L');
     make_leaf(&tree, &energy, "Trigger", "energy", false, 'D');
     make_leaf(&tree, &cfdfail, "Trigger", "CFDfail", false, 'O');
@@ -77,7 +77,7 @@ details::DetectorEntries::DetectorEntries(TTree &tree, const char *base_name)
     make_leaf(&tree, &mult, base_name, "Mult", false, 's');
     make_leaf(&tree, ID, base_name, "ID", true, 's');
     make_leaf(&tree, finishflag, base_name, "FinishFlag", true, 'O');
-    make_leaf(&tree, adcvalue, base_name, "ADCValue", true, 's');
+    make_leaf(&tree, adcvalue, base_name, "ADCValue", true, 'i');
     make_leaf(&tree, timestamp, base_name, "timestamp", true, 'L');
     make_leaf(&tree, energy, base_name, "energy", true, 'D');
     make_leaf(&tree, cfdfail, base_name, "CFDfail", true, 'O');
