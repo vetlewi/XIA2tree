@@ -16,7 +16,7 @@ using namespace Task;
 
 // TODO: The actual implementation of the routine that indexes the data should be refactored so that it is more testable
 
-void check_consistency(const uint32_t *begin, const uint32_t *end)
+/*void check_consistency(const uint32_t *begin, const uint32_t *end)
 {
     int scale[] = {0, 0, 8, 8, 8, 8, 8, 8, 10};
     indicators::ProgressSpinner spinner{
@@ -50,7 +50,7 @@ void check_consistency(const uint32_t *begin, const uint32_t *end)
     spinner.set_option(indicators::option::ShowPercentage{false});
     spinner.set_option(indicators::option::PostfixText{"Finished"});
     spinner.mark_as_completed();
-}
+}*/
 
 XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui, const size_t &capacity)
     //: output_queue( capacity )
@@ -59,13 +59,12 @@ XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui, con
 {
     for ( auto &file : files ){
         mapped_files.emplace_back(file,std::make_unique<IO::MemoryMap>(file.c_str()) );
-        //check_consistency(mapped_files[file]->GetPtr<uint32_t>(),
-        //                  mapped_files[file]->GetPtr<uint32_t>() + mapped_files[file]->GetSize<uint32_t>());
     }
 }
 
 void XIAReader::RunWithUI()
 {
+    QueueWorker worker(output_queue);
     int fno = 0;
     for ( const auto &[name, file] : mapped_files ){
         const auto *begin = file->GetPtr<uint32_t>();
@@ -76,17 +75,6 @@ void XIAReader::RunWithUI()
 
         size_t read = 0;
         while ( pos < end && !done ){
-
-            // Essentially what we are doing is indexing the entries.
-            // Next step is to read the contents and calibrate them.
-            // That will not be done by this thread.
-            // We can therefor focus on reading these.
-            // Every time we reach 128k we will update the progress bar.
-            /*while ( !output_queue.wait_enqueue_timed(reinterpret_cast<const XIA_base_t *>(pos),
-                                                     std::chrono::seconds(1)) ){
-                if ( done )
-                    break;
-            }*/
             output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
 
             // Since the if test is very rare, and very predictable this shouldn't affect the runtime that much.
@@ -104,22 +92,13 @@ void XIAReader::RunWithUI()
 
 void XIAReader::RunWithoutUI()
 {
+    QueueWorker worker(output_queue);
     int fno = 0;
     for ( const auto &[name, file] : mapped_files ){
         const auto *begin = file->GetPtr<uint32_t>();
         const auto *end = begin + file->GetSize<uint32_t>();
         const auto *pos = begin;
         while ( pos < end && !done ){
-
-            // Essentially what we are doing is indexing the entries.
-            // Next step is to read the contents and calibrate them.
-            // That will not be done by this thread.
-            // We can therefor focus on reading these.
-            /*while ( !output_queue.wait_enqueue_timed(reinterpret_cast<const XIA_base_t *>(pos),
-                                                     std::chrono::seconds(1)) ){
-                if ( done )
-                    break;
-            }*/
             output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
 
             // Increment position to the next event

@@ -5,6 +5,16 @@
 #ifndef XIA2TREE_USERSORT_H
 #define XIA2TREE_USERSORT_H
 
+
+class Histograms;
+class ThreadSafeHistograms;
+
+#ifdef THREADSAFE
+using HistogramsType = ThreadSafeHistograms;
+#else
+using HistogramsType = Histograms;
+#endif // THREADSAFE
+
 class Triggered_event;
 
 class UserSort {

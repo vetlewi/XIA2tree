@@ -11,10 +11,12 @@
 #include "Tasks/XIAReader.h"
 #include "Tasks/Calibrator.h"
 #include "Tasks/Buffer.h"
+#include "Tasks/BufferSE.h"
 #include "Tasks/Splitter.h"
+#include "Tasks/SplitterSE.h"
 #include "Tasks/Trigger.h"
-//#include "Tasks/Sort.h"
-#include "Tasks/MTSort.h"
+#include "Tasks/Sort.h"
+//#include "Tasks/MTSort.h"
 
 #include "Tools/CommandLineInterface.h"
 #include "Tools/ProgressUI.h"
@@ -46,22 +48,16 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     std::vector<std::string> root_files;
     if ( options.tree.value() ) {
         auto outname = options.output.value();
-        outname = outname.substr(0, outname.find_last_of('.'));
-        tree_file = outname + "_tree.root";
-        hist_file = outname + "_hist.root";
-        root_files.push_back(tree_file);
-        root_files.push_back(hist_file);
+        tree_file = outname;
+        hist_file = outname;
     } else {
         hist_file = options.output.value();
-        root_files.push_back(hist_file);
     }
-    //hist_file = options.output.value();
-    //tree_file = options.output.value();
 
     Task::XIAReader reader(options.input.value(), &progress);
     Task::Calibrator calibrator(cal, reader.GetQueue());
-    Task::Buffer buffer(calibrator.GetQueue());
-    Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());
+    Task::BufferSE buffer(calibrator.GetQueue());
+    Task::SplitterSE splitter(buffer.GetQueue(), options.SplitTime.value());
     Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
                             options.Trigger.value(), options.sortType.value());
 
@@ -70,9 +66,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
 
-    //Task::Sorter sorter(trigger.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
-
-    Task::Sorters sorters(trigger.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
+    Task::Sorter sorter(trigger.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);
@@ -80,21 +74,22 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     pool.AddTask(&buffer);
     pool.AddTask(&splitter);
     pool.AddTask(&trigger);
-    //pool.AddTask(&sorter);
+    pool.AddTask(&sorter);
 
-    for ( int i = 0 ; i < 8 ; ++i ){
-        pool.AddTask(sorters.GetNewSorter());
-    }
 
     try {
         pool.Wait();
     } catch ( const std::exception &ex ){
         std::cerr << "Got exception: " << ex.what() << std::endl;
     }
-    Histograms &hm = sorters.GetHistograms();
-    root_files = sorters.GetTreeFiles();
-    RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
-    root_files.push_back(hist_file);
+    Histograms &hm = sorter.GetHistograms();
+    if ( options.tree.value() ) {
+        RootWriter::Write(hm, hist_file.c_str(), nullptr, "UPDATE");
+    } else {
+        RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
+    }
+
+    //root_files.push_back(hist_file);
     return root_files;
 }
 

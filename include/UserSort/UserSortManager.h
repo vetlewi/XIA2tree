@@ -12,6 +12,8 @@ class ThreadSafeHistograms;
 class UserSort;
 class Triggered_event;
 
+using HistogramsType = Histograms;
+
 namespace OCL {
     class UserConfiguration;
 }
@@ -23,7 +25,7 @@ private:
     UserSort *object;
 
 public:
-    UserSortManager(ThreadSafeHistograms &hist, const OCL::UserConfiguration &config_file, const char *libname = nullptr);
+    UserSortManager(HistogramsType &hist, const OCL::UserConfiguration &config_file, const char *libname = nullptr);
     ~UserSortManager();
     void FillEvent(const Triggered_event &event);
 };

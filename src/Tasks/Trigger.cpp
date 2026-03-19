@@ -72,79 +72,17 @@ std::vector<typename T::const_iterator> GetTriggersExclusive(const T &entries, c
 
 void Trigger::Run()
 {
+    QueueWorker worker(output_queue);
     std::vector<Entry_t> input;
-
     while ( input_queue.is_not_finish() || !input_queue.empty() ) {
         if ( !input_queue.try_pop(input)) {
+            std::this_thread::yield();
             continue;
         }
         //input = input_queue.pop();
 
         if ( sort_type == CLI::sort_type::gap && trigger == DetectorType::any ) {
-            output_queue.enqueue(std::make_pair(input, -1));
-            //output_queue.push(std::make_pair(input, -1));
-            continue;
-        }
-
-        if ( sort_type == CLI::sort_type::gap ){
-            // Check if there is an entry that satisfies the trigger
-            if ( std::find_if(input.begin(), input.end(), [this](const auto& e){ return e.type == trigger; }) == input.end() )
-                continue;
-            output_queue.enqueue(std::make_pair(input, -1));
-            ///output_queue.push({input, -1});
-            continue;
-        }
-
-
-        auto triggers = ( sort_type == CLI::sort_type::time ) ? GetTriggers(input, trigger) : GetTriggersExclusive(input, trigger);
-        for ( auto &trig : triggers ){
-
-            if ( sort_type == CLI::sort_type::time ){ // If it is a time calibration run, we only care about the timing relative to the "trigger"
-                if ( trig->detectorID != 0 )
-                    continue;
-            }
-
-            auto begin = trig;
-            for ( begin = trig ; begin > input.begin() ; --begin ){
-                if ( abs( double((begin-1)->timestamp - trig->timestamp) +
-                          ((begin-1)->cfdcorr - trig->cfdcorr) ) > coincidence_time )
-                    break;
-            }
-
-            auto end = trig + 1;
-            for ( end = trig + 1 ; end != input.end() ; ++end ){
-                if ( abs( double(end->timestamp - trig->timestamp) +
-                          (end->cfdcorr - trig->cfdcorr) ) > coincidence_time )
-                    break;
-            }
-            output_queue.enqueue({std::vector(begin, end), trig - begin});
-            //output_queue.push({std::vector(begin, end), trig - begin});
-        }
-    }
-    //output_queue.mark_as_finish();
-    is_done = true;
-}
-
-STrigger::STrigger(MCEventQueue_t &input, TEventQueue_t &output, const double &time,
-                   const DetectorType &trig, const CLI::sort_type &_sort_type)
-        : input_queue( input )
-        , output_queue( output )
-        , coincidence_time( time )
-        , trigger( trig )
-        , sort_type( _sort_type )
-{}
-
-void STrigger::Run()
-{
-    std::vector<Entry_t> input;
-
-    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
-        if ( !input_queue.try_pop(input)) {
-            continue;
-        }
-        //input = input_queue.pop();
-
-        if ( sort_type == CLI::sort_type::gap && trigger == DetectorType::any ) {
+            //output_queue.enqueue(std::make_pair(input, -1));
             output_queue.push(std::make_pair(input, -1));
             continue;
         }
@@ -153,7 +91,7 @@ void STrigger::Run()
             // Check if there is an entry that satisfies the trigger
             if ( std::find_if(input.begin(), input.end(), [this](const auto& e){ return e.type == trigger; }) == input.end() )
                 continue;
-            auto evt = std::make_pair(input, -1);
+            //output_queue.enqueue(std::make_pair(input, -1));
             output_queue.push({input, -1});
             continue;
         }
@@ -180,91 +118,9 @@ void STrigger::Run()
                           (end->cfdcorr - trig->cfdcorr) ) > coincidence_time )
                     break;
             }
-
             output_queue.push({std::vector(begin, end), trig - begin});
         }
     }
     output_queue.mark_as_finish();
-
-/*    while ( !done ){
-
-        if ( input_queue.wait_dequeue_timed(input, std::chrono::seconds(1)) ){
-
-            if ( sort_type == CLI::sort_type::gap && trigger == DetectorType::any ) {
-                auto evt = std::make_pair<std::vector<Entry_t>, int>(std::move(input), -1);
-                while ( !output_queue.try_enqueue(evt) ){
-                    if ( done )
-                        break;
-                }
-                continue;
-            }
-            if ( sort_type == CLI::sort_type::gap ){
-                // Check if there is an entry that satisfies the trigger
-                if ( std::find_if(input.begin(), input.end(), [this](const auto& e){ return e.type == trigger; }) == input.end() )
-                    continue;
-                auto evt = std::make_pair(input, -1);
-                while ( !output_queue.try_enqueue(evt) ){
-                    if ( done )
-                        break;
-                }
-                continue;
-            }
-
-            // First we will find all the entries that corresponds to a "correct" trigger within the buffer
-            //auto triggers = GetTriggers(input, trigger);
-            auto triggers = ( sort_type == CLI::sort_type::time ) ? GetTriggers(input, trigger) : GetTriggersExclusive(input, trigger);
-            for ( auto &trig : triggers ){
-
-                if ( sort_type == CLI::sort_type::time ){ // If it is a time calibration run, we only care about the timing relative to the "trigger"
-                    if ( trig->detectorID != 0 )
-                        continue;
-                }
-
-                auto begin = trig;
-                for ( begin = trig ; begin > input.begin() ; --begin ){
-                    if ( abs( double((begin-1)->timestamp - trig->timestamp) +
-                              ((begin-1)->cfdcorr - trig->cfdcorr) ) > coincidence_time )
-                        break;
-                }
-
-                auto end = trig + 1;
-                for ( end = trig + 1 ; end != input.end() ; ++end ){
-                    if ( abs( double(end->timestamp - trig->timestamp) +
-                              (end->cfdcorr - trig->cfdcorr) ) > coincidence_time )
-                        break;
-                }
-
-                auto evt = std::make_pair(std::vector(begin, end), trig - begin);
-                while ( !output_queue.try_enqueue(evt) ){
-                    if ( done )
-                        break;
-                }
-            }
-        }
-    }*/
     is_done = true;
-}
-
-Triggers::Triggers(Task::MCEventQueue_t &input,
-                   const double &time,
-                   const DetectorType &trig,
-                   const CLI::sort_type &_sort_type,
-                   const size_t &cap)
-    : input_queue( input )
-    , output_queue( /*cap*/ )
-    , coincidence_time( time )
-    , trigger( trig )
-    , sort_type( _sort_type ) {
-}
-
-Triggers::~Triggers()
-{
-    for ( auto &trig : triggers )
-        delete trig;
-}
-
-STrigger *Triggers::GetNewTrigger()
-{
-    triggers.push_back(new STrigger(input_queue, output_queue, coincidence_time, trigger, sort_type));
-    return triggers.back();
 }

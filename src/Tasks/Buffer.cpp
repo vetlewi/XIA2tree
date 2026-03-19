@@ -16,6 +16,7 @@ Buffer::Buffer(EntryQueue_t &input, const size_t &buf_size, const size_t &cap)
 
 void Buffer::Run()
 {
+    Task::QueueWorker worker(output_queue);
     Entry_t event;
     while ( input_queue.is_not_finish() || !input_queue.empty() ) {
         if ( buffer.size() > size ){
@@ -37,11 +38,6 @@ void Buffer::Run()
 
     // We reach this point if we are told we are done. Flush buffer.
     output_queue.push(buffer);
-    /*if ( !output_queue.try_enqueue(buffer) ){
-        // This is no really a problem. It doesn't make sense to kill the process because of this error.
-        std::cerr << __PRETTY_FUNCTION__ << ": Unable to flush buffer." << std::endl;
-        //throw std::runtime_error(std::string(__PRETTY_FUNCTION__)+"Unable to flush buffer");
-    }*/
     is_done = true;
     output_queue.mark_as_finish();
 }
