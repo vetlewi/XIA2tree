@@ -89,7 +89,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
         RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
     }
 
-    //root_files.push_back(hist_file);
+    root_files.push_back(hist_file);
     return root_files;
 }
 
