@@ -5,7 +5,7 @@
 XIA2tree is a package for sorting XIA list mode data from experiments at the Oslo Cyclotron Laboratory (OCL).  
 It reads raw digitizer data, applies detector-specific calibration and time/event building, and produces ROOT histograms and optionally ROOT TTrees for further physics analysis.
 
-### What XIA2tree does
+## What XIA2tree does
 At a high level, XIA2tree:
 
 - Reads one or more raw XIA list-mode files and interprets the DAQ words.
@@ -16,7 +16,7 @@ At a high level, XIA2tree:
 
 For a more detailed description of the internal pipeline and data flow, see [`docs/architecture.md`](docs/architecture.md).
 
-### Installing
+##  Installing
 The `XIA2tree` project can be downloaded from a custom Homebrew tap. To install follow these steps:
 1) Add the custom repo(tap):
 ```bash
@@ -29,7 +29,7 @@ brew install xia2tree
 Note that to install the three first letters are not capitalized, while when running the software from command line you
 need to captialize the first three letters.
 
-### Building
+## Building from source
 The `XIA2tree` project has a minimal number of dependencies. You only need `ROOT` and `CMake` installed on your computer.
 
 To build:
@@ -75,7 +75,7 @@ XIA2tree -i /path/to/raw/file(s) -o output_file.root -C /path/to/config_calibrat
 
 See `docs/usage.md` for step-by-step usage examples and common workflows.
 
-### Command line options
+## Command line options
 
 In addition to the minimal example, there are more options:
 
@@ -121,7 +121,7 @@ The timing and event-building options are:
 
 See [`docs/architecture.md`](docs/architecture.md) for how these parameters affect the internal pipeline.
 
-### Configuration and calibration file
+## Configuration and calibration file
 The sorting code requires a calibration/configuration file.
 This file describes the data acquisition system, the number of detectors, which detectors are connected to which DAQ channels, and the calibration of the detectors.
 
@@ -132,7 +132,10 @@ Examples of these files are:
 
 A more detailed description of the expected YAML structure (including `setup`, `calibration`, `analysis`, and `user_parameters` sections) is available in [`docs/usage.md`](docs/usage.md).
 
-### Further documentation
+## License
+See [License](LICENSE).
+
+## Further documentation
 
 - [`docs/architecture.md`](docs/architecture.md): internal architecture and data flow (pipeline stages, threads, queues, ROOT output).
 - [`docs/usage.md`](docs/usage.md): detailed usage examples, YAML configuration structure, and recommended workflows.
