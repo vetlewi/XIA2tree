@@ -59,23 +59,17 @@ CPMAddPackage(
         VERSION 0.9.6
 )
 
-#CPMAddPackage(
-#        NAME zstr
-#        GITHUB_REPOSITORY mateidavid/zstr
-#        VERSION 1.0.7
-#)
+CPMAddPackage(
+        NAME hwinfo
+        GITHUB_REPOSITORY lfreist/hwinfo
+        GIT_TAG 99f45c3b009d4e743c082f7beff53d11e9126ad1
+)
 
 CPMAddPackage(
         NAME cmake-scripts
         GITHUB_REPOSITORY StableCoder/cmake-scripts
         GIT_TAG 003c241725972de76e87afc0986209829b9a7d4f
 )
-
-### Setup sanetizers if ON ###
-if ( ENABLE_SANITIZERS )
-    include(${cmake-scripts_SOURCE_DIR}/sanitizers.cmake)
-    add_sanitizer_support(thread)
-endif()
 
 ### Generate version file ###
 configure_file(
@@ -90,7 +84,6 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Calibrator.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MemoryMap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Sort.cpp
-        #${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MTSort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/SplitterSE.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
@@ -100,6 +93,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/XIA_CFD.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/CommandLineInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/Metadata.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/ProgressUI.cpp
 )
 set_target_properties(XIAfuncs PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -157,6 +151,7 @@ target_link_libraries(XIAfuncs
         ROOT::Tree
         yaml-cpp::yaml-cpp
         magic_enum::magic_enum
+        lfreist-hwinfo::hwinfo
 )
 
 target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
