@@ -16,6 +16,14 @@
 #define MAX_ENTRIES 128
 #endif // MAX_ENTRIES
 
+#ifndef TRACE_MAX_LENGTH
+#define TRACE_MAX_LENGTH 8192
+#endif // TRACE_MAX_LENGTH
+
+#ifndef QDC_SIZE
+#define QDC_SIZE 8
+#endif // QDC_SIZE
+
 namespace Task {
 
     namespace details {
@@ -29,10 +37,11 @@ namespace Task {
             bool cfdfail;
             double cfdcorr;
             unsigned short idx;     //!< Index in list of detectors that the trigger corresponds to.
-            std::array<uint32_t, 8> qdc;
+            std::array<uint32_t, QDC_SIZE> qdc;
+            std::array<uint16_t, TRACE_MAX_LENGTH> trace;
 
         public:
-            explicit TriggerEntry(TTree &tree);
+            explicit TriggerEntry(TTree &tree, const bool& traces);
 
             inline void Fill(const Entry_t *trigger)
             {
@@ -44,13 +53,18 @@ namespace Task {
                 cfdfail = trigger->cfdfail;
                 cfdcorr = trigger->cfdcorr;
                 qdc = trigger->qdc;
+                if ( !trigger->trace.empty() && trigger->trace.size() <= TRACE_MAX_LENGTH ) {
+                    memccpy(trace.data(), trigger->trace.data(), TRACE_MAX_LENGTH * sizeof(uint16_t), trigger->trace.size());
+                } else {
+                    memset(trace.data(), 0, TRACE_MAX_LENGTH * sizeof(uint16_t));
+                }
             }
         };
 
         class DetectorEntries
         {
         private:
-            unsigned short mult;    //!< Number of entries of the detector type in event    */
+            int mult;    //!< Number of entries of the detector type in event    */
             unsigned short ID[MAX_ENTRIES]; //!< ID number of the detector event.           */
             bool finishflag[MAX_ENTRIES];   //!< Pile-up flag   */
             unsigned int adcvalue[MAX_ENTRIES]; //!< 16-bit ADC reading */
@@ -60,10 +74,13 @@ namespace Task {
             double time[MAX_ENTRIES];   //!< Time w.r.t. trigger    */
             bool cfdfail[MAX_ENTRIES];  //!< Result of the CFD filter   */
             double cfdcorr[MAX_ENTRIES]; //!< CFD correction to the timestamp    */
-            unsigned qdc[MAX_ENTRIES][8];
+            unsigned qdc[MAX_ENTRIES][QDC_SIZE]; //!< QDC entries */
+            int trace_entries[MAX_ENTRIES]; //!< Number of trace entries */
+            unsigned short trace[MAX_ENTRIES][MAX_ENTRIES]; //!< Trace entries */
+            //MultiTraceType trace; //!< Traces (if applicable) */
 
         public:
-            DetectorEntries(TTree &tree, const char *base_name);
+            DetectorEntries(TTree &tree, const char *base_name, const bool& traces);
 
 
             inline void Fill(const subvector<Entry_t> &entries, const Entry_t *trigger = nullptr){
@@ -83,9 +100,16 @@ namespace Task {
                     }
 
                     if ( !entry.qdc.empty() ) {
-                        for (int i = 0; i < 8; ++i) qdc[mult][i] = entry.qdc[i];
+                        //for (int i = 0; i < 8; ++i) qdc[mult][i] = entry.qdc[i];
+                        memcpy(qdc[mult], entry.qdc.data(), QDC_SIZE * sizeof(unsigned));
                     } else {
-                        for (int i = 0; i < 8; ++i) qdc[mult][i] = 0;
+                        //for (int i = 0; i < 8; ++i) qdc[mult][i] = 0;
+                        memset(qdc[mult], 0, QDC_SIZE * sizeof(unsigned));
+                    }
+                    trace_entries[mult] = entry.trace.size();
+                    if ( !entry.trace.empty() && entry.trace.size() <= TRACE_MAX_LENGTH ) {
+                    } else {
+                        memset(trace[mult], 0, TRACE_MAX_LENGTH * sizeof(unsigned short));
                     }
 
                     cfdfail[mult] = entry.cfdfail;
@@ -110,6 +134,7 @@ namespace Task {
             details::DetectorEntries eDet;
             details::DetectorEntries ppacDet;
             details::DetectorEntries labrDet;
+            details::DetectorEntries qintDet;
 
             details::DetectorEntries *GetDet(const DetectorType &type){
                 switch ( type ) {
@@ -117,6 +142,7 @@ namespace Task {
                     case DetectorType::deDet : return &deDet;
                     case DetectorType::eDet : return &eDet;
                     case DetectorType::ppac : return &ppacDet;
+                    case DetectorType::qint : return &qintDet;
                     default : return nullptr;
                 }
             }
@@ -124,14 +150,15 @@ namespace Task {
         public:
 
 
-            explicit TTreeManager(const char *fname)
+            explicit TTreeManager(const char* fname, const bool& traces)
                     : file( TFile(fname, "RECREATE") )
                     , tree( new TTree("ocl_events", "OCL events") )
-                    , trigger( *tree )
-                    , deDet( *tree, "deDet" )
-                    , eDet( *tree, "eDet" )
-                    , ppacDet( *tree, "ppac" )
-                    , labrDet( *tree, "labr" )
+                    , trigger( *tree, traces )
+                    , deDet( *tree, "deDet", traces )
+                    , eDet( *tree, "eDet", traces )
+                    , ppacDet( *tree, "ppac", traces )
+                    , labrDet( *tree, "labr", traces )
+                    , qintDet( *tree, "qint", traces )
             {
                 tree->SetDirectory(&file);
             }
@@ -143,19 +170,15 @@ namespace Task {
 
             inline void Fill(const Triggered_event &event)
             {
-                // Get the lock...
                 if ( event.GetTrigger() )
                     trigger.Fill(event.GetTrigger());
-                for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac} ){
+                for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet,
+                                    DetectorType::ppac, DetectorType::qint} ){
                     GetDet(type)->reset();
                     GetDet(type)->Fill(event.GetDetector(type), event.GetTrigger());
                 }
-                //GetDet(DetectorType::deDet)->reset();
-                //GetDet(DetectorType::deDet)->Fill(event.GetDetector(DetectorType::deDet), event.GetTrigger());
-
                 tree->Fill();
             }
-
         };
     }
 }

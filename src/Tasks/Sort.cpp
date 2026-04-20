@@ -245,12 +245,12 @@ void HistManager::AddEntry(Triggered_event &buffer)
 }
 
 Sorter::Sorter(TEventQueue_t &input, const OCL::UserConfiguration &config,
-               const char *tree_name, const char *user_sort)
+               const char *tree_name, const bool& keep_traces, const char *user_sort)
     : input_queue( input )
     , histograms( )
     , hm( histograms, config, user_sort )
     , userConfig( config )
-    , tree( ( tree_name ) ? new ROOT::TTreeManager(tree_name) : nullptr )
+    , tree( ( tree_name ) ? new ROOT::TTreeManager(tree_name, keep_traces) : nullptr )
 {
 }
 

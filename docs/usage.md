@@ -35,6 +35,7 @@ USAGE: XIA2tree [FLAGS] [OPTIONS]
 
 FLAGS:
     -t, --tree
+    -k, --keep_traces
 
 OPTIONS:
     -i, --input <input>
@@ -81,6 +82,11 @@ OPTIONS:
 - **`-t`, `--tree`**
   - If set, XIA2tree writes a ROOT TTree containing one entry per selected event.
   - This is useful when you need to re-analyze events in ROOT or apply different selections later.
+
+- **`-k`, `--keep_traces`**
+  - Only active together with `-t`.
+  - If set, XIA2tree will include traces, if available in the raw file, in the ROOT TTree.
+  - Note that this option will significantly increase processing time and should only be used if you intend to preserve the trace data.
 
 #### Event-building and timing options
 

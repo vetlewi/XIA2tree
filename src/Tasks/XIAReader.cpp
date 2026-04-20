@@ -78,15 +78,13 @@ void XIAReader::RunWithUI()
             const auto *header = reinterpret_cast<const XIA_base_t *>(pos);
             if ( pos + header->eventLen <= end ) {
                 output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
-                pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
-            } else {
-                pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
             }
 
             // Since the if test is very rare, and very predictable this shouldn't affect the runtime that much.
             if ( read++ % UPDATE_COUNT == 0 ){
                 bar.UpdateProgress(pos - begin);
             }
+            pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
         }
         bar.FinishProgress();
     }

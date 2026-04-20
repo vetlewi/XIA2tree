@@ -66,7 +66,8 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
     if ( options.userSort.has_value() )
         user_sort = options.userSort->c_str();
 
-    Task::Sorter sorter(trigger.GetQueue(), userConfig, ( tree_file.empty() ) ? nullptr : tree_file.c_str(), user_sort);
+    Task::Sorter sorter(trigger.GetQueue(), userConfig,
+        ( tree_file.empty() ) ? nullptr : tree_file.c_str(), options.keep_traces.value(), user_sort);
 
     ThreadPool<std::thread> pool;
     pool.AddTask(&reader);
