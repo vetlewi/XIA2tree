@@ -85,6 +85,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Trigger.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/XIAReader.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/RootInterface/MetadataWriter.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/RootInterface/TTreeManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ConfigManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
