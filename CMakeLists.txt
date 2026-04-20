@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 1.4.0 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.5.0 LANGUAGES C CXX)
 
 # Default to the project version when git information is unavailable
 set(FULL_VERSION "${PROJECT_VERSION}")
