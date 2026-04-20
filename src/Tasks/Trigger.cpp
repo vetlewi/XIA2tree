@@ -79,8 +79,7 @@ void Trigger::Run()
             std::this_thread::yield();
             continue;
         }
-        //input = input_queue.pop();
-
+        ++entries_processed;
         if ( sort_type == CLI::sort_type::gap && trigger == DetectorType::any ) {
             //output_queue.enqueue(std::make_pair(input, -1));
             output_queue.push(std::make_pair(input, -1));

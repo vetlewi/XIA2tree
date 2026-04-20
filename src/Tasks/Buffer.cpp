@@ -22,6 +22,7 @@ void Buffer::Run()
             std::this_thread::yield();
             continue;
         }
+        ++entries_processed;
         buffer.push(event);
         if ( buffer.size() > size ){
             output_queue.push(buffer.top());

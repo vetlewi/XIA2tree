@@ -261,6 +261,7 @@ void Sorter::Run() {
             std::this_thread::yield();
             continue;
         }
+        ++entries_processed;
         if ( entries.first.empty() )
             continue;
         if ( userConfig.GetSortType() == CLI::sort_type::gap ){

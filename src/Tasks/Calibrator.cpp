@@ -25,7 +25,7 @@ void Calibrator::Run()
             std::this_thread::yield();
             continue;
         }
-
+        ++entries_processed;
         // Get the entry. If false we can continue.
         if ( !calibration.keep(xia) ){
             continue;

@@ -22,7 +22,7 @@ void Splitter::Run()
             std::this_thread::yield();
             continue;
         }
-
+        ++entries_processed;
         if (entries.empty()) {
             entries.emplace_back(entry);
             continue;
