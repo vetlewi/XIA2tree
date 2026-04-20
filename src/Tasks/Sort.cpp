@@ -94,10 +94,10 @@ void Particle_telescope_t::Fill(const std::vector<Entry_t> &deltaE, const std::v
 
 HistManager::HistManager(Histograms &histograms, const OCL::UserConfiguration &user_config, const char *custom_sort)
         : configuration( user_config )
-        , labr( histograms, "labr", NUM_LABR_DETECTORS )
-        , si_de( histograms, "si_de", NUM_SI_DE_DET )
-        , si_e( histograms, "si_e", NUM_SI_E_DET )
-        , ppacs( histograms, "ppac", NUM_PPAC )
+        , labr( histograms, "labr", user_config.GetNumDetectors(DetectorType::labr) )
+        , si_de( histograms, "si_de", user_config.GetNumDetectors(DetectorType::deDet) )
+        , si_e( histograms, "si_e", user_config.GetNumDetectors(DetectorType::eDet) )
+        , ppacs( histograms, "ppac", user_config.GetNumDetectors(DetectorType::ppac) )
         , particle_coincidence{{ histograms, 0},
                                { histograms, 1},
                                { histograms, 2},
