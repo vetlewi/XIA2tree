@@ -88,7 +88,6 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/BufferSE.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Calibrator.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MemoryMap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Sort.cpp
         #${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/MTSort.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Splitter.cpp
@@ -100,6 +99,7 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/XIA_CFD.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/CommandLineInterface.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/MemoryMap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/ProgressUI.cpp
 )
 set_target_properties(XIAfuncs PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -167,6 +167,18 @@ add_executable(XIA2tree main.cpp)
 set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 20)
 target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwriterqueue concurrentqueue)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
+
+add_executable(FileInspector FileInspector.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/MemoryMap.cpp)
+target_include_directories(FileInspector
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Format
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+)
+set_target_properties(FileInspector PROPERTIES CXX_STANDARD 20)
+
 
 include(GNUInstallDirs)
 install(TARGETS XIA2tree

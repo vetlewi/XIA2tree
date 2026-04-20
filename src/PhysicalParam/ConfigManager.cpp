@@ -150,6 +150,14 @@ UserConfiguration::UserConfiguration(const YAML::Node &_userConfig, const Detect
 {
 }
 
+const size_t UserConfiguration::GetNumDetectors(const DetectorType &type) const {
+    try {
+        return userConfig["setup"]["detectors"][std::string(magic_enum::enum_name(type))].as<size_t>();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 0;
+    }
+}
 
 ConfigManager ConfigManager::FromFile(const char *file)
 {

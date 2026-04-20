@@ -8,7 +8,7 @@
 using namespace CLI;
 
 STRUCTOPT(Options, input, output, CalibrationFile, RangeFile, userSort, coincidenceTime,
-          SplitTime, tree, sortType, Trigger);
+          SplitTime, tree, keep_traces, sortType, Trigger);
 
 std::ostream &operator<<(std::ostream &os, const Options &opt)
 {
@@ -36,6 +36,7 @@ std::ostream &operator<<(std::ostream &os, const Options &opt)
     os << "\tSplit time: " << opt.SplitTime.value() << " ns\n";
 
     os << "\tBuild tree: " << std::boolalpha << opt.tree.value() << "\n";
+    os << "\tWrite traces to tree: " << std::boolalpha << opt.keep_traces.value() << "\n";
     os << "\tSort type: " << magic_enum::enum_name(opt.sortType.value()) << "\n";
     os << "\tTrigger: " << magic_enum::enum_name(opt.Trigger.value()) << "\n";
     return os;

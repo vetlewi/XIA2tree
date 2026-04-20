@@ -16,7 +16,7 @@ class ProgressUI;
 /*namespace IO {
     class MemoryMap;
 }*/
-#include "Tasks/MemoryMap.h"
+#include "../Tools/MemoryMap.h"
 
 namespace Task {
 

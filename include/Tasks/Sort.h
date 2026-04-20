@@ -108,7 +108,7 @@ namespace Task {
 
     public:
         Sorter(TEventQueue_t &input, const OCL::UserConfiguration &config,
-             const char *tree_name = nullptr, const char *user_sort = nullptr);
+             const char *tree_name = nullptr, const bool& keep_traces = false, const char *user_sort = nullptr);
         ~Sorter() override = default;
         void Run() override;
         Histograms &GetHistograms() { return histograms; }
