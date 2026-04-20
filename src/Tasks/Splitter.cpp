@@ -8,44 +8,32 @@
 using namespace Task;
 
 
-Splitter::Splitter(EventQueue_t &input, const double &time_gap, const size_t &cap)
+Splitter::Splitter(EntryQueue_t &input, const double &time_gap, const size_t &cap)
     : input_queue( input ), output_queue( /*cap*/ ), gap( time_gap ){}
-
-template<typename T>
-T Split(T begin, T end, const double gap)
-{
-    /*return std::adjacent_find(begin, end,
-                                  [gap](const Entry_t &lhs, const Entry_t &rhs){
-        return  abs((double(rhs.timestamp - lhs.timestamp) + (rhs.cfdcorr - lhs.cfdcorr))) > gap;
-    }) + 1;*/
-
-    for ( auto i = 0 ; i < end - begin - 1 ; ++i ) {
-        auto p = begin + i;
-        auto q = begin + i + 1;
-        if ( abs( double(q->timestamp - p->timestamp) + (q->cfdcorr - p->cfdcorr) ) > gap )
-            return q;
-    }
-    return end;
-}
 
 void Splitter::Run()
 {
     QueueWorker worker(output_queue);
+    Entry_t entry;
     std::vector<Entry_t> entries;
+    entries.reserve(128);
     while ( input_queue.is_not_finish() || !input_queue.empty() ) {
-        if ( !input_queue.try_pop(entries) ) {
+        if ( !input_queue.try_pop(entry) ) {
+            std::this_thread::yield();
             continue;
         }
-        // Continue pushing to the output queue until all entries has been split.
-        auto entries_begin = entries.begin();
-        auto entries_end = entries.begin();
-        while ( entries_end < entries.end() ){
-            entries_end = Split(entries_begin, entries.end(), gap);
-            std::vector<Entry_t> split_entries(entries_begin, entries_end);
-            if (split_entries.empty())
-                continue;
-            output_queue.push(split_entries);
-            entries_begin = entries_end;
+
+        if (entries.empty()) {
+            entries.emplace_back(entry);
+            continue;
+        }
+
+        if ( (double(entry.timestamp - entries.back().timestamp) + (entry.cfdcorr - entries.back().cfdcorr)) <= gap) {
+            entries.emplace_back(entry);
+        } else {
+            output_queue.push(entries);
+            entries.clear();
+            entries.emplace_back(entry);
         }
     }
     output_queue.mark_as_finish();

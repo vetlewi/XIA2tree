@@ -16,43 +16,7 @@ using namespace Task;
 
 // TODO: The actual implementation of the routine that indexes the data should be refactored so that it is more testable
 
-/*void check_consistency(const uint32_t *begin, const uint32_t *end)
-{
-    int scale[] = {0, 0, 8, 8, 8, 8, 8, 8, 10};
-    indicators::ProgressSpinner spinner{
-        indicators::option::PostfixText("Checking file consistency"),
-        indicators::option::ForegroundColor{indicators::Color::yellow},
-        indicators::option::SpinnerStates{std::vector<std::string>{"⠈", "⠐", "⠠", "⢀", "⡀", "⠄", "⠂", "⠁"}},
-        indicators::option::FontStyles{std::vector<indicators::FontStyle>{indicators::FontStyle::bold}}
-    };
-
-    const auto *pos = begin;
-    auto pre_header = reinterpret_cast<const XIA_base_t *>(pos);
-    size_t read = 0;
-    while ( pos < end ){
-        auto header = reinterpret_cast<const XIA_base_t *>(pos);
-        if ( header->timestamp() * scale[header->slotID] < pre_header->timestamp() * scale[pre_header->slotID] ){
-            std::cout << "Header timestamps: " << header->timestamp() * scale[header->slotID];
-            std::cout << " " << pre_header->timestamp() * scale[header->slotID];
-            std::cout << std::endl;
-        }
-        pre_header = header;
-        pos += header->eventLen;
-        // Since the if test is very rare, and very predictable this shouldn't affect the runtime that much.
-        if ( read++ % (UPDATE_COUNT / 4) == 0 ){
-            spinner.set_progress((pos-begin)*100.0/(end-begin));
-        }
-
-    }
-    spinner.set_option(indicators::option::ForegroundColor{indicators::Color::green});
-    spinner.set_option(indicators::option::PrefixText{"✔"});
-    spinner.set_option(indicators::option::ShowSpinner{false});
-    spinner.set_option(indicators::option::ShowPercentage{false});
-    spinner.set_option(indicators::option::PostfixText{"Finished"});
-    spinner.mark_as_completed();
-}*/
-
-XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui, const size_t &capacity)
+XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui)
     //: output_queue( capacity )
     : output_queue( )
     , ui( _ui )

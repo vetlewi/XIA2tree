@@ -11,9 +11,9 @@
 #include "Tasks/XIAReader.h"
 #include "Tasks/Calibrator.h"
 #include "Tasks/Buffer.h"
-#include "Tasks/BufferSE.h"
+#include "Tasks/Buffer.h"
 #include "Tasks/Splitter.h"
-#include "Tasks/SplitterSE.h"
+#include "Tasks/Splitter.h"
 #include "Tasks/Trigger.h"
 #include "Tasks/Sort.h"
 //#include "Tasks/MTSort.h"
@@ -56,8 +56,8 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
 
     Task::XIAReader reader(options.input.value(), &progress);
     Task::Calibrator calibrator(cal, reader.GetQueue());
-    Task::BufferSE buffer(calibrator.GetQueue());
-    Task::SplitterSE splitter(buffer.GetQueue(), options.SplitTime.value());
+    Task::Buffer buffer(calibrator.GetQueue());
+    Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());
     Task::Trigger trigger(splitter.GetQueue(), options.coincidenceTime.value(),
                             options.Trigger.value(), options.sortType.value());
 

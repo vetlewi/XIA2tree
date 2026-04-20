@@ -30,7 +30,7 @@ namespace Task {
         void RunWithoutUI();
 
     public:
-        XIAReader(const std::vector<std::string> &files, ProgressUI *ui = nullptr, const size_t &capacity = 131072);
+        XIAReader(const std::vector<std::string> &files, ProgressUI *ui = nullptr);
 
         auto &GetQueue(){ return output_queue; }
 
