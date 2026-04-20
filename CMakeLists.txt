@@ -83,11 +83,7 @@ configure_file(
         ${CMAKE_CURRENT_BINARY_DIR}/version.h
 )
 
-ROOT_GENERATE_DICTIONARY(TraceTypeDict ${CMAKE_CURRENT_SOURCE_DIR}/include/RootInterface/TraceType.h
-                         LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/RootInterface/TraceType_LinkDef.h)
-
 add_library(XIAfuncs
-        TraceTypeDict.cxx
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Format/event.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/Buffer.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tasks/BufferSE.cpp
@@ -173,11 +169,16 @@ target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwr
 add_dependencies(XIA2tree ParticleCoincidenceSort)
 
 add_executable(FileInspector FileInspector.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/MemoryMap.cpp)
-set_target_properties(FileInspector PROPERTIES CXX_STANDARD 20)
-target_link_directories(FileInspector PRIVATE
+target_include_directories(FileInspector
+    PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Format
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools
+    PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+)
+set_target_properties(FileInspector PROPERTIES CXX_STANDARD 20)
+
 
 include(GNUInstallDirs)
 install(TARGETS XIA2tree
