@@ -32,11 +32,13 @@ namespace Task {
         //std::stop_token done;
         std::atomic<bool> done = false;
         std::optional<std::exception> exception;
+        size_t entries_processed = 0;
     public:
         virtual ~Base() = default;
 
         void Finish() { done = true; }
         virtual void Run() = 0;
+        size_t GetEntriesProcessed() const { return entries_processed; }
 
         // Check if an exception was thrown
         bool check_status(){
