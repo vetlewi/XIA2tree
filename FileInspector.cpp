@@ -7,8 +7,10 @@
 #include <ostream>
 #include <vector>
 
-#include "MemoryMap.h"
+#include <cstdint>
+
 #include "xiaformat.h"
+#include "MemoryMap.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
