@@ -34,6 +34,23 @@
  *   - Number of rejected entries (i.e. mod/chan not mapped to a detector)
  */
 
+#include <string>
+
+namespace Metadata {
+    struct SystemMetadata_t {
+        std::string cpuVendor;
+        std::string cpuName;
+    };
+
+    struct RunMetadata_t {
+        std::chrono::time_point<std::chrono::system_clock> starTime;
+        std::chrono::time_point<std::chrono::system_clock> endTime;
+
+        size_t number;
+
+    };
+}
+
 void tst_hwinfo();
 
 #endif // METADATA_H
