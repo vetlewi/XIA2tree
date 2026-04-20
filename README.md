@@ -127,7 +127,7 @@ This file describes the data acquisition system, the number of detectors, which 
 
 Examples of these files are:
 
-- `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a $500$ MHz module.
+- `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a 500 MHz module.
 - `cal/LaBr500MHz.yaml` for an OSCAR setup where the LaBr$_3$:Ce detectors are read out with 500 MHz modules and all Si detectors with 250 MHz modules.
 
 A more detailed description of the expected YAML structure (including `setup`, `calibration`, `analysis`, and `user_parameters` sections) is available in [`docs/usage.md`](docs/usage.md).
