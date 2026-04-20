@@ -29,6 +29,10 @@ brew install xia2tree
 Note that to install the three first letters are not capitalized, while when running the software from command line you
 need to captialize the first three letters.
 
+## System requirements
+`XIA2tree` has been tested on both Ubuntu (linux) and MacOS and will probably run on other Unix based operating systems.
+The minimum hardware requirements are 8 GB of memory and a CPU with at least 6 cores will be advantageous, although not strictly necessary.
+
 ## Building from source
 The `XIA2tree` project has a minimal number of dependencies. You only need `ROOT` and `CMake` installed on your computer.
 
@@ -127,7 +131,7 @@ This file describes the data acquisition system, the number of detectors, which 
 
 Examples of these files are:
 
-- `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a $500$ MHz module.
+- `cal/LaBr250MHz.yaml` for OSCAR configured with 250 MHz XIA modules for LaBr$_3$:Ce, while the E detector was read out with a 500 MHz module.
 - `cal/LaBr500MHz.yaml` for an OSCAR setup where the LaBr$_3$:Ce detectors are read out with 500 MHz modules and all Si detectors with 250 MHz modules.
 
 A more detailed description of the expected YAML structure (including `setup`, `calibration`, `analysis`, and `user_parameters` sections) is available in [`docs/usage.md`](docs/usage.md).
