@@ -8,7 +8,7 @@
 TEST_CASE("Splitter: can be constructed and provides output queue") {
     using namespace Task;
 
-    EventQueue_t input(1024);
+    EventQueue_t input;
     Splitter splitter(input, 1500.0, 1024);
 
     auto& out = splitter.GetQueue();
