@@ -67,10 +67,8 @@ void XIAReader::RunWithoutUI()
             const auto *header = reinterpret_cast<const XIA_base_t *>(pos);
             if ( pos + header->eventLen <= end ) {
                 output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
-                pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
-            } else {
-                pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
-            }
+             }
+            pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
         }
     }
     output_queue.mark_as_finish();
