@@ -5,7 +5,7 @@
 #include "XIAReader.h"
 
 #include <memory>
-#include "MemoryMap.h"
+#include "../../include/Tools/MemoryMap.h"
 
 #include "Tools/ProgressUI.h"
 #include "indicators/progress_spinner.hpp"
