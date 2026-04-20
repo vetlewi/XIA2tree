@@ -2,13 +2,13 @@
 // Created by Vetle Wegner Ingeberg on 16/04/2021.
 //
 
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef BUFFERSE_H
+#define BUFFERSE_H
 
 #include <Task.h>
 #include <Queue.h>
 
-#include <deque>
+#include <queue>
 
 
 namespace Task {
@@ -17,20 +17,24 @@ namespace Task {
     {
 
     private:
+        struct Compare {
+            bool operator()(const Entry_t &a, const Entry_t &b) const { return ( double(a.timestamp - b.timestamp) + (a.cfdcorr - b.cfdcorr) > 0); }
+        };
+
         EntryQueue_t &input_queue;
-        EventQueue_t output_queue;
+        EntryQueue_t output_queue;
 
         const size_t size;
-        std::vector<Entry_t> buffer;
+        std::priority_queue<Entry_t, std::vector<Entry_t>, Compare> buffer;
 
     public:
 
         Buffer(EntryQueue_t &input, const size_t &buf_size = 65536/*196608*/, const size_t &cap = 1024);
-        EventQueue_t &GetQueue(){ return output_queue; }
+        EntryQueue_t &GetQueue(){ return output_queue; }
         void Run() override;
 
     };
 
 }
 
-#endif //TDR2TREE_BUFFER_H
+#endif //BUFFERSE_H
