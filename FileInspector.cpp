@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <vector>
 
 #include "MemoryMap.h"
 #include "xiaformat.h"
