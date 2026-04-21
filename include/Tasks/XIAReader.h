@@ -30,10 +30,10 @@ namespace Task {
         void RunWithoutUI();
 
     public:
+        CLASS_NAME(XIAReader)
         XIAReader(const std::vector<std::string> &files, ProgressUI *ui = nullptr);
 
         auto &GetQueue(){ return output_queue; }
-
         void Run() override;
 
     };

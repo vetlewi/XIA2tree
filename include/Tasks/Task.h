@@ -15,7 +15,10 @@
 #include <readerwritercircularbuffer.h>
 #include <blockingconcurrentqueue.h>
 
-//#define USE_ATOMIC_QUEUE
+#ifndef CLASS_NAME
+#define CLASS_NAME(class_name) \
+    static const char* name(){ return #class_name; }
+#endif // CLASS_NAME
 
 namespace TDR {
     struct Entry_t;
@@ -34,6 +37,7 @@ namespace Task {
         std::optional<std::exception> exception;
         size_t entries_processed = 0;
     public:
+        CLASS_NAME(Base);
         virtual ~Base() = default;
 
         void Finish() { done = true; }
@@ -74,6 +78,7 @@ namespace Task {
         {
             return std::make_pair(std::thread(&Base::Run, this), this);
         }
+
     };
 }
 

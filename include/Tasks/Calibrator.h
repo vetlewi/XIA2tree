@@ -14,16 +14,14 @@ namespace Task {
 
     class Calibrator : public Base {
     private:
-
         OCL::ConfigManager &calibration;
         EntryQueue_t output_queue;
         XIAQueue_t &input_queue;
 
     public:
+        CLASS_NAME(Calibrator)
         Calibrator(OCL::ConfigManager &cal, XIAQueue_t &input, const size_t &capacity = 1024);
-
         auto &GetQueue(){ return output_queue; }
-
         void Run() override;
 
     };
