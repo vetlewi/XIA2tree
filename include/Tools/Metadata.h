@@ -43,8 +43,8 @@ namespace Metadata {
     };
 
     struct RunMetadata_t {
-        std::chrono::time_point<std::chrono::system_clock> starTime;
-        std::chrono::time_point<std::chrono::system_clock> endTime;
+        //std::chrono::time_point<std::chrono::system_clock> starTime;
+        //std::chrono::time_point<std::chrono::system_clock> endTime;
 
         size_t number;
 
