@@ -7,6 +7,8 @@
 #include "PhysicalParam/ParticleRange.h"
 #include "histogram/RootWriter.h"
 
+#include "RootInterface/MetadataWriter.h"
+
 #include "Tasks/Tasks.h"
 #include "Tasks/XIAReader.h"
 #include "Tasks/Calibrator.h"
@@ -90,6 +92,9 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
         RootWriter::Write(hm, hist_file.c_str()/*, nullptr, "UPDATE"*/);
     }
 
+    MetadataWriter mdwriter(hist_file.c_str());
+    mdwriter.AddProcessedMetadata(pool.GetProcessedData());
+    mdwriter.Write();
     root_files.push_back(hist_file);
     return root_files;
 }
