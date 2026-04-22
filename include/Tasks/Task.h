@@ -17,7 +17,7 @@
 
 #ifndef CLASS_NAME
 #define CLASS_NAME(class_name) \
-    static const char* name(){ return #class_name; }
+    const char* name() override { return #class_name; }
 #endif // CLASS_NAME
 
 namespace TDR {
@@ -37,7 +37,7 @@ namespace Task {
         std::optional<std::exception> exception;
         size_t entries_processed = 0;
     public:
-        CLASS_NAME(Base);
+        virtual const char* name() = 0;
         virtual ~Base() = default;
 
         void Finish() { done = true; }
