@@ -108,6 +108,7 @@ namespace Task {
                     }
                     trace_entries[mult] = entry.trace.size();
                     if ( !entry.trace.empty() && entry.trace.size() <= TRACE_MAX_LENGTH ) {
+                        memcpy(trace[mult], entry.trace.data(), entry.trace.size() * sizeof(unsigned short));
                     } else {
                         memset(trace[mult], 0, TRACE_MAX_LENGTH * sizeof(unsigned short));
                     }
