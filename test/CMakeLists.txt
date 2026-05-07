@@ -17,10 +17,10 @@ if(NOT COMMAND CPMAddPackage)
     include(${CMAKE_CURRENT_LIST_DIR}/../cmake/CPM.cmake)
 endif()
 
-CPMAddPackage("gh:doctest/doctest@2.4.12")
+CPMAddPackage("gh:doctest/doctest@2.5.2")
 
 add_executable(XIA2tree_tests ${TEST_SOURCES})
-set_target_properties(XIA2tree_tests PROPERTIES CXX_STANDARD 17)
+set_target_properties(XIA2tree_tests PROPERTIES CXX_STANDARD 20)
 
 target_link_libraries(XIA2tree_tests doctest::doctest XIAfuncs)
 
