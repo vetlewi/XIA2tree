@@ -50,7 +50,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME yaml-cpp
         GITHUB_REPOSITORY jbeder/yaml-cpp
-        GIT_TAG 28f93bdec6387d42332220afa9558060c8016795
+        GIT_TAG 56e3bb550c91fd7005566f19c079cb7a503223cf
 )
 
 CPMAddPackage(
