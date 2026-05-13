@@ -74,11 +74,7 @@ void Trigger::Run()
 {
     QueueWorker worker(output_queue);
     std::vector<Entry_t> input;
-    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
-        if ( !input_queue.try_pop(input)) {
-            std::this_thread::yield();
-            continue;
-        }
+    while ( input_queue.wait_and_pop(input) ){
         ++entries_processed;
         if ( sort_type == CLI::sort_type::gap && trigger == DetectorType::any ) {
             //output_queue.enqueue(std::make_pair(input, -1));

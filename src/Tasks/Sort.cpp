@@ -256,11 +256,7 @@ Sorter::Sorter(TEventQueue_t &input, const OCL::UserConfiguration &config,
 
 void Sorter::Run() {
     std::pair<std::vector<Entry_t>, int> entries;
-    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
-        if ( !input_queue.try_pop(entries) ) {
-            std::this_thread::yield();
-            continue;
-        }
+    while ( input_queue.wait_and_pop(entries) ){
         ++entries_processed;
         if ( entries.first.empty() )
             continue;
