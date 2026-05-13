@@ -20,16 +20,13 @@ void Calibrator::Run()
 {
     QueueWorker worker(output_queue);
     const XIA_base_t *xia;
-    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
-        if ( !input_queue.try_pop( xia )) {
-            std::this_thread::yield();
-            continue;
-        }
+    while ( input_queue.wait_and_pop(xia) ){
 
-        // Get the entry. If false we can continue.
+        // Check if we are keeping the event or rejecting it
         if ( !calibration.keep(xia) ){
             continue;
         }
+
         Entry_t entry = calibration(xia);
         output_queue.push(entry);
     }
