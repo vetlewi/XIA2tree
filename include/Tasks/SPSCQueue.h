@@ -97,7 +97,10 @@ public:
         }
     }
 
-    void mark_as_finish(){ is_finish = true; }
+    void mark_as_finish() {
+        is_finish = true;
+        tail_.notify_all();
+    }
     bool is_not_finish() const { return !is_finish; }
     bool empty() {
         size_t head = head_local_;
