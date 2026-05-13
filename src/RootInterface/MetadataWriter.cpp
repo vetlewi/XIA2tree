@@ -68,7 +68,7 @@ bool MetadataWriter::WriteSystemInfo() {
     WriteString("OS.name", os.name());
     WriteString("OS.kernel", os.kernel());
     WriteString("OS.version", os.version());
-    WriteString("OS.endian", os)
+    WriteString("OS.endian", (os.isBigEndian() ? "BigEndian" : "LittleEndian") );
 }
 
 MetadataWriter::~MetadataWriter() {
