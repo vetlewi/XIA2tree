@@ -17,11 +17,7 @@ void Buffer::Run()
 {
     QueueWorker worker(output_queue);
     Entry_t event;
-    while ( input_queue.is_not_finish() || !input_queue.empty() ) {
-        if ( !input_queue.try_pop( event )) {
-            std::this_thread::yield();
-            continue;
-        }
+    while ( input_queue.wait_and_pop(event) ){
         buffer.push(event);
         if ( buffer.size() > size ){
             output_queue.push(buffer.top());
@@ -33,7 +29,6 @@ void Buffer::Run()
         output_queue.push(buffer.top());
         buffer.pop();
     }
-
     is_done = true;
     output_queue.mark_as_finish();
 }
