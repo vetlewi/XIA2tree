@@ -81,6 +81,15 @@ public:
 
         }
     }
+
+    std::map<std::string, size_t> GetProcessedData() const {
+        std::map<std::string, size_t> m;
+        for (auto& task : tasks) {
+                m[task.second->name()] = task.second->GetEntriesProcessed();
+        }
+        return m;
+    }
+
 };
 
 #endif //XIA2TREE_THREADPOOL_HPP

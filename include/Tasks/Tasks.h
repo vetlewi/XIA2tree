@@ -37,7 +37,6 @@ namespace Task {
 
         typename std::vector<V>::iterator &begin(){ return tasks.begin(); }
         typename std::vector<V>::iterator &end(){ return tasks.end(); }
-
     };
 
 }

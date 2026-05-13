@@ -21,7 +21,7 @@ namespace Task {
         void SplitEntries();
 
     public:
-
+        CLASS_NAME(Splitter)
         Splitter(EntryQueue_t &input, const double &time_gap = 1500., const size_t &cap = 65536);
         MCEventQueue_t &GetQueue(){ return output_queue; }
         void Run() override;

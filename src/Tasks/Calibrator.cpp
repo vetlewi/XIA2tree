@@ -21,8 +21,8 @@ void Calibrator::Run()
     QueueWorker worker(output_queue);
     const XIA_base_t *xia;
     while ( input_queue.wait_and_pop(xia) ){
-
-        // Check if we are keeping the event or rejecting it
+        ++entries_processed;
+        
         if ( !calibration.keep(xia) ){
             continue;
         }

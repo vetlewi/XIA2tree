@@ -48,6 +48,7 @@ void XIAReader::RunWithUI()
             if ( read++ % UPDATE_COUNT == 0 ){
                 bar.UpdateProgress(pos - begin);
             }
+            ++entries_processed;
             pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
         }
         bar.FinishProgress();
@@ -69,6 +70,8 @@ void XIAReader::RunWithoutUI()
                 output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
              }
             pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
+            ++entries_processed;
+
         }
     }
     output_queue.mark_as_finish();

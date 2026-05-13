@@ -22,6 +22,7 @@ namespace Task {
         const CLI::sort_type sort_type;
 
     public:
+        CLASS_NAME(Trigger)
         Trigger(MCEventQueue_t &input, const double &time = 1500., const DetectorType &trigger = DetectorType::eDet,
                 const CLI::sort_type &sort_type = CLI::sort_type::coincidence);
         MTEventQueue_t &GetQueue(){ return output_queue; }

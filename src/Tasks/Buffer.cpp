@@ -18,6 +18,7 @@ void Buffer::Run()
     QueueWorker worker(output_queue);
     Entry_t event;
     while ( input_queue.wait_and_pop(event) ){
+        ++entries_processed;
         buffer.push(event);
         if ( buffer.size() > size ){
             output_queue.push(buffer.top());
