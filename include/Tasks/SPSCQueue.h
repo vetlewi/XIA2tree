@@ -79,6 +79,24 @@ public:
         return true;
     }
 
+    bool wait_and_pop(T& out) {
+        size_t head = head_local_;
+        while ( true ) {
+            tail_cache_ = tail_.load(std::memory_order_acquire);
+            if (head != tail_cache_) {
+                out = std::move(buffer_[head & mask]);
+                head_local_ = head + 1;
+                head_.store(head_local_, std::memory_order_release);
+                head_.notify_one();
+                return true;
+            }
+            if (is_finish)
+                return false;
+            tail_.wait(tail_cache_);
+            head = head_local_;
+        }
+    }
+
     void mark_as_finish(){ is_finish = true; }
     bool is_not_finish() const { return !is_finish; }
     bool empty() {
