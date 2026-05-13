@@ -12,6 +12,7 @@
 #include <hwinfo/utils/unit.h>
 
 #include "MetadataWriter.h"
+#include "version.h"
 
 bool ProcessedDataMetadata::exportData() const {
     // Total number of events read from file
@@ -23,7 +24,7 @@ bool ProcessedDataMetadata::exportData() const {
 
     TParameter entriesDropped("DroppedEvents", static_cast<int64_t>(processedData.at("Buffer")) - static_cast<int64_t>(processedData.at("Calibrator")));
     if (entriesDropped.Write() == 0) return false;
-    
+
     TParameter eventsFound("EventsFound",  static_cast<int64_t>(processedData.at("Trigger")));
     if (eventsFound.Write() == 0) return false;
 
@@ -69,6 +70,17 @@ bool MetadataWriter::WriteSystemInfo() {
     WriteString("OS.kernel", os.kernel());
     WriteString("OS.version", os.version());
     WriteString("OS.endian", (os.isBigEndian() ? "BigEndian" : "LittleEndian") );
+
+    WriteString("Version", PROJECT_VERSION);
+    WriteString("BuildDate", __DATE__);
+    WriteString("BuildTime", __TIME__);
+    WriteString("BuildType", BUILD_TYPE);
+    WriteString("Architecture", ARCHITECTURE);
+    WriteString("Compiler", COMPILER);
+    WriteString("Compiler version", COMPILER_VERSION);
+    WriteString("C++ version", CPLUSPLUS_VERSION);
+
+    return true;
 }
 
 MetadataWriter::~MetadataWriter() {
