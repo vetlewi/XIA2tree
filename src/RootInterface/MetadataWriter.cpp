@@ -23,7 +23,7 @@ bool ProcessedDataMetadata::exportData() const {
 
     TParameter entriesDropped("DroppedEvents", static_cast<int64_t>(processedData.at("Buffer")) - static_cast<int64_t>(processedData.at("Calibrator")));
     if (entriesDropped.Write() == 0) return false;
-
+    
     TParameter eventsFound("EventsFound",  static_cast<int64_t>(processedData.at("Trigger")));
     if (eventsFound.Write() == 0) return false;
 
