@@ -52,6 +52,7 @@ CPMAddPackage(
         GIT_TAG 99f45c3b009d4e743c082f7beff53d11e9126ad1
         OPTIONS HWINFO_SHARED OFF HWINFO_STATIC ON
 )
+set_target_properties(hwinfo_cpu hwinfo_battery hwinfo_disk hwinfo_gpu hwinfo_mainboard hwinfo_os hwinfo_ram hwinfo_network PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 CPMAddPackage(
         NAME cmake-scripts
@@ -79,7 +80,6 @@ add_library(XIAfuncs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/ParticleRange.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/PhysicalParam/XIA_CFD.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/CommandLineInterface.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/Metadata.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/MemoryMap.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/ProgressUI.cpp
 )
@@ -95,6 +95,18 @@ target_include_directories(XIAfuncs
     PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+add_library(metadatawriter
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/Metadata.cpp
+)
+set_target_properties(metadatawriter PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
+target_include_directories(metadatawriter
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools
+)
+target_link_libraries(metadatawriter PRIVATE lfreist-hwinfo::hwinfo)
+add_library(OCL::metadatawriter ALIAS metadatawriter)
 
 add_library(UserSort
         ${CMAKE_CURRENT_SOURCE_DIR}/src/UserSort/DynamicLibrary.cpp
@@ -125,18 +137,18 @@ add_library(TimingInvestigation MODULE TimingInvestigation.cpp)
 set_target_properties(TimingInvestigation PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(TimingInvestigation PUBLIC OCL::UserSort)
 
-set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 20)
+set_target_properties(XIAfuncs PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(XIAfuncs
     PUBLIC
         OCL::Histogram
         OCL::UserSort
+        OCL::metadatawriter
         indicators::indicators
         structopt
         ROOT::RIO
         ROOT::Tree
         yaml-cpp::yaml-cpp
         magic_enum::magic_enum
-        lfreist-hwinfo::hwinfo
 )
 
 target_link_libraries(ParticleCoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSort)
@@ -144,7 +156,7 @@ target_link_libraries(Co60CoincidenceSort PRIVATE OCL::Histogram XIAfuncs UserSo
 target_link_libraries(TimingInvestigation PRIVATE OCL::Histogram XIAfuncs UserSort)
 
 add_executable(XIA2tree main.cpp)
-set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 20)
+set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 20 POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
 
