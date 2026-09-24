@@ -97,6 +97,8 @@ HistManager::HistManager(Histograms &histograms, const OCL::UserConfiguration &u
         , labr( histograms, "labr", user_config.GetNumDetectors(DetectorType::labr) )
         , si_de( histograms, "si_de", user_config.GetNumDetectors(DetectorType::deDet) )
         , si_e( histograms, "si_e", user_config.GetNumDetectors(DetectorType::eDet) )
+        , oscar_F( histograms, "oscarF", user_config.GetNumDetectors(DetectorType::oscarF) )
+        , oscar_B( histograms, "oscarB", user_config.GetNumDetectors(DetectorType::oscarB) )
         , ppacs( histograms, "ppac", user_config.GetNumDetectors(DetectorType::ppac) )
         , particle_coincidence{{ histograms, 0},
                                { histograms, 1},
@@ -168,6 +170,8 @@ Detector_Histograms_t *HistManager::GetSpec(const DetectorType &type)
         case DetectorType::labr : return &labr;
         case DetectorType::deDet : return &si_de;
         case DetectorType::eDet : return &si_e;
+        case DetectorType::oscarF : return &oscar_F;
+        case DetectorType::oscarB : return &oscar_B;
         case DetectorType::ppac : return &ppacs;
         default : return nullptr;
     }

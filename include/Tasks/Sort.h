@@ -58,6 +58,8 @@ namespace Task {
         Detector_Histograms_t labr;
         Detector_Histograms_t si_de;
         Detector_Histograms_t si_e;
+        Detector_Histograms_t oscar_F;
+        Detector_Histograms_t oscar_B;
         Detector_Histograms_t ppacs;
 
         //! Time energy spectra for particles.
