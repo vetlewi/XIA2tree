@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(XIA2tree VERSION 1.5.0 LANGUAGES C CXX)
+project(XIA2tree VERSION 1.5.1 LANGUAGES C CXX)
 
 # Default to the project version when git information is unavailable
 set(FULL_VERSION "${PROJECT_VERSION}")
@@ -27,19 +27,6 @@ target_include_directories(structopt
 )
 
 CPMAddPackage(
-        NAME readerwriterqueue
-        GITHUB_REPOSITORY cameron314/readerwriterqueue
-        GIT_TAG 211616e0554f93152ab3108b8d93fbc23174a9d9
-)
-
-CPMAddPackage(
-        NAME concurrentqueue
-        GITHUB_REPOSITORY cameron314/concurrentqueue
-        #VERSION 1.0.4
-        GIT_TAG c68072129c8a5b4025122ca5a0c82ab14b30cb03
-)
-
-CPMAddPackage(
         NAME indicators
         GITHUB_REPOSITORY p-ranav/indicators
         #VERSION 2.3
@@ -63,6 +50,7 @@ CPMAddPackage(
         NAME hwinfo
         GITHUB_REPOSITORY lfreist/hwinfo
         GIT_TAG 99f45c3b009d4e743c082f7beff53d11e9126ad1
+        OPTIONS HWINFO_SHARED OFF HWINFO_STATIC ON
 )
 
 CPMAddPackage(
@@ -142,8 +130,6 @@ target_link_libraries(XIAfuncs
     PUBLIC
         OCL::Histogram
         OCL::UserSort
-        readerwriterqueue
-        concurrentqueue
         indicators::indicators
         structopt
         ROOT::RIO
@@ -159,7 +145,7 @@ target_link_libraries(TimingInvestigation PRIVATE OCL::Histogram XIAfuncs UserSo
 
 add_executable(XIA2tree main.cpp)
 set_target_properties(XIA2tree PROPERTIES CXX_STANDARD 20)
-target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs readerwriterqueue concurrentqueue)
+target_link_libraries(XIA2tree PRIVATE OCL::Histogram UserSort XIAfuncs)
 add_dependencies(XIA2tree ParticleCoincidenceSort)
 
 add_executable(FileInspector FileInspector.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/Tools/MemoryMap.cpp)

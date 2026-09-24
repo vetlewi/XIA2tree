@@ -12,9 +12,6 @@
 #include <optional>
 #include <iostream>
 
-#include <readerwritercircularbuffer.h>
-#include <blockingconcurrentqueue.h>
-
 #ifndef CLASS_NAME
 #define CLASS_NAME(class_name) \
     const char* name() override { return #class_name; }
