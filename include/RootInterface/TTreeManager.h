@@ -136,6 +136,8 @@ namespace Task {
             details::DetectorEntries ppacDet;
             details::DetectorEntries labrDet;
             details::DetectorEntries qintDet;
+            details::DetectorEntries oscarFDet;
+            details::DetectorEntries oscarBDet;
 
             details::DetectorEntries *GetDet(const DetectorType &type){
                 switch ( type ) {
@@ -144,6 +146,8 @@ namespace Task {
                     case DetectorType::eDet : return &eDet;
                     case DetectorType::ppac : return &ppacDet;
                     case DetectorType::qint : return &qintDet;
+                    case DetectorType::oscarF : return &oscarFDet;
+                    case DetectorType::oscarB : return &oscarBDet;
                     default : return nullptr;
                 }
             }
@@ -152,14 +156,16 @@ namespace Task {
 
 
             explicit TTreeManager(const char* fname, const bool& traces)
-                    : file( TFile(fname, "RECREATE") )
-                    , tree( new TTree("ocl_events", "OCL events") )
-                    , trigger( *tree, traces )
-                    , deDet( *tree, "deDet", traces )
-                    , eDet( *tree, "eDet", traces )
-                    , ppacDet( *tree, "ppac", traces )
-                    , labrDet( *tree, "labr", traces )
-                    , qintDet( *tree, "qint", traces )
+                : file( TFile(fname, "RECREATE") )
+                , tree( new TTree("ocl_events", "OCL events") )
+                , trigger( *tree, traces )
+                , deDet( *tree, "deDet", traces )
+                , eDet( *tree, "eDet", traces )
+                , ppacDet( *tree, "ppac", traces )
+                , labrDet( *tree, "labr", traces )
+                , qintDet( *tree, "qint", traces )
+                , oscarFDet( *tree, "oscar", traces )
+                , oscarBDet( *tree, "oscarB", traces )
             {
                 tree->SetDirectory(&file);
             }
@@ -173,8 +179,8 @@ namespace Task {
             {
                 if ( event.GetTrigger() )
                     trigger.Fill(event.GetTrigger());
-                for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet,
-                                    DetectorType::ppac, DetectorType::qint} ){
+                for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet,DetectorType::ppac,
+                                    DetectorType::qint, DetectorType::oscarF, DetectorType::oscarB,} ){
                     GetDet(type)->reset();
                     GetDet(type)->Fill(event.GetDetector(type), event.GetTrigger());
                 }

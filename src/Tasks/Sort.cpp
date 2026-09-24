@@ -194,7 +194,8 @@ void HistManager::AddEntry(Triggered_event &buffer)
         if ( trigger->cfdfail )
             return;
 
-    for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac} ){
+    for ( auto &type : {DetectorType::labr, DetectorType::deDet, DetectorType::eDet, DetectorType::ppac,
+                        DetectorType::oscarF, DetectorType::oscarB} ) {
         GetSpec(type)->Fill(buffer.GetDetector(type), trigger);
     }
 
