@@ -13,11 +13,7 @@
 #include "SPSCQueue.h"
 #include "SPMCQueue.h"
 
-#include <blockingconcurrentqueue.h>
-
 #define SIZE 16384
-//#define SIZE 2048
-//#define SIZE 32
 
 namespace Task {
 
