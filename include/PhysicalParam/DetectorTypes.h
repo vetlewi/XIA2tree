@@ -21,6 +21,8 @@ enum DetectorType {
     ppac,       //!< Is a PPAC
     rfchan,     //!< Is a RF channel
     qint,       //!< Is a charge integrator
+    oscarF,     //!< Is the strips of OSCAR particle (Si detector front)
+    oscarB,     //!< Is the pad of OSCAR particle (Si detector back)
     any,        //!< Any detector
     unused      //!< Is a unused XIA channel
 };
