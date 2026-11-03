@@ -105,7 +105,7 @@ target_include_directories(metadatawriter
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/include/Tools
 )
-target_link_libraries(metadatawriter PRIVATE lfreist-hwinfo::hwinfo)
+target_link_libraries(metadatawriter PUBLIC lfreist-hwinfo::hwinfo)
 add_library(OCL::metadatawriter ALIAS metadatawriter)
 
 add_library(UserSort
