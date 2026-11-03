@@ -87,7 +87,11 @@ namespace OCL {
                 case deDet:
                 case eDet:
                 case ppac:
+                case rfchan:
                 case qint:
+                case oscarF:
+                case oscarB:
+                case any:
                     return true;
                 default:
                     return false;

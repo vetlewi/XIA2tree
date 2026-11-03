@@ -57,23 +57,23 @@ Particle_telescope_t::Particle_telescope_t(Histograms &hm, const size_t &num)
                       hm.Create2D("ede_spectra_b"+std::to_string(num)+"f6", "E energy vs dE energy",
                                   3000, 0, 30000, "E energy [keV]", 1500, 0, 15000, "dE energy [keV]"),
                       hm.Create2D("ede_spectra_b"+std::to_string(num)+"f7", "E energy vs dE energy",
-                                  3000, 0, 30000, "E energy [keV]", 2048, 0, 16384, "dE energy [keV]")}
+                                  3000, 0, 30000, "E energy [keV]", 1500, 0, 15000, "dE energy [keV]")}
         , ede_spectra_raw{ hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f0", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f1", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f2", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f3", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f4", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f5", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f6", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]"),
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]"),
                            hm.Create2D("ede_spectra_raw_b"+std::to_string(num)+"f7", "E energy vs dE energy (raw, uncalibrated)",
-                                   2048, 0, 16384, "E energy [ch]", 2048, 0, 16384, "dE energy [ch]")}
+                                   4096, 0, 65536, "E energy [ch]", 4096, 0, 65536, "dE energy [ch]")}
 {
 }
 
@@ -261,7 +261,10 @@ Sorter::Sorter(TEventQueue_t &input, const OCL::UserConfiguration &config,
 
 void Sorter::Run() {
     std::pair<std::vector<Entry_t>, int> entries;
-    while ( input_queue.wait_and_pop(entries) ){
+    while ( !done ){
+        if ( !input_queue.wait_and_pop(entries, std::chrono::milliseconds(100)) ) {
+            continue;
+        }
         ++entries_processed;
         if ( entries.first.empty() )
             continue;

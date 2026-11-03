@@ -11,6 +11,7 @@
 #define NUM_SI_E_DET 8          //!< Number of E Si rings
 #define NUM_SI_E_GUARD 8        //!< Number of E guard rings
 #define NUM_PPAC       4        //!< Number of PPAC detectors
+#define NUM_DETECTOR_TYPES 12
 
 enum DetectorType {
     invalid,    //!< Invalid address

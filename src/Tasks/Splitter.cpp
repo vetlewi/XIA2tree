@@ -17,7 +17,10 @@ void Splitter::Run()
     Entry_t entry;
     std::vector<Entry_t> entries;
     entries.reserve(128);
-    while ( input_queue.wait_and_pop(entry) ) {
+    while ( !done ){
+        if ( !input_queue.wait_and_pop(entry, std::chrono::milliseconds(100)) ) {
+            continue;
+        }
         ++entries_processed;
         if (entries.empty()) {
             entries.emplace_back(entry);

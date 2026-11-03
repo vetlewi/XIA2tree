@@ -17,7 +17,10 @@ void Buffer::Run()
 {
     QueueWorker worker(output_queue);
     Entry_t event;
-    while ( input_queue.wait_and_pop(event) ){
+    while ( !done ){
+        if ( !input_queue.wait_and_pop(event, std::chrono::milliseconds(100)) ) {
+            continue;
+        }
         ++entries_processed;
         buffer.push(event);
         if ( buffer.size() > size ){

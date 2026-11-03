@@ -20,9 +20,12 @@ void Calibrator::Run()
 {
     QueueWorker worker(output_queue);
     const XIA_base_t *xia;
-    while ( input_queue.wait_and_pop(xia) ){
+    while ( !done ) {
+        if ( !input_queue.wait_and_pop(xia, std::chrono::milliseconds(100)) ) {
+            continue;
+        }
         ++entries_processed;
-        
+
         if ( !calibration.keep(xia) ){
             continue;
         }
