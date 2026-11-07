@@ -56,7 +56,7 @@ std::vector<std::string> RunSort(const CLI::Options &options, ProgressUI &progre
         hist_file = options.output.value();
     }
 
-    Task::XIAReader reader(options.input.value(), &progress);
+    Task::XIAReader reader(options.input.value(), &progress, options.len_header.value());
     Task::Calibrator calibrator(cal, reader.GetQueue());
     Task::Buffer buffer(calibrator.GetQueue());
     Task::Splitter splitter(buffer.GetQueue(), options.SplitTime.value());

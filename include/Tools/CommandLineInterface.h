@@ -37,6 +37,8 @@ namespace CLI {
         std::optional<bool> keep_traces = false;
         std::optional<sort_type> sortType = sort_type::coincidence;
         std::optional<DetectorType> Trigger = DetectorType::eDet;
+        std::optional<bool> len_header = false;
+
     };
 
     Options ParseCLA(const int &argc, char *argv[]);
