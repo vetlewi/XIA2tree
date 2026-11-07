@@ -41,8 +41,9 @@ void XIAReader::RunWithUI()
         size_t read = 0;
         while ( pos < end && !done ){
             const auto *header = reinterpret_cast<const XIA_base_t *>(pos);
-            if ( pos + header->eventLen <= end ) {
-                output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
+            const auto len = use_headerLen ? header->headerLen : header->eventLen;
+            if ( pos + len <= end ) {
+                output_queue.push(header);
             }
 
             // Since the if test is very rare, and very predictable this shouldn't affect the runtime that much.
@@ -50,10 +51,7 @@ void XIAReader::RunWithUI()
                 bar.UpdateProgress(pos - begin);
             }
             ++entries_processed;
-            if ( use_headerLen )
-                pos += reinterpret_cast<const XIA_base_t *>(pos)->headerLen;
-            else
-                pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
+            pos += len;
         }
         bar.FinishProgress();
     }
@@ -70,10 +68,11 @@ void XIAReader::RunWithoutUI()
         const auto *pos = begin;
         while ( pos < end && !done ){
             const auto *header = reinterpret_cast<const XIA_base_t *>(pos);
-            if ( pos + header->eventLen <= end ) {
-                output_queue.push(reinterpret_cast<const XIA_base_t *>(pos));
-             }
-            pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
+            const auto len = use_headerLen ? header->headerLen : header->eventLen;
+            if ( pos + len <= end ) {
+                output_queue.push(header);
+            }
+            pos += len;
             ++entries_processed;
 
         }
