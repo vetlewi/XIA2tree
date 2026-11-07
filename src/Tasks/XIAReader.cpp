@@ -16,10 +16,11 @@ using namespace Task;
 
 // TODO: The actual implementation of the routine that indexes the data should be refactored so that it is more testable
 
-XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui)
+XIAReader::XIAReader(const std::vector<std::string> &files, ProgressUI *_ui, bool _use_headerLen)
     //: output_queue( capacity )
     : output_queue( )
     , ui( _ui )
+    , use_headerLen( _use_headerLen )
 {
     for ( auto &file : files ){
         mapped_files.emplace_back(file,std::make_unique<IO::MemoryMap>(file.c_str()) );
@@ -49,7 +50,10 @@ void XIAReader::RunWithUI()
                 bar.UpdateProgress(pos - begin);
             }
             ++entries_processed;
-            pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
+            if ( use_headerLen )
+                pos += reinterpret_cast<const XIA_base_t *>(pos)->headerLen;
+            else
+                pos += reinterpret_cast<const XIA_base_t *>(pos)->eventLen;
         }
         bar.FinishProgress();
     }

@@ -25,13 +25,14 @@ namespace Task {
         std::vector<std::pair<std::string, std::unique_ptr<IO::MemoryMap>>> mapped_files;
         XIAQueue_t output_queue;
         ProgressUI *ui;
+        const bool use_headerLen;
 
         void RunWithUI();
         void RunWithoutUI();
 
     public:
         CLASS_NAME(XIAReader)
-        XIAReader(const std::vector<std::string> &files, ProgressUI *ui = nullptr);
+        XIAReader(const std::vector<std::string> &files, ProgressUI *ui = nullptr, bool use_headerLen = false);
 
         auto &GetQueue(){ return output_queue; }
         void Run() override;
